@@ -4,6 +4,10 @@ function reverse(word: string) {
   return word.split('').reverse().join('');
 }
 
+function values<T>(dict: Dictionary<T>): T[] {
+  return Object.keys(dict).map(k => dict[k]);
+}
+
 export class GaddagNode {
   constructor(public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) { }
 }
@@ -12,18 +16,27 @@ export class Gaddag {
   public root: GaddagNode;
   public static TurnToken = '>';
 
-  /*
-      Returns the total number of nodes
-   */
-  public size() {
-    return JSON.stringify(this.root).match(/children/g).length;
-  }
-
   /**
    * Returns all words in the gaddag.
    */
   public allWords(): string[] {
+    return [];
+  }
 
+  /**
+   * 
+   * @param word 
+   */
+  public wordsForPrefix(word: string): string[] {
+    return [];
+  }
+
+  /**
+   * 
+   * @param word 
+   */
+  public checkWord(word: string): boolean {
+    return false;
   }
 
   /**
