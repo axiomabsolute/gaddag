@@ -57,6 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# Output
+dist/
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
