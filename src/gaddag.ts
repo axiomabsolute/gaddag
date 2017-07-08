@@ -17,6 +17,13 @@ export class Gaddag {
   public static TurnToken = '>';
 
   /**
+   * Returns the size - the number of nodes of the graph
+   */
+  public size(): number {
+    return 0;
+  }
+
+  /**
    * Returns all words in the gaddag.
    */
   public allWords(): string[] {
