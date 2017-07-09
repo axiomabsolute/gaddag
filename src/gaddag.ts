@@ -12,6 +12,10 @@ function flatten<T>(arrays: T[][]): T[] {
   return [].concat.apply([], arrays);
 }
 
+function unique<T>(arr: T[]): T[] {
+  return arr.filter( (v, i) => arr.indexOf(v) === i );
+}
+
 export class GaddagNode {
   private countFlag: Date;
   constructor(public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) { }
@@ -36,6 +40,13 @@ export class Gaddag {
     return Gaddag.sizeNode(this.root, new Date());
   }
 
+  /**
+   * Returns the unminimized size
+   */
+  public rawSize(): number {
+    return this.allWords().reduce( (p, n) => p + (n.length * n.length), 0);
+  }
+
   private static sizeNode(node: GaddagNode, flag: Date): number {
     return node.count(flag) + values(node.children)
       .map(n => Gaddag.sizeNode(n, flag))
@@ -43,15 +54,46 @@ export class Gaddag {
   }
 
   /**
+   * Calculates the compression rate based off of the unminimized and minimized sizes
+   */
+  public compressionRate(): number {
+    return this.size() / this.rawSize();
+  }
+
+  /**
    * Returns all words in the gaddag.
    */
   public allWords(): string[] {
     let size = this.size();
-    if (size > 100) {
+    if (size > 100000) {
       throw `GADDAG too large: size ${size}`;
     }
     // Just find all suffix paths
     return this.wordsForSuffix("");
+  }
+
+  public wordsContaining(substring: string): string[] {
+    return Gaddag.wordsContainingFromNode(substring, reverse(substring), this.root);
+  }
+
+  /**
+   * Walk the GADDAG treating the substring as a prefix, then starting from the node where the "prefix" has run out, find
+   * all prefixes and suffixes and add them to the "prefix"
+   * 
+   * @param substring 
+   * @param gnirtsbus 
+   * @param node 
+   */
+  private static wordsContainingFromNode(substring: string, gnirtsbus: string, node: GaddagNode): string[] {
+    if (gnirtsbus.length === 0) {
+      let result = node.isCompleteWord ? [ substring ] : [];
+      let prefixes = Gaddag.wordsForPrefixFromNode(substring, "", node);
+      let suffixes = Gaddag.walkSuffixesFromNode(node).map(suff => substring + suff);
+      return unique(result.concat(prefixes, suffixes));
+    }
+    let firstChar = gnirtsbus[0];
+    if (!(firstChar in node.children)) { return []; }
+    return Gaddag.wordsContainingFromNode(substring, gnirtsbus.substr(1), node.children[firstChar]);
   }
 
   /**
