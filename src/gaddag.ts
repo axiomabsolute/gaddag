@@ -198,6 +198,7 @@ export class Gaddag {
    * @param word Word to add
    */
   public addWord(word: string) {
+    if (word.length < 2) { return; }
     let reversed = reverse(word); // asked -> deksa
     let degenerateCaseNode = this.addPath(this.root, reversed);
     degenerateCaseNode.isCompleteWord = true;
