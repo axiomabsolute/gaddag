@@ -1,25 +1,48 @@
 type Dictionary<T> = { [index: string]: T }
 
+/**
+ * Reverse a string; reverse('hello') -> 'olleh'
+ * @param word Word to reverse
+ */
 function reverse(word: string) {
   return word.split('').reverse().join('');
 }
 
+/**
+ * Returns values of a dictionary 
+ * @param dict Dict to return values of
+ */
 function values<T>(dict: Dictionary<T>): T[] {
   return Object.keys(dict).map(k => dict[k]);
 }
 
+/**
+ * Given a nested array, return a flattened array containing all members
+ * @param arrays Array of arrays to flatten
+ */
 function flatten<T>(arrays: T[][]): T[] {
   return [].concat.apply([], arrays);
 }
 
+/**
+ * Returns a new array with duplicates removed
+ * @param arr Array to deduplicate
+ */
 function unique<T>(arr: T[]): T[] {
   return arr.filter( (v, i) => arr.indexOf(v) === i );
 }
 
+/**
+ * A single node of a GADDAG data structure
+ */
 export class GaddagNode {
   private countFlag: Date;
   constructor(public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) { }
 
+  /**
+   * Sets the counter for this node and returns 1 if the node was not already counted
+   * @param flag The flag to use to determine whether a node has been counted
+   */
   public count(flag: Date): number {
     if (this.countFlag != flag) {
       this.countFlag = flag;
@@ -29,6 +52,9 @@ export class GaddagNode {
   }
 }
 
+/**
+ * A GADDAG data structure
+ */
 export class Gaddag {
   public root: GaddagNode;
   public static TurnToken = '>';
@@ -72,6 +98,10 @@ export class Gaddag {
     return this.wordsForSuffix("");
   }
 
+  /**
+   * Walk the GADDAG and generate all words containing the substring
+   * @param substring Substring to search for
+   */
   public wordsContaining(substring: string): string[] {
     return Gaddag.wordsContainingFromNode(substring, reverse(substring), this.root);
   }
@@ -147,8 +177,8 @@ export class Gaddag {
   }
 
   /**
-   * 
-   * @param word 
+   * Check whether the given word is in the GADDAG
+   * @param word Word to check
    */
   public checkWord(word: string): boolean {
     return Gaddag.checkWordNode(reverse(word), this.root);
@@ -164,7 +194,8 @@ export class Gaddag {
   }
 
   /**
-   * Adds a word to the gaddag
+   * Adds a word to the GADDAG
+   * @param word Word to add
    */
   public addWord(word: string) {
     let reversed = reverse(word); // asked -> deksa
