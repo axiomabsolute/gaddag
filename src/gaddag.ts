@@ -77,8 +77,8 @@ export class Gaddag {
   }
 
   /**
-   * Walk the GADDAG treating the substring as a prefix, then starting from the node where the "prefix" has run out, find
-   * all prefixes and suffixes and add them to the "prefix"
+   * Walk the GADDAG treating the substring as a prefix, then starting from the node where the "prefix" has run out,
+   * keep walking till a turn is found, then find all prefixes and suffixes and add them to the "prefix"
    * 
    * @param substring 
    * @param gnirtsbus 
@@ -87,9 +87,13 @@ export class Gaddag {
   private static wordsContainingFromNode(substring: string, gnirtsbus: string, node: GaddagNode): string[] {
     if (gnirtsbus.length === 0) {
       let result = node.isCompleteWord ? [ substring ] : [];
-      let prefixes = Gaddag.wordsForPrefixFromNode(substring, "", node);
-      let suffixes = Gaddag.walkSuffixesFromNode(node).map(suff => substring + suff);
-      return unique(result.concat(prefixes, suffixes));
+      let suffixes = flatten(Object.keys(node.children).map(key => {
+        if (key === Gaddag.TurnToken) {
+          return Gaddag.walkSuffixesFromNode(node.children[key]).map(s => substring + s);
+        }
+        return Gaddag.wordsContainingFromNode(key + substring, gnirtsbus, node.children[key]);
+      }));
+      return unique(result.concat(suffixes));
     }
     let firstChar = gnirtsbus[0];
     if (!(firstChar in node.children)) { return []; }
