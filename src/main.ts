@@ -1,19 +1,25 @@
-import { Gaddag, GaddagNode } from './gaddag';
-import { bingos } from './bingos';
+import * as fs from 'fs';
 
-let wordList = bingos.bingos; /*[
-    "cardamom",
-    "careen",
-    "greener",
-    "scars"
-];*/
+import { Gaddag, GaddagNode } from './gaddag';
+import { bingosSample } from './data/bingos-sample';
+import { bingos } from './data/bingos';
+import { words } from './data/words';
+
+let wordList = bingos.words;
 
 let dag = new Gaddag();
 wordList.forEach(w => dag.addWord(w));
-// console.log(JSON.stringify(dag));
-let dagSize = dag.size();
 console.log("\n------------------------\n");
 
+console.log("Saving GADDAG to out.js");
+var start = new Date();
+fs.writeFile('./dist/out.js', JSON.stringify(dag));
+console.log(`Time: ${new Date().getTime() - start.getTime()} ms`);
+let dagSize = dag.size();
+
+console.log("------------------------\n");
+
+start = new Date();
 console.log(`GADDAG Size: ${dagSize} Nodes`);
 console.log(`Compression Rate: ${Math.ceil(dag.compressionRate() * 1000)/10}% of original size`);
 console.log(`checkWord("red"): ${dag.checkWord('red')}`);
@@ -31,5 +37,6 @@ console.log(`wordsContaining("car"): ${dag.wordsContaining("car")}`)
 console.log(`wordsContaining("ee"): ${dag.wordsContaining("ee")}`)
 console.log(`wordsContaining("red"): ${dag.wordsContaining("red")}`)
 console.log(`wordsContaining(${wordList[0]}): ${dag.wordsContaining(wordList[0])}`)
+console.log(`Time: ${new Date().getTime() - start.getTime()} ms`);
 
 console.log("\n------------------------");

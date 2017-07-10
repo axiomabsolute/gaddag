@@ -1,5 +1,5 @@
-export var bingos = {
-  "bingos": [
+export var bingosSample = {
+  "words": [
     "aneroid",
     "aileron",
     "alienor",

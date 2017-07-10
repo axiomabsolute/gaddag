@@ -90,10 +90,6 @@ export class Gaddag {
    * Returns all words in the gaddag.
    */
   public allWords(): string[] {
-    let size = this.size();
-    if (size > 100000) {
-      throw `GADDAG too large: size ${size}`;
-    }
     // Just find all suffix paths
     return this.wordsForSuffix("");
   }

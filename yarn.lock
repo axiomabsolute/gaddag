@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@types/node@^8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.10.tgz#12efec9183b072d5f951cf86395a4c780f868a17"
+
 ansi-regex@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-2.1.1.tgz#c3b33ab5ee360d86e0e628f0468ae7ef27d654df"
