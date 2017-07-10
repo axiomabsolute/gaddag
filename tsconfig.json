@@ -1,7 +1,8 @@
 {
     "files": [
-        "src/main.ts",
-        "src/gaddag.ts"
+        "src/bingos.ts",
+        "src/gaddag.ts",
+        "src/main.ts"
     ],
     "compilerOptions":{
         "noImplicitAny": true,
