@@ -5,7 +5,7 @@ import { bingosSample } from './data/bingos-sample';
 import { bingos } from './data/bingos';
 import { words } from './data/words';
 
-let wordList = bingos.words;
+let wordList = bingosSample.words;
 
 let dag = new Gaddag();
 wordList.forEach(w => dag.addWord(w));
@@ -13,7 +13,11 @@ console.log("\n------------------------\n");
 
 console.log("Saving GADDAG to out.js");
 var start = new Date();
-fs.writeFile('./dist/out.js', JSON.stringify(dag));
+fs.writeFile('./dist/out.js', JSON.stringify(dag), (err: any) => {
+  if (err) {
+    console.error(err);
+  }
+});
 console.log(`Time: ${new Date().getTime() - start.getTime()} ms`);
 let dagSize = dag.size();
 
@@ -37,6 +41,7 @@ console.log(`wordsContaining("car"): ${dag.wordsContaining("car")}`)
 console.log(`wordsContaining("ee"): ${dag.wordsContaining("ee")}`)
 console.log(`wordsContaining("red"): ${dag.wordsContaining("red")}`)
 console.log(`wordsContaining(${wordList[0]}): ${dag.wordsContaining(wordList[0])}`)
+console.log(`dag.wordsForHand("retinas"): ${dag.wordsForHand("retinas")}`);
 console.log(`Time: ${new Date().getTime() - start.getTime()} ms`);
 
 console.log("\n------------------------");
