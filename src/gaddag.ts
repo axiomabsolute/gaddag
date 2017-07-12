@@ -1,6 +1,16 @@
 type Dictionary<T> = { [index: string]: T }
 
 /**
+ * Creates a shallow clone of a dictionary 
+ * @param dict Dictionary to clone
+ */
+function cloneDict<T>(dict: Dictionary<T>): Dictionary<T> {
+  let result: Dictionary<T> = {};
+  Object.getOwnPropertyNames(dict).forEach(k => result[k] = dict[k]);
+  return result;
+}
+
+/**
  * Reverse a string; reverse('hello') -> 'olleh'
  * @param word Word to reverse
  */
@@ -14,6 +24,14 @@ function reverse(word: string) {
  */
 function values<T>(dict: Dictionary<T>): T[] {
   return Object.keys(dict).map(k => dict[k]);
+}
+
+/**
+ * Returns the sum of an array of numbers
+ * @param nums Array of numbers to sum
+ */
+function sum(nums: number[]): number {
+  return nums.reduce( (p, n) => p + n, 0);
 }
 
 /**
@@ -92,6 +110,38 @@ export class Gaddag {
   public allWords(): string[] {
     // Just find all suffix paths
     return this.wordsForSuffix("");
+  }
+
+  /**
+   * Returns all words matching a given hand
+   * @param hand Hand to track whlie walking GADDAG
+   */
+  public wordsForHand(hand: string): string[] {
+    let seed: Dictionary<number> = {};
+    let letters = hand.split('')
+      .reduce( (result, letter) => {
+        if (!(letter in result)) {
+          result[letter] = 0;
+        }
+        result[letter] = result[letter] + 1;
+        return result;
+      }, seed);
+      return Gaddag.walkWordsForHandFromNode(letters, this.root, "");
+  }
+
+  private static walkWordsForHandFromNode(hand: Dictionary<number>, node: GaddagNode, progress: string): string[] {
+    if (sum(values(hand)) === 0) {
+      return  node.isCompleteWord ? [progress] : [];
+    }
+    let childrenInHand = Object.keys(node.children).filter( k => k in hand && hand[k] > 0);
+    if (childrenInHand.length === 0) {
+      return  node.isCompleteWord ? [progress] : [];
+    } 
+    return flatten(childrenInHand.map( k => {
+      let newHand = cloneDict(hand);
+      newHand[k] = newHand[k] - 1;
+      return Gaddag.walkWordsForHandFromNode(newHand, node.children[k], k + progress);
+    }));
   }
 
   /**
