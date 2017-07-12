@@ -5,7 +5,7 @@ import { bingosSample } from './data/bingos-sample';
 import { bingos } from './data/bingos';
 import { words } from './data/words';
 
-let wordList = bingosSample.words;
+let wordList = words.words;
 
 let dag = new Gaddag();
 wordList.forEach(w => dag.addWord(w));
