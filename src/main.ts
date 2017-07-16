@@ -44,4 +44,7 @@ console.log(`wordsContaining(${wordList[0]}): ${dag.wordsContaining(wordList[0])
 console.log(`dag.wordsForHand("retinas"): ${dag.wordsForHand("retinas")}`);
 console.log(`Time: ${new Date().getTime() - start.getTime()} ms`);
 
+console.log(`Number of nodes: ${dag.getNodes().length}`);
+console.log(`Number of edges: ${dag.getEdges().length}`);
+
 console.log("\n------------------------");

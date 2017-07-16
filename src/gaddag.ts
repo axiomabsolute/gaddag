@@ -1,5 +1,13 @@
 type Dictionary<T> = { [index: string]: T }
 
+function makeIdGenerator() {
+  var count = -1;
+  return () => {
+    count = count + 1;
+    return count;
+  };
+}
+
 /**
  * Creates a shallow clone of a dictionary 
  * @param dict Dictionary to clone
@@ -51,11 +59,22 @@ function unique<T>(arr: T[]): T[] {
 }
 
 /**
+ * Represents an edge in the Gaddag
+ */
+export class GaddagEdge {
+  /**
+   * @param source ID of source node
+   * @param target ID of target node
+   */
+  constructor(public source: number, public target: number) { }
+}
+
+/**
  * A single node of a GADDAG data structure
  */
 export class GaddagNode {
   private countFlag: Date;
-  constructor(public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) { }
+  constructor(public id: number, public token: string, public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) { }
 
   /**
    * Sets the counter for this node and returns 1 if the node was not already counted
@@ -74,6 +93,7 @@ export class GaddagNode {
  * A GADDAG data structure
  */
 export class Gaddag {
+  private idGenerator: () => number;
   public root: GaddagNode;
   public static TurnToken = '>';
 
@@ -82,6 +102,48 @@ export class Gaddag {
    */
   public size(): number {
     return Gaddag.sizeNode(this.root, new Date());
+  }
+
+  /**
+   * Returns all nodes in the Gaddag
+   */
+  public getNodes(): GaddagNode[] {
+    let result: Dictionary<GaddagNode> = {'root': this.root};
+    return values(Gaddag.getNodesFromNode(this.root)
+      .reduce( (p, n) => {
+        p[n.id] = n;
+        return p;
+      }, result));
+  }
+
+  /**
+   * Returns children nodes from given node
+   * @param node Node to traverse from
+   */
+  private static getNodesFromNode(node: GaddagNode): GaddagNode[] {
+    return values(node.children).concat(flatten(values(node.children).map(n => Gaddag.getNodesFromNode(n))));
+  }
+
+  /**
+   * Returns all edges in the Gaddag
+   */
+  public getEdges(): GaddagEdge[] {
+    let result: Dictionary<GaddagEdge> = {};
+    let finalResult = values(Gaddag.getEdgesForNode(this.root)
+      .reduce( (p, n) =>{
+        p[`${n.source}-${n.target}`] = n;
+        return p;
+      }, result));
+    return finalResult;
+  }
+
+  /**
+   * Returns the edges for a particular node in the Gaddag
+   * @param node Node's edges to traverse
+   */
+  private static getEdgesForNode(node: GaddagNode): GaddagEdge[] {
+    return values(node.children).map(c => new GaddagEdge(node.id, c.id))
+      .concat(flatten(values(node.children).map(n => Gaddag.getEdgesForNode(n))));
   }
 
   /**
@@ -250,7 +312,7 @@ export class Gaddag {
     degenerateCaseNode.isCompleteWord = true;
 
     let baseCaseNode = this.addPath(this.root, reversed.slice(1)) // eksa
-    let baseCaseTurn = new GaddagNode({});
+    let baseCaseTurn = new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
     baseCaseNode.children[Gaddag.TurnToken] = baseCaseTurn;
     let previousNode = this.addPath(baseCaseTurn, word.slice(-1)); // d
     previousNode.isCompleteWord = true;
@@ -261,7 +323,7 @@ export class Gaddag {
       let previousFinalLetter = reversed[start-2];
 
       let nextBaseNode = this.addPath(this.root, nextPrefix); // ksa
-      let nextCaseTurn = nextBaseNode.children[Gaddag.TurnToken] || new GaddagNode({});
+      let nextCaseTurn = nextBaseNode.children[Gaddag.TurnToken] || new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
       nextBaseNode.children[Gaddag.TurnToken] = nextCaseTurn;
       let nextNode = this.addPath(nextCaseTurn, newFinalLetter) // e
       nextNode.children[previousFinalLetter] = previousNode;
@@ -272,7 +334,7 @@ export class Gaddag {
   private addPath(startingNode: GaddagNode, word: string) {
     return word.split('').reduce((prevNode, char) => {
       if ( !(char in prevNode.children) ) {
-        let newNode = new GaddagNode();
+        let newNode = new GaddagNode(this.idGenerator(), char);
         prevNode.children[char] = newNode;
         return newNode;
       }
@@ -281,6 +343,7 @@ export class Gaddag {
   }
 
   constructor() {
-    this.root = new GaddagNode();
+    this.idGenerator = makeIdGenerator();
+    this.root = new GaddagNode(this.idGenerator(), 'root');
   }
 }
