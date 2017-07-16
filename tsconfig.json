@@ -1,5 +1,6 @@
 {
     "files": [
+        "src/browser.ts",
         "src/data/bingos-sample.ts",
         "src/data/bingos.ts",
         "src/data/words.ts",
