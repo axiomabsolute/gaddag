@@ -30,7 +30,7 @@ function reverse(word: string) {
  * Returns values of a dictionary 
  * @param dict Dict to return values of
  */
-function values<T>(dict: Dictionary<T>): T[] {
+export function values<T>(dict: Dictionary<T>): T[] {
   return Object.keys(dict).map(k => dict[k]);
 }
 
@@ -46,7 +46,7 @@ function sum(nums: number[]): number {
  * Given a nested array, return a flattened array containing all members
  * @param arrays Array of arrays to flatten
  */
-function flatten<T>(arrays: T[][]): T[] {
+export function flatten<T>(arrays: T[][]): T[] {
   return [].concat.apply([], arrays);
 }
 
@@ -87,6 +87,14 @@ export class GaddagNode {
     }
     return 0;
   }
+
+  public include(flag: Date): boolean {
+    if (this.countFlag != flag) {
+      this.countFlag = flag;
+      return true
+    }
+    return false;
+  }
 }
 
 /**
@@ -122,6 +130,34 @@ export class Gaddag {
    */
   private static getNodesFromNode(node: GaddagNode): GaddagNode[] {
     return values(node.children).concat(flatten(values(node.children).map(n => Gaddag.getNodesFromNode(n))));
+  }
+
+  /**
+   * Returns a map from tree depth to an array of nodes whose shallowest path is at that depth.
+   */
+  public getNodesByDepth(): {[depth: string]: GaddagNode[]} {
+    let flag = new Date();
+    return Gaddag.getNodesByDepthFromNode(this.root, 0, flag);
+  }
+
+  /**
+   * Returns a map from tree depth to an array of nodes whose shallowest path is at that depth starting from a given
+   * node and specified depth.
+   * @param node Node to traverse from
+   * @param depth Current depth counter
+   * @param flag Flag to use when traversing to prevent multiple traversal
+   */
+  private static getNodesByDepthFromNode(node: GaddagNode, depth: number, flag: Date): {[depth: string]: GaddagNode[]} {
+    let result: {[depth: string]: GaddagNode[]} = {};
+    result[depth] = values(node.children).filter(n => n.include(flag));
+    result[depth].forEach(n => {
+      let intermediary = Gaddag.getNodesByDepthFromNode(n, depth + 1, flag);
+      Object.keys(intermediary).forEach(k => {
+        result[k] = result[k] || [];
+        intermediary[k].forEach(i => result[k].push(i));
+      });
+    });
+    return result;
   }
 
   /**
