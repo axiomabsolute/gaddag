@@ -8,8 +8,7 @@ import { words } from './data/words';
 let wordList = bingosSample.words;
 
 let dag = new Gaddag();
-// wordList.forEach(w => dag.addWord(w));
-dag.addWord("call");
+wordList.forEach(w => dag.addWord(w));
 console.log("\n------------------------\n");
 
 console.log("Saving GADDAG to out.js");
@@ -47,6 +46,6 @@ console.log(`Number of nodes: ${dag.getNodes().length}`);
 console.log(`Number of edges: ${dag.getEdges().length}`);
 console.log(`Number of words: ${dag.allWords().length}`);
 
-console.log(dag.getNodesByDepth());
+console.log(`Depth: ${Object.keys(dag.getNodesByDepth()).length}`);
 
 console.log("\n------------------------");
