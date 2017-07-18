@@ -91,7 +91,7 @@ class SlideShow {
   }
 
   public next(): void {
-    if (this._slideNumber < this.slides.length) {
+    if (this._slideNumber < this.slides.length - 1) {
       this._slideNumber = this._slideNumber + 1;
     }
   }
@@ -158,6 +158,7 @@ function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
   
   introNodes
     .append('circle')
+    .attr('class', 'anagram-node')
     .attr('r', 20)
     .style('fill', (d,i) => colorScale[i] );
   
