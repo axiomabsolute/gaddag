@@ -35,6 +35,14 @@
       display: block;
     }
 
+    /* Components */
+    .card {
+      margin: .5em;
+      padding: .5em;
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+      border-radius: 2px;
+    }
+
     /* Base show styles */
     .slide-show {
       display: flex;
@@ -63,6 +71,22 @@
       display: flex;
     }
 
+    .message-slide .message {
+      height: 500px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .message-slide .slide-title {
+      font-size: 24px;
+    }
+
+    .message-slide .slide-text {
+      font-size: 16px;
+    }
 
     /* Exploration layout */
     .exploration-slide {
@@ -70,7 +94,7 @@
     }
 
     .exploration-slide .slide-header {
-      height: 300px;
+      height: 245px;
     }
 
     .exploration-slide .slide-title {
@@ -107,13 +131,13 @@
 
   <template id="template-exploration-slide">
     <div class="exploration-slide">
-      <div class="slide-header">
-        <span class="slide-title"></span>
+      <div class="slide-header card">
+        <h3 class="slide-title"></h3>
         <div class="slide-text"></div>
       </div>
       <div class="slide-body">
-        <div class="slide-controls"></div>
-        <div class="slide-visual">
+        <div class="slide-controls card"></div>
+        <div class="slide-visual card">
           <svg height="650" width="1000"></svg>
         </div>
         <div class="slide-explorations"></div>
@@ -123,8 +147,10 @@
 
   <template id="template-message-slide">
     <div class="message-slide">
-      <div class="slide-title"></div>
-      <div class="slide-text"></div>
+      <div class="message card">
+        <h3 class="slide-title"></h3>
+        <div class="slide-text"></div>
+      </div>
     </div>
   </template>
 
