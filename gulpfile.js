@@ -27,7 +27,7 @@ gulp.task('default', ['build'], function() {
   run()
 });
 
-gulp.task('deploy', ['default'], function() {
+gulp.task('deploy', [], function() {
   browserify()
     .add('src/browser.ts')
     .plugin(tsify, { noImplicitAny: true })

@@ -90,19 +90,31 @@ class SlideShow {
     return this.slides[this._slideNumber];
   }
 
-  public next(): void {
+  public next(): boolean {
     if (this._slideNumber < this.slides.length - 1) {
       this._slideNumber = this._slideNumber + 1;
+      return true;
     }
+    return false;
   }
 
-  public previous(): void {
+  public previous(): boolean {
     if (this._slideNumber > 0) {
       this._slideNumber = this._slideNumber - 1;
+      return true;
     }
+    return false;
   }
 
-  private render() {
+  private goToPage(index: number): boolean {
+    if (index >= 0 && index < this.slides.length) {
+      this._slideNumber = index;
+      return true;
+    }
+    return false;
+  }
+
+  private renderSlide() {
     let currentSlide = this.host.querySelector('.show');
     currentSlide.innerHTML = '';
 
@@ -112,15 +124,44 @@ class SlideShow {
     currentSlide.appendChild(clone);
   }
 
+  private renderPageControls() {
+    d3.selectAll('.page-dot')
+      .classed('page-dot--active', (d, i) => i == this._slideNumber);
+    this.renderSlide();
+  }
+
   constructor(public slides: Slide<any>[], initialSlide: number = 0, hostSelector: string = ".slide-show") {
     this._slideNumber = slides[initialSlide] ? initialSlide : 0;
 
     this.host = document.querySelector(hostSelector);
 
-    this.render();
+    this.renderSlide();
 
-    d3.select('.next-slide').on('click', () => { this.next(); this.render(); });
-    d3.select('.prev-slide').on('click', () => { this.previous(); this.render(); });
+    d3.select(this.host).select('.page-dots')
+      .selectAll('.page-dot')
+      .data(slides).enter()
+      .append('a')
+        .attr('href', (d, i) => `#page-${i}`)
+        .attr('class', (d,i) => 'page-dot')
+        .classed('page-dot--active', (d,i) => i == this._slideNumber)
+        .text((d,i) => i + 1)
+        .on('click', (d, i) => {
+          this.goToPage(i);
+          this.renderPageControls();
+        });
+
+    d3.select('.next-slide').on('click', () => {
+      let result = this.next();
+      if (!result) { return; }
+      this.renderSlide();
+      this.renderPageControls();
+    });
+    d3.select('.prev-slide').on('click', () => {
+      let result = this.previous();
+      if (!result) { return; }
+      this.renderSlide();
+      this.renderPageControls();
+    });
   }
 }
 
