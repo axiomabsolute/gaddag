@@ -8,6 +8,26 @@ function makeIdGenerator() {
   };
 }
 
+export function permute<T>(inputArr: T[]) {
+  let result: T[][] = [];
+
+  const permuteInner = (arr: T[], m: T[] = []) => {
+    if (arr.length === 0) {
+      result.push(m)
+    } else {
+      for (let i = 0; i < arr.length; i++) {
+        let curr = arr.slice();
+        let next = curr.splice(i, 1);
+        permuteInner(curr.slice(), m.concat(next))
+     }
+   }
+ }
+
+ permuteInner(inputArr)
+
+ return result;
+}
+
 /**
  * Creates a shallow clone of a dictionary 
  * @param dict Dictionary to clone
@@ -54,7 +74,7 @@ export function flatten<T>(arrays: T[][]): T[] {
  * Returns a new array with duplicates removed
  * @param arr Array to deduplicate
  */
-function unique<T>(arr: T[]): T[] {
+export function unique<T>(arr: T[]): T[] {
   return arr.filter( (v, i) => arr.indexOf(v) === i );
 }
 
@@ -376,6 +396,14 @@ export class Gaddag {
       }
       return prevNode.children[char];
     }, startingNode);
+  }
+
+  public wordsForHandByPermutation(hand: string): {[permutation: string]: string[]} {
+    let perms = unique(permute(hand.split('')).map(m => m.join('')));
+    return perms.reduce( (p: {[key: string]: string[]}, n) => {
+      p[n] = this.wordsContaining(n);
+      return p;
+    }, {});
   }
 
   constructor() {
