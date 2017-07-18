@@ -6,17 +6,34 @@
   </head>
   <body>
     <style>
-      .links line {
-        stroke: #999;
-        stroke-opacity: 0.6;
+      .node circle {
+        fill: #999;
       }
 
-      .nodes circle {
-        stroke: #fff;
+      .node text {
+        font: 16px sans-serif;
+      }
+
+      .node--internal circle {
+        fill: #555;
+      }
+
+      .node.node--complete-word.node--internal circle {
+        fill: red;
+      }
+
+      .link {
+        fill: none;
+        stroke: #555;
+        stroke-opacity: 0.4;
         stroke-width: 1.5px;
       }
+
+      label {
+        display: block;
+      }
     </style>
-    <svg width="960" height="600"></svg>
+    <svg></svg>
 
     <script src="./dist/bundle.js"></script>
   </body>
