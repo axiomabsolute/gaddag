@@ -15,15 +15,15 @@ function diagonal(d: d3.HierarchyPointNode<{}>) {
 }
 
 let dag = new Gaddag();
-let dagSample = new Gaddag();
-wordList.slice(50,75).forEach(w => dagSample.addWord(w));
+// let dagSample = new Gaddag();
+// wordList.slice(50,75).forEach(w => dagSample.addWord(w));
 wordList.forEach(w => dag.addWord(w));
+console.log("------------------------\n");
 console.log(`Time: ${new Date().getTime() - timestart}ms`);
-console.log("\n------------------------\n");
+console.log("------------------------\n");
 
-timestart = new Date().getTime();
-let dagNodes = dagSample.getNodes();
-let dagEdges = dagSample.getEdges();
+// let dagNodes = dag.getNodes();
+// let dagEdges = dag.getEdges();
 
 // let svg = d3.select("svg"),
 //   rawWidth = 1875,
@@ -78,7 +78,7 @@ let dagEdges = dagSample.getEdges();
 // console.log(dag.wordsForHandByPermutation('tion'));
 
 type TemplateIds = '#template-exploration-slide' | '#template-message-slide';
-type Slide = { templateId: TemplateIds, bootstrap: (host: Element) => void };
+type Slide<T> = { templateId: TemplateIds, bootstrap: (host: Element, initialState: T) => void, initialState: T };
 
 class SlideShow {
   private host: Element;
@@ -86,7 +86,7 @@ class SlideShow {
   public get slideNumber(): number {
     return this._slideNumber;
   }
-  public get slide(): Slide {
+  public get slide(): Slide<any> {
     return this.slides[this._slideNumber];
   }
 
@@ -108,11 +108,11 @@ class SlideShow {
 
     let newTemplate: any = document.querySelector(this.slide.templateId);
     let clone: Element = document.importNode(newTemplate.content, true);
-    this.slide.bootstrap(clone);
+    this.slide.bootstrap(clone, this.slide.initialState);
     currentSlide.appendChild(clone);
   }
 
-  constructor(public slides: Slide[], initialSlide: number = 0, hostSelector: string = ".slide-show") {
+  constructor(public slides: Slide<any>[], initialSlide: number = 0, hostSelector: string = ".slide-show") {
     this._slideNumber = slides[initialSlide] ? initialSlide : 0;
 
     this.host = document.querySelector(hostSelector);
@@ -124,7 +124,7 @@ class SlideShow {
   }
 }
 
-function clabbersSlide(host: Element) {
+function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
   let data = [
     { token: 'C', end: 1 },
     { token: 'L', end: 6 },
@@ -174,7 +174,7 @@ function clabbersSlide(host: Element) {
       .attr('transform', (d, i) => `translate(${200 + (i*50)},${200})`);
   }
 
- svg.on('click', anagram);
+  svg.on('click', anagram);
 
   setTimeout(() => {
     frame.selectAll('.intro-node')
@@ -182,6 +182,22 @@ function clabbersSlide(host: Element) {
       .transition().duration(700)
       .attr('transform', (d, i) => `translate(${200 + (d.end*50)},${200})`)
   }, 3000);
+
+  d3.select(host).select('.explorations-handle .collapse-status-icon')
+    .classed('fa-chevron-up', initialState.expanded)
+    .classed('fa-chevron-down', !initialState.expanded);
+
+  d3.select(host).select('.explorations-handle').on('click', () => {
+    let isCurrentlyExpanded = d3.select('.explorations-content').classed('explorations-content--expanded');
+    // Add --expanded
+    d3.select('.explorations-content')
+      .classed('explorations-content--expanded', !isCurrentlyExpanded );
+    // Set collapse icon
+    d3.select('.explorations-handle .collapse-status-icon')
+      .classed('fa-chevron-up', isCurrentlyExpanded)
+      .classed('fa-chevron-down', !isCurrentlyExpanded);
+  });
+
 }
 
 function helloWorldSlide(host: Element) {
@@ -189,9 +205,9 @@ function helloWorldSlide(host: Element) {
   d3.select(host).select('.slide-text').text("World!");
 }
 
-let slides: Slide[] = [
-  { templateId: '#template-message-slide', bootstrap: helloWorldSlide},
-  { templateId: '#template-exploration-slide', bootstrap: clabbersSlide },
+let slides: Slide<any>[] = [
+  { templateId: '#template-message-slide', bootstrap: helloWorldSlide, initialState: {}},
+  { templateId: '#template-exploration-slide', bootstrap: clabbersSlide, initialState: { expanded: true } },
 ];
 
 let show = new SlideShow(slides);

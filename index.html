@@ -118,7 +118,27 @@
       flex-grow: 1;
     }
 
-    .exploration-slide .slide-explorations {}
+    .exploration-slide .slide-explorations {
+      position: absolute;
+      bottom: -.5em;
+      right: 4em;
+      background-color: white;
+    }
+
+    .exploration-slide .explorations-handle {
+      cursor: pointer;
+    }
+
+    .exploration-slide .explorations-content {
+      height: 0;
+      width: 300px;
+    }
+
+    .exploration-slide .explorations-content.explorations-content--expanded {
+      height: 300px;
+      overflow: auto;
+    }
+
   </style>
 
   <div class="slide-show">
@@ -140,7 +160,12 @@
         <div class="slide-visual card">
           <svg height="650" width="1000"></svg>
         </div>
-        <div class="slide-explorations"></div>
+        <div class="slide-explorations card">
+          <div class="explorations-handle">
+            <i class="collapse-status-icon fa"></i> Explorations
+          </div>
+          <div class="explorations-content"></div>
+        </div>
       </div>
     </div>
   </template>
@@ -154,6 +179,7 @@
     </div>
   </template>
 
+  <script src="https://use.fontawesome.com/f40c084173.js"></script>
   <script src="./dist/bundle.js"></script>
 </body>
 
