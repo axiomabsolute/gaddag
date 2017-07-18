@@ -25,20 +25,20 @@ timestart = new Date().getTime();
 let dagNodes = dagSample.getNodes();
 let dagEdges = dagSample.getEdges();
 
-// let svg = d3.select("svg"),
-//   rawWidth = 1875,
-//   rawHeight = 950,
-//   margin = { top: 20, right: 120, bottom: 20, left: 120 },
-//   width = rawWidth - margin.right - margin.left,
-//   height = rawHeight - margin.top - margin.bottom;
+let svg = d3.select("svg"),
+  rawWidth = 1875,
+  rawHeight = 950,
+  margin = { top: 20, right: 120, bottom: 20, left: 120 },
+  width = rawWidth - margin.right - margin.left,
+  height = rawHeight - margin.top - margin.bottom;
 
-// svg
-//   .attr('height', rawHeight)
-//   .attr('width', rawWidth);
+svg
+  .attr('height', rawHeight)
+  .attr('width', rawWidth);
 
-// let frame = svg
-//   .append('g')
-//     .attr('transform', `translate(${margin.left},${margin.top})`) ;
+let frame = svg
+  .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`) ;
 
 //  let hierarchyRoot = d3.hierarchy(dagSample.root, n => values(n.children));
 //  let tree = d3.tree<GaddagNode>()
@@ -76,3 +76,54 @@ let dagEdges = dagSample.getEdges();
 // anyWindow['dag'] = dag;
 
 // console.log(dag.wordsForHandByPermutation('tion'));
+
+function slide1() {
+  let data = [
+    { token: 'C', end: 1 },
+    { token: 'L', end: 6 },
+    { token: 'A', end: 3 },
+    { token: 'B', end: 5 },
+    { token: 'B', end: 4 },
+    { token: 'E', end: 7 },
+    { token: 'R', end: 2 },
+    { token: 'S', end: 0 }
+  ]
+  var colorScale = d3.schemeCategory20;
+
+  let introNodes = frame
+    .selectAll('.intro-node')
+    .data(data)
+    .enter()
+    .append('g')
+    .attr('class', 'intro-node')
+    .attr('transform', (d, i) => `translate(${200 + (i*50)},${200})`);
+  
+  introNodes
+    .append('circle')
+    .attr('r', 20)
+    .style('fill', (d,i) => colorScale[i] );
+  
+  introNodes
+    .append('text')
+    .style('text-anchor', 'middle')
+    .attr('dy', 3)
+    .text(d => d.token);
+  
+  function anagram(){
+    frame.selectAll('.intro-node')
+      .sort((a,b) => d3.ascending(Math.random(), Math.random()))
+      .transition().duration(700)
+      .attr('transform', (d, i) => `translate(${200 + (i*50)},${200})`);
+  }
+
+ svg.on('click', anagram);
+
+  setTimeout(() => {
+    frame.selectAll('.intro-node')
+      .data(data)
+      .transition().duration(700)
+      .attr('transform', (d, i) => `translate(${200 + (d.end*50)},${200})`)
+  }, 3000);
+}
+
+slide1();
