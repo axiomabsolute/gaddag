@@ -183,6 +183,8 @@ function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
       .attr('transform', (d, i) => `translate(${200 + (d.end*50)},${200})`)
   }, 3000);
 
+  d3.select(host).select('.explorations-content')
+    .classed('explorations-content--expanded', initialState.expanded );
   d3.select(host).select('.explorations-handle .collapse-status-icon')
     .classed('fa-chevron-up', initialState.expanded)
     .classed('fa-chevron-down', !initialState.expanded);
