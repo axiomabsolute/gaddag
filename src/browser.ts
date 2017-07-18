@@ -25,20 +25,20 @@ timestart = new Date().getTime();
 let dagNodes = dagSample.getNodes();
 let dagEdges = dagSample.getEdges();
 
-let svg = d3.select("svg"),
-  rawWidth = 1875,
-  rawHeight = 950,
-  margin = { top: 20, right: 120, bottom: 20, left: 120 },
-  width = rawWidth - margin.right - margin.left,
-  height = rawHeight - margin.top - margin.bottom;
+// let svg = d3.select("svg"),
+//   rawWidth = 1875,
+//   rawHeight = 950,
+//   margin = { top: 20, right: 120, bottom: 20, left: 120 },
+//   width = rawWidth - margin.right - margin.left,
+//   height = rawHeight - margin.top - margin.bottom;
 
-svg
-  .attr('height', rawHeight)
-  .attr('width', rawWidth);
+// svg
+//   .attr('height', rawHeight)
+//   .attr('width', rawWidth);
 
-let frame = svg
-  .append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`) ;
+// let frame = svg
+//   .append('g')
+//     .attr('transform', `translate(${margin.left},${margin.top})`) ;
 
 //  let hierarchyRoot = d3.hierarchy(dagSample.root, n => values(n.children));
 //  let tree = d3.tree<GaddagNode>()
@@ -77,7 +77,54 @@ let frame = svg
 
 // console.log(dag.wordsForHandByPermutation('tion'));
 
-function slide1() {
+type TemplateIds = '#template-exploration-slide' | '#template-message-slide';
+type Slide = { templateId: TemplateIds, bootstrap: (host: Element) => void };
+
+class SlideShow {
+  private host: Element;
+  private _slideNumber: number;
+  public get slideNumber(): number {
+    return this._slideNumber;
+  }
+  public get slide(): Slide {
+    return this.slides[this._slideNumber];
+  }
+
+  public next(): void {
+    if (this._slideNumber < this.slides.length) {
+      this._slideNumber = this._slideNumber + 1;
+    }
+  }
+
+  public previous(): void {
+    if (this._slideNumber > 0) {
+      this._slideNumber = this._slideNumber - 1;
+    }
+  }
+
+  private render() {
+    let currentSlide = this.host.querySelector('.show');
+    currentSlide.innerHTML = '';
+
+    let newTemplate: any = document.querySelector(this.slide.templateId);
+    let clone: Element = document.importNode(newTemplate.content, true);
+    this.slide.bootstrap(clone);
+    currentSlide.appendChild(clone);
+  }
+
+  constructor(public slides: Slide[], initialSlide: number = 0, hostSelector: string = ".slide-show") {
+    this._slideNumber = slides[initialSlide] ? initialSlide : 0;
+
+    this.host = document.querySelector(hostSelector);
+
+    this.render();
+
+    d3.select('.next-slide').on('click', () => { this.next(); this.render(); });
+    d3.select('.prev-slide').on('click', () => { this.previous(); this.render(); });
+  }
+}
+
+function clabbersSlide(host: Element) {
   let data = [
     { token: 'C', end: 1 },
     { token: 'L', end: 6 },
@@ -89,6 +136,17 @@ function slide1() {
     { token: 'S', end: 0 }
   ]
   var colorScale = d3.schemeCategory20;
+
+  let svg = d3.select(host).select("svg"),
+    rawWidth = +svg.attr('width'),
+    rawHeight = +svg.attr('height'),
+    margin = { top: 20, right: 120, bottom: 20, left: 120 },
+    width = rawWidth - margin.right - margin.left,
+    height = rawHeight - margin.top - margin.bottom;
+
+  let frame = svg
+    .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`) ;
 
   let introNodes = frame
     .selectAll('.intro-node')
@@ -126,4 +184,14 @@ function slide1() {
   }, 3000);
 }
 
-slide1();
+function helloWorldSlide(host: Element) {
+  d3.select(host).select('.slide-title').text("Hello");
+  d3.select(host).select('.slide-text').text("World!");
+}
+
+let slides: Slide[] = [
+  { templateId: '#template-message-slide', bootstrap: helloWorldSlide},
+  { templateId: '#template-exploration-slide', bootstrap: clabbersSlide },
+];
+
+let show = new SlideShow(slides);
