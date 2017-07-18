@@ -3,13 +3,15 @@
 
 <head>
   <meta charset="utf-8">
-  <link href="https://fonts.googleapis.com/css?family=Dosis" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css?family=Dosis" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 </head>
 
 <body>
   <style>
     body {
       font-family: 'Dosis', sans-serif;
+      overflow-y: hidden;
     }
 
     .node circle {
@@ -35,12 +37,15 @@
       stroke-width: 1.5px;
     }
 
+    /* Visualization Styles */
+
     label {
       display: block;
     }
 
-    .anagram-node {
+    .intro-node {
       cursor: pointer;
+      user-select: none;
     }
 
     /* Components */
@@ -125,6 +130,10 @@
 
     .exploration-slide .slide-header {
       height: 245px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .exploration-slide .slide-title {
@@ -132,7 +141,7 @@
     }
 
     .exploration-slide .slide-text {
-      font-size: 16px;
+      font-size: 18px;
     }
 
     .exploration-slide .slide-body {
@@ -153,6 +162,11 @@
       bottom: -.5em;
       right: 4em;
       background-color: white;
+      transform: translate(0px, 235px);
+    }
+
+    .exploration-slide .slide-explorations.slide-explorations--expanded {
+      transform: translate(0px, 0px);
     }
 
     .exploration-slide .explorations-handle {
@@ -160,12 +174,8 @@
     }
 
     .exploration-slide .explorations-content {
-      height: 0;
-      width: 300px;
-    }
-
-    .exploration-slide .explorations-content.explorations-content--expanded {
-      height: 300px;
+      max-height: 300px;
+      width: 500px;
       overflow: auto;
     }
 
@@ -180,7 +190,41 @@
     </div>
   </div>
 
-  <template id="template-exploration-slide">
+  <template class="slide" id="clabbers-slide">
+    <div class="slide-title">A Game of Anagrams</div>
+    <div class="slide-text">
+      At its core, Scrabble is a game of <em>anagrams</em>. Each player blindly draws seven tiles with letters inscribed on them from
+      a bag and tries to build up a crossword style board of interconnected words.
+    </div>
+    <div class="slide-controls">
+      <form class="pure-form pure-form-stacked">
+        <fieldset>
+          <legend>
+            Visualization Parameters
+            <span class="pure-form-message">Changes to these form fields will automatically update the visualization.</span>
+          </legend>
+          <label for="anagram-letters">Letters to Show</label>
+          <input id="anagram-letters" type="text" value="SCRABBLE">
+        </fieldset>
+      </form>
+    </div>
+    <div class="explorations-content">
+      <p>
+        Throughout this presentation, helpful information will appear in this explorations panel. If you find the panel is in your way,
+        <strong>you may dismiss the panel by clicking on the chevron icon</strong at the top of the panel.
+      </p>
+      <p>
+        Each visualization is designed to be interactive and parameter driven.  Parameters to the visualization will appear on the left-hand slide
+        of the screen. Any interactions that are not obvious will be described here. For example, try clicking on one of the colored circles in the
+        visualization area to scramble the letters.
+      </p>
+      <p>
+        To move on to the next visualization, use the arrow and page controls on the right-hand side of the screen.
+      </p>
+    </div>
+  </template>
+
+  <template id="layout-exploration-slide">
     <div class="exploration-slide">
       <div class="slide-header card">
         <h3 class="slide-title"></h3>
@@ -201,7 +245,7 @@
     </div>
   </template>
 
-  <template id="template-message-slide">
+  <template id="layout-message-slide">
     <div class="message-slide">
       <div class="message card">
         <h3 class="slide-title"></h3>

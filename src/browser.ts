@@ -7,12 +7,12 @@ import * as d3 from 'd3';
 let wordList = words.words;
 var timestart = new Date().getTime();
 
-function diagonal(d: d3.HierarchyPointNode<{}>) {
-  return "M" + d.y + "," + d.x
-      + "C" + (d.parent.y + 100) + "," + d.x
-      + " " + (d.parent.y + 100) + "," + d.parent.x
-      + " " + d.parent.y + "," + d.parent.x;
-}
+// function diagonal(d: d3.HierarchyPointNode<{}>) {
+//   return "M" + d.y + "," + d.x
+//       + "C" + (d.parent.y + 100) + "," + d.x
+//       + " " + (d.parent.y + 100) + "," + d.parent.x
+//       + " " + d.parent.y + "," + d.parent.x;
+// }
 
 let dag = new Gaddag();
 // let dagSample = new Gaddag();
@@ -50,7 +50,7 @@ console.log("------------------------\n");
 //   .enter().append('path')
 //     .attr('class', 'link')
 //     .attr('d', diagonal);
-  
+
 // let nodes = frame.selectAll('.node')
 //     .data(treeRoot.descendants())
 //   .enter().append('g')
@@ -77,8 +77,8 @@ console.log("------------------------\n");
 
 // console.log(dag.wordsForHandByPermutation('tion'));
 
-type TemplateIds = '#template-exploration-slide' | '#template-message-slide';
-type Slide<T> = { templateId: TemplateIds, bootstrap: (host: Element, initialState: T) => void, initialState: T };
+type TemplateIds = '#layout-exploration-slide' | '#layout-message-slide';
+type Slide<T> = { templateId: TemplateIds, markupId: string, bootstrap: (host: Element, initialState: T) => void, initialState: T };
 
 class SlideShow {
   private host: Element;
@@ -120,7 +120,23 @@ class SlideShow {
 
     let newTemplate: any = document.querySelector(this.slide.templateId);
     let clone: Element = document.importNode(newTemplate.content, true);
+
+    if (this.slide.markupId) {
+      let newSlideMarkupTemplate: any = document.querySelector(this.slide.markupId);
+      let newSlideMarkupNode: Element = document.importNode(newSlideMarkupTemplate.content, true);
+      for (var i = 0; i < newSlideMarkupNode.children.length; i++) {
+        let child = newSlideMarkupNode.children[i];
+        let childClasses = child.className.split(' ');
+        childClasses.forEach(c => {
+          if (c.length == 0) { return; }
+          let node = clone.querySelector(`.${c}`);
+          node.innerHTML = child.innerHTML;
+        });
+      }
+    }
+
     this.slide.bootstrap(clone, this.slide.initialState);
+
     currentSlide.appendChild(clone);
   }
 
@@ -141,14 +157,14 @@ class SlideShow {
       .selectAll('.page-dot')
       .data(slides).enter()
       .append('a')
-        .attr('href', (d, i) => `#page-${i}`)
-        .attr('class', (d,i) => 'page-dot')
-        .classed('page-dot--active', (d,i) => i == this._slideNumber)
-        .text((d,i) => i + 1)
-        .on('click', (d, i) => {
-          this.goToPage(i);
-          this.renderPageControls();
-        });
+      .attr('href', (d, i) => `#page-${i}`)
+      .attr('class', (d, i) => 'page-dot')
+      .classed('page-dot--active', (d, i) => i == this._slideNumber)
+      .text((d, i) => i + 1)
+      .on('click', (d, i) => {
+        this.goToPage(i);
+        this.renderPageControls();
+      });
 
     d3.select('.next-slide').on('click', () => {
       let result = this.next();
@@ -165,17 +181,20 @@ class SlideShow {
   }
 }
 
+function populateExplorationSlide(host: Element, title: string, messages: string[], controls: Element, explorations: string[]) {
+  d3.select(host).select('.slide-title').text(title);
+  d3.select(host).select('.slide-text')
+    .selectAll('p').data(messages)
+    .enter().append('p')
+    .text(d => d);
+}
+
 function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
-  let data = [
-    { token: 'C', end: 1 },
-    { token: 'L', end: 6 },
-    { token: 'A', end: 3 },
-    { token: 'B', end: 5 },
-    { token: 'B', end: 4 },
-    { token: 'E', end: 7 },
-    { token: 'R', end: 2 },
-    { token: 'S', end: 0 }
-  ]
+  let data = (<HTMLInputElement>host.querySelector('#anagram-letters')).value
+    .split('')
+    .map((c, i) => {
+      return { token: c, end: i };
+    }).sort((a, b) => d3.ascending(Math.random(), Math.random()));
   var colorScale = d3.schemeCategory20;
 
   let svg = d3.select(host).select("svg"),
@@ -187,7 +206,7 @@ function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
 
   let frame = svg
     .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`) ;
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
   let introNodes = frame
     .selectAll('.intro-node')
@@ -195,26 +214,39 @@ function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
     .enter()
     .append('g')
     .attr('class', 'intro-node')
-    .attr('transform', (d, i) => `translate(${200 + (i*50)},${200})`);
-  
+    .attr('transform', (d, i) => `translate(${200 + (i * 50)},${200})`);
+
   introNodes
     .append('circle')
     .attr('class', 'anagram-node')
     .attr('r', 20)
-    .style('fill', (d,i) => colorScale[i] );
-  
+    .style('fill', (d, i) => colorScale[i]);
+
+  introNodes
+    .exit().remove();
+
   introNodes
     .append('text')
     .style('text-anchor', 'middle')
     .attr('dy', 3)
     .text(d => d.token);
-  
-  function anagram(){
+
+  function anagram() {
     frame.selectAll('.intro-node')
-      .sort((a,b) => d3.ascending(Math.random(), Math.random()))
+      .sort((a, b) => d3.ascending(Math.random(), Math.random()))
       .transition().duration(700)
-      .attr('transform', (d, i) => `translate(${200 + (i*50)},${200})`);
+      .attr('transform', (d, i) => `translate(${200 + (i * 50)},${200})`);
   }
+
+  d3.select(host).select('#anagram-letters')
+    .on('change', function(){
+      let data = ((<HTMLInputElement>this).value)
+          .split('')
+          .map((c, i) => {
+            return { token: c, end: i };
+          });
+      introNodes.data(data);
+    });
 
   svg.on('click', anagram);
 
@@ -222,26 +254,25 @@ function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
     frame.selectAll('.intro-node')
       .data(data)
       .transition().duration(700)
-      .attr('transform', (d, i) => `translate(${200 + (d.end*50)},${200})`)
+      .attr('transform', (d, i) => `translate(${200 + (d.end * 50)},${200})`)
   }, 3000);
 
-  d3.select(host).select('.explorations-content')
-    .classed('explorations-content--expanded', initialState.expanded );
+  d3.select(host).select('.slide-explorations')
+    .classed('slide-explorations--expanded', initialState.expanded);
   d3.select(host).select('.explorations-handle .collapse-status-icon')
     .classed('fa-chevron-up', initialState.expanded)
     .classed('fa-chevron-down', !initialState.expanded);
 
   d3.select(host).select('.explorations-handle').on('click', () => {
-    let isCurrentlyExpanded = d3.select('.explorations-content').classed('explorations-content--expanded');
+    let isCurrentlyExpanded = d3.select('.slide-explorations').classed('slide-explorations--expanded');
     // Add --expanded
-    d3.select('.explorations-content')
-      .classed('explorations-content--expanded', !isCurrentlyExpanded );
+    d3.select('.slide-explorations')
+      .classed('slide-explorations--expanded', !isCurrentlyExpanded);
     // Set collapse icon
     d3.select('.explorations-handle .collapse-status-icon')
       .classed('fa-chevron-up', isCurrentlyExpanded)
       .classed('fa-chevron-down', !isCurrentlyExpanded);
   });
-
 }
 
 function helloWorldSlide(host: Element) {
@@ -250,8 +281,14 @@ function helloWorldSlide(host: Element) {
 }
 
 let slides: Slide<any>[] = [
-  { templateId: '#template-message-slide', bootstrap: helloWorldSlide, initialState: {}},
-  { templateId: '#template-exploration-slide', bootstrap: clabbersSlide, initialState: { expanded: true } },
+  { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, initialState: { expanded: true } },
+  { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, initialState: {} },
 ];
 
-let show = new SlideShow(slides);
+let initialPage = 0;
+if (window.location.hash) {
+  let splits = window.location.hash.split('page-');
+  initialPage = splits.length > 1 ? parseInt(splits[1]) : 0;
+}
+
+let show = new SlideShow(slides, initialPage);
