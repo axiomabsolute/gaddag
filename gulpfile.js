@@ -2,6 +2,9 @@ var gulp = require("gulp");
 var ts = require("gulp-typescript");
 var tsProject = ts.createProject("tsconfig.json");
 var exec = require('child_process').exec;
+var browserify = require('browserify');
+var tsify = require('tsify');
+var source = require('vinyl-source-stream');
 
 gulp.task("build", function() {
     return tsProject.src()
@@ -24,10 +27,25 @@ gulp.task('default', ['build'], function() {
   run()
 });
 
+gulp.task('deploy', ['default'], function() {
+  browserify()
+    .add('src/browser.ts')
+    .plugin(tsify, { noImplicitAny: true })
+    .bundle()
+    .on('error', function (error) { console.error(error.toString()); })
+    .pipe(source("bundle.js"))
+    .pipe(gulp.dest('./dist'));
+});
+
 var watchFiles = [
-  './src/*.ts'
+  './src/*.ts',
+  './index.html'
 ];
 
 gulp.task("watch", ['default'],  function() {
   gulp.watch('./src/*.ts', ['default']);
+});
+
+gulp.task("watch-deploy", ['deploy'], function() {
+  gulp.watch('./src/*', ['deploy']);
 });
