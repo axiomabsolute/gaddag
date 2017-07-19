@@ -479,6 +479,27 @@ export class Gaddag {
   }
 
   /**
+   * Recursively collects all words of given length
+   * @param length length of word to search for
+   */
+  public wordsOfLength(length: number): string[] {
+    return Gaddag.wordsOfLengthForNode(this.root, length);
+  }
+
+  /**
+   * Recursively collects all words of a given length starting at given node
+   * @param node current node
+   * @param length remaining length
+   */
+  private static wordsOfLengthForNode(node: GaddagNode, length: number): string[] {
+    let children = values(node.children);
+    if (length == 1) {
+      return children.filter(n => n.isCompleteWord).map(n => n.token);
+    }
+    return flatten(children.map(n => Gaddag.wordsOfLengthForNode(n, length - 1))).map(r => node.token + r);
+  }
+
+  /**
    * Constructor.
    * Initializes the counter and creates root node.
    */

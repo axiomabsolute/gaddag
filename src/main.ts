@@ -49,5 +49,8 @@ console.log("------------------------");
 // console.log(`Number of words: ${dag.allWords().length}`);
 
 // console.log(`Depth: ${Object.keys(dag.getNodesByDepth()).length}`);
+// console.log(`Words of length 7: ${dag.wordsOfLength(7).length}`);
+// console.log(`Expects graph ${dag.allWords().filter(w => w.length == 7).length}`);
+// console.log(`Expects wordlist ${wordList.filter(w => w.length == 7).length}`);
 
 // console.log("\n------------------------");
