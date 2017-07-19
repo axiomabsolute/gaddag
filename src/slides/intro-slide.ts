@@ -2,8 +2,36 @@ import * as d3 from 'd3';
 
 export const clabbersSlideInitialState = { expanded: true };
 
+function update(colorScale: string[], anagramData: {token: string, end: number}[], frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>) {
+  let introNodes = frame
+    .selectAll('.intro-node')
+    .data(anagramData);
+
+  let introNodesEnter = 
+    introNodes.enter().append('g')
+      .merge(introNodes)
+      .attr('class', 'intro-node')
+      .attr('transform', (d, i) => `translate(${200 + (i * 50)},${200})`);
+
+  introNodesEnter
+    .append('circle')
+    .attr('class', 'anagram-node')
+    .attr('r', 20)
+    .style('fill', (d, i) => colorScale[i]);
+
+  introNodes
+    .exit().remove();
+
+  introNodesEnter
+    .append('text')
+    .style('text-anchor', 'middle')
+    .attr('dy', 3)
+    .text((d: any) => d.token);
+
+}
+
 export function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
-  let data = (<HTMLInputElement>host.querySelector('#anagram-letters')).value
+  let anagramData = (<HTMLInputElement>host.querySelector('#anagram-letters')).value
     .split('')
     .map((c, i) => {
       return { token: c, end: i };
@@ -21,28 +49,6 @@ export function clabbersSlide(host: Element, initialState: { expanded: boolean }
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  let introNodes = frame
-    .selectAll('.intro-node')
-    .data(data)
-    .enter().append('g')
-      .attr('class', 'intro-node')
-      .attr('transform', (d, i) => `translate(${200 + (i * 50)},${200})`);
-
-  introNodes
-    .append('circle')
-    .attr('class', 'anagram-node')
-    .attr('r', 20)
-    .style('fill', (d, i) => colorScale[i]);
-
-  introNodes
-    .exit().remove();
-
-  introNodes
-    .append('text')
-    .style('text-anchor', 'middle')
-    .attr('dy', 3)
-    .text(d => d.token);
-
   function anagram() {
     frame.selectAll('.intro-node')
       .sort((a, b) => d3.ascending(Math.random(), Math.random()))
@@ -50,24 +56,35 @@ export function clabbersSlide(host: Element, initialState: { expanded: boolean }
       .attr('transform', (d, i) => `translate(${200 + (i * 50)},${200})`);
   }
 
-  d3.select(host).select('#anagram-letters')
-    .on('change', function(){
-      let data = ((<HTMLInputElement>this).value)
+  function scheduleUnscramble() {
+    setTimeout(() => {
+      frame.selectAll('.intro-node')
+        .data(anagramData)
+        .transition().duration(700)
+        .attr('transform', (d, i) => `translate(${200 + (d.end * 50)},${200})`)
+    }, 3000);
+  }
+
+  update(colorScale, anagramData, frame);
+  scheduleUnscramble();
+
+  d3.select(host).select('#anagram-update-button')
+    .on('click', function(){
+      let data = ((<HTMLInputElement>document.querySelector('#anagram-letters')).value)
+          .toUpperCase()
           .split('')
           .map((c, i) => {
             return { token: c, end: i };
-          });
-      introNodes.data(data);
+          })
+          .sort((a, b) => d3.ascending(Math.random(), Math.random()));
+      console.log(data);
+      anagramData.splice(0, anagramData.length);
+      anagramData.push(...data);
+      update(colorScale, anagramData, frame);
+      scheduleUnscramble();
     });
 
   svg.on('click', anagram);
-
-  setTimeout(() => {
-    frame.selectAll('.intro-node')
-      .data(data)
-      .transition().duration(700)
-      .attr('transform', (d, i) => `translate(${200 + (d.end * 50)},${200})`)
-  }, 3000);
 
   d3.select(host).select('.slide-explorations')
     .classed('slide-explorations--expanded', initialState.expanded);
