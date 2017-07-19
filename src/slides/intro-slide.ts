@@ -32,6 +32,7 @@ function update(colorScale: string[], anagramData: {token: string, end: number}[
 
 export function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
   let anagramData = (<HTMLInputElement>host.querySelector('#anagram-letters')).value
+    .toUpperCase()
     .split('')
     .map((c, i) => {
       return { token: c, end: i };
@@ -77,7 +78,6 @@ export function clabbersSlide(host: Element, initialState: { expanded: boolean }
             return { token: c, end: i };
           })
           .sort((a, b) => d3.ascending(Math.random(), Math.random()));
-      console.log(data);
       anagramData.splice(0, anagramData.length);
       anagramData.push(...data);
       update(colorScale, anagramData, frame);
