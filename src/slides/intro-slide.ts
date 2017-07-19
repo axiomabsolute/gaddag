@@ -30,6 +30,13 @@ function update(colorScale: string[], anagramData: {token: string, end: number}[
 
 }
 
+/**
+ * Renders a spaced set of circles, each representing the letters of a word, in a random order, then animates them
+ * to return the original order. Attaches even handlers for clicking to scramble the word, upding the word based on
+ * a new input value, and expanding a section of descriptive explorations.
+ * @param host 
+ * @param initialState 
+ */
 export function clabbersSlide(host: Element, initialState: { expanded: boolean }) {
   let anagramData = (<HTMLInputElement>host.querySelector('#anagram-letters')).value
     .toUpperCase()
