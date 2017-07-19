@@ -1,6 +1,10 @@
 type Dictionary<T> = { [index: string]: T }
 
-function makeIdGenerator() {
+/**
+ * Monotonically increasing ID generator generator
+ * @returns A generator which produces a monitonically increasing ID when called
+ */
+function makeIdGenerator(): () => number {
   var count = -1;
   return () => {
     count = count + 1;
@@ -8,6 +12,11 @@ function makeIdGenerator() {
   };
 }
 
+/**
+ * Returns all permutations of a source array
+ * @param inputArr array to permute
+ * @returns array of permutations of original array items
+ */
 export function permute<T>(inputArr: T[]) {
   let result: T[][] = [];
 
@@ -31,6 +40,7 @@ export function permute<T>(inputArr: T[]) {
 /**
  * Creates a shallow clone of a dictionary 
  * @param dict Dictionary to clone
+ * @returns Cloned dictionary
  */
 function cloneDict<T>(dict: Dictionary<T>): Dictionary<T> {
   let result: Dictionary<T> = {};
@@ -41,6 +51,7 @@ function cloneDict<T>(dict: Dictionary<T>): Dictionary<T> {
 /**
  * Reverse a string; reverse('hello') -> 'olleh'
  * @param word Word to reverse
+ * @returns reversed word
  */
 function reverse(word: string) {
   return word.split('').reverse().join('');
@@ -49,6 +60,7 @@ function reverse(word: string) {
 /**
  * Returns values of a dictionary 
  * @param dict Dict to return values of
+ * @returns values of the dictionary
  */
 export function values<T>(dict: Dictionary<T>): T[] {
   return Object.keys(dict).map(k => dict[k]);
@@ -57,6 +69,7 @@ export function values<T>(dict: Dictionary<T>): T[] {
 /**
  * Returns the sum of an array of numbers
  * @param nums Array of numbers to sum
+ * @returns sum of values of array
  */
 function sum(nums: number[]): number {
   return nums.reduce( (p, n) => p + n, 0);
@@ -65,6 +78,7 @@ function sum(nums: number[]): number {
 /**
  * Given a nested array, return a flattened array containing all members
  * @param arrays Array of arrays to flatten
+ * @returns a flattened array
  */
 export function flatten<T>(arrays: T[][]): T[] {
   return [].concat.apply([], arrays);
@@ -73,6 +87,7 @@ export function flatten<T>(arrays: T[][]): T[] {
 /**
  * Returns a new array with duplicates removed
  * @param arr Array to deduplicate
+ * @returns an array of unique members
  */
 export function unique<T>(arr: T[]): T[] {
   return arr.filter( (v, i) => arr.indexOf(v) === i );
@@ -99,6 +114,7 @@ export class GaddagNode {
   /**
    * Sets the counter for this node and returns 1 if the node was not already counted
    * @param flag The flag to use to determine whether a node has been counted
+   * @returns value to count - 0 if already counted, 1 otherwise
    */
   public count(flag: Date): number {
     if (this.countFlag != flag) {
@@ -108,6 +124,11 @@ export class GaddagNode {
     return 0;
   }
 
+  /**
+   * Determines whether a node should be included, returning false if it has already been visited, otherwise true
+   * @param flag The flag to use to determine whether a node has already been included
+   * @returns boolean indicating whether the node should be included - false if already visited, true otherwise
+   */
   public include(flag: Date): boolean {
     if (this.countFlag != flag) {
       this.countFlag = flag;
@@ -122,18 +143,37 @@ export class GaddagNode {
  */
 export class Gaddag {
   private idGenerator: () => number;
-  public root: GaddagNode;
+  private root: GaddagNode;
+
+  /**
+   * Token used to indicate a turn in the GADDAG; a separator between the reversed prefix and normal suffix portions of a path
+   */
   public static TurnToken = '>';
 
   /**
    * Returns the size - the number of nodes of the graph
+   * @returns the number of nodes in the graph
    */
   public size(): number {
     return Gaddag.sizeNode(this.root, new Date());
   }
 
   /**
-   * Returns all nodes in the Gaddag
+   * Recursively sums the size of the graph by walking the graph from the given node and setting a flag value
+   * on each node to determine whether it has already been counted.
+   * @param node node to start from
+   * @param flag flag value
+   * @return number of nodes accessible from a particular node, relative to the given flag value
+   */
+  private static sizeNode(node: GaddagNode, flag: Date): number {
+    return node.count(flag) + values(node.children)
+      .map(n => Gaddag.sizeNode(n, flag))
+      .reduce((p, n) => p + n, 0);
+  }
+
+  /**
+   * Recursively collects all nodes in the Gaddag
+   * @returns array of all nodes in the graph
    */
   public getNodes(): GaddagNode[] {
     let result: Dictionary<GaddagNode> = {'root': this.root};
@@ -147,13 +187,15 @@ export class Gaddag {
   /**
    * Returns children nodes from given node
    * @param node Node to traverse from
+   * @returns array of all nodes from the given node
    */
   private static getNodesFromNode(node: GaddagNode): GaddagNode[] {
     return values(node.children).concat(flatten(values(node.children).map(n => Gaddag.getNodesFromNode(n))));
   }
 
   /**
-   * Returns a map from tree depth to an array of nodes whose shallowest path is at that depth.
+   * Recursively builds a map from depth to an array of nodes in the graph with that minimum distance from the root
+   * @returns map from depth to array of nodes at that depth
    */
   public getNodesByDepth(): {[depth: string]: GaddagNode[]} {
     let flag = new Date();
@@ -161,11 +203,12 @@ export class Gaddag {
   }
 
   /**
-   * Returns a map from tree depth to an array of nodes whose shallowest path is at that depth starting from a given
+   * Recursively builds a map from tree depth to an array of nodes whose shallowest path is at that depth starting from a given
    * node and specified depth.
    * @param node Node to traverse from
    * @param depth Current depth counter
    * @param flag Flag to use when traversing to prevent multiple traversal
+   * @returns map of nodes by depth relative to a particular flag from the perspective of a given node
    */
   private static getNodesByDepthFromNode(node: GaddagNode, depth: number, flag: Date): {[depth: string]: GaddagNode[]} {
     let result: {[depth: string]: GaddagNode[]} = {};
@@ -181,7 +224,8 @@ export class Gaddag {
   }
 
   /**
-   * Returns all edges in the Gaddag
+   * Recursively collects all edges in the graph
+   * @returns array of all edges in the graph
    */
   public getEdges(): GaddagEdge[] {
     let result: Dictionary<GaddagEdge> = {};
@@ -194,8 +238,9 @@ export class Gaddag {
   }
 
   /**
-   * Returns the edges for a particular node in the Gaddag
+   * Recursively builds an array of the edges for a particular node in the Gaddag
    * @param node Node's edges to traverse
+   * @returns array of all eges from the perspective of a given node
    */
   private static getEdgesForNode(node: GaddagNode): GaddagEdge[] {
     return values(node.children).map(c => new GaddagEdge(node.id, c.id))
@@ -203,27 +248,24 @@ export class Gaddag {
   }
 
   /**
-   * Returns the unminimized size
+   * Calculates the unminimized size of the graph as a function of the number of nodes and size of each node
+   * @returns calculated unminimized size
    */
   public rawSize(): number {
     return this.allWords().reduce( (p, n) => p + (n.length * n.length), 0);
   }
 
-  private static sizeNode(node: GaddagNode, flag: Date): number {
-    return node.count(flag) + values(node.children)
-      .map(n => Gaddag.sizeNode(n, flag))
-      .reduce((p, n) => p + n, 0);
-  }
-
   /**
    * Calculates the compression rate based off of the unminimized and minimized sizes
+   * @return ratio of actual to computed size
    */
   public compressionRate(): number {
     return this.size() / this.rawSize();
   }
 
   /**
-   * Returns all words in the gaddag.
+   * Recursively collects all words in the gaddag.
+   * @returns array of all words in the graph
    */
   public allWords(): string[] {
     // Just find all suffix paths
@@ -231,11 +273,13 @@ export class Gaddag {
   }
 
   /**
-   * Returns all words matching a given hand
+   * Recursively collects all words matching a given hand
    * @param hand Hand to track whlie walking GADDAG
+   * @returns array of all matching words
    */
   public wordsForHand(hand: string): string[] {
     let seed: Dictionary<number> = {};
+    // Construct a map of letter frequencies to track remaining hand while traversing graph
     let letters = hand.split('')
       .reduce( (result, letter) => {
         if (!(letter in result)) {
@@ -247,6 +291,14 @@ export class Gaddag {
       return Gaddag.walkWordsForHandFromNode(letters, this.root, "");
   }
 
+  /**
+   * Recurively collects all words matching a given hand by walking the graph and keeping track of remaining
+   * hand along the way.
+   * @param hand current remaining hand, as a map of letter to count
+   * @param node current node of the walk
+   * @param progress word as seen thus far in the walk
+   * @return array of words from the perspective of given node
+   */
   private static walkWordsForHandFromNode(hand: Dictionary<number>, node: GaddagNode, progress: string): string[] {
     if (sum(values(hand)) === 0) {
       return  node.isCompleteWord ? [progress] : [];
@@ -263,8 +315,9 @@ export class Gaddag {
   }
 
   /**
-   * Walk the GADDAG and generate all words containing the substring
+   * Recursively collects all words containing a given substring
    * @param substring Substring to search for
+   * @returns array of all words containing ordered substring
    */
   public wordsContaining(substring: string): string[] {
     return Gaddag.wordsContainingFromNode(substring, reverse(substring), this.root);
@@ -274,9 +327,10 @@ export class Gaddag {
    * Walk the GADDAG treating the substring as a prefix, then starting from the node where the "prefix" has run out,
    * keep walking till a turn is found, then find all prefixes and suffixes and add them to the "prefix"
    * 
-   * @param substring 
-   * @param gnirtsbus 
-   * @param node 
+   * @param substring substring to search for
+   * @param gnirtsbus reversed substring - get it - mutated at each recursive call to track remaining progress
+   * @param node current node
+   * @returns array of words containing substring from the perspective of the node
    */
   private static wordsContainingFromNode(substring: string, gnirtsbus: string, node: GaddagNode): string[] {
     if (gnirtsbus.length === 0) {
@@ -358,21 +412,28 @@ export class Gaddag {
   }
 
   /**
-   * Adds a word to the GADDAG
+   * Adds a word to the GADDAG, re-using existing nodes for words longer than 2 characters.
+   * Produces a partially minimized graph.
    * @param word Word to add
    */
   public addWord(word: string) {
+    // Minimum of length 2 words
     if (word.length < 2) { return; }
     let reversed = reverse(word); // asked -> deksa
+    // Add full prefix path
     let degenerateCaseNode = this.addPath(this.root, reversed);
     degenerateCaseNode.isCompleteWord = true;
 
+    // Add path for prefix + 1 letter suffix
     let baseCaseNode = this.addPath(this.root, reversed.slice(1)) // eksa
     let baseCaseTurn = new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
     baseCaseNode.children[Gaddag.TurnToken] = baseCaseTurn;
     let previousNode = this.addPath(baseCaseTurn, word.slice(-1)); // d
     previousNode.isCompleteWord = true;
 
+    // Loop over decreasing prefix, using last removed letter to join next suffix
+    // with previous suffix.  See Steven Gordon's 1993 paper "A Faster Scrabble Move Generation Algorithm"
+    // for details
     for (var start = 2; start < reversed.length; start++) {
       let nextPrefix = reversed.slice(start);
       let newFinalLetter = reversed[start-1];
@@ -387,7 +448,13 @@ export class Gaddag {
     }
   }
 
-  private addPath(startingNode: GaddagNode, word: string) {
+  /**
+   * Given a string and a starting node, add a sequence of nodes and edges to complete the path
+   * @param startingNode node to start adding from
+   * @param word word to add
+   * @returns last node added
+   */
+  private addPath(startingNode: GaddagNode, word: string): GaddagNode {
     return word.split('').reduce((prevNode, char) => {
       if ( !(char in prevNode.children) ) {
         let newNode = new GaddagNode(this.idGenerator(), char);
@@ -398,6 +465,11 @@ export class Gaddag {
     }, startingNode);
   }
 
+  /**
+   * Builds a map from hand permutation (anagram) to valid words found within the hand
+   * @param hand hand to permute
+   * @returns map of valid words by hand permutation (anagram)
+   */
   public wordsForHandByPermutation(hand: string): {[permutation: string]: string[]} {
     let perms = unique(permute(hand.split('')).map(m => m.join('')));
     return perms.reduce( (p: {[key: string]: string[]}, n) => {
@@ -406,6 +478,10 @@ export class Gaddag {
     }, {});
   }
 
+  /**
+   * Constructor.
+   * Initializes the counter and creates root node.
+   */
   constructor() {
     this.idGenerator = makeIdGenerator();
     this.root = new GaddagNode(this.idGenerator(), 'root');
