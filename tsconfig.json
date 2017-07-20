@@ -7,7 +7,8 @@
         "src/gaddag.ts",
         "src/main.ts",
         "src/slides/intro-slide.ts",
-        "src/slides/two-letter.ts"
+        "src/slides/two-letter.ts",
+        "src/layouts/exploration-slide.layout.ts"
     ],
     "compilerOptions":{
         "noImplicitAny": true,

@@ -1,6 +1,7 @@
 import { Gaddag, GaddagNode, permute, unique, values } from './gaddag';
 import { clabbersSlideInitialState, clabbersSlide } from './slides/intro-slide';
 import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './slides/two-letter'
+import { layout as explorationLayout } from './layouts/exploration-slide.layout';
 // Other word sets
 // import { bingosSample } from './data/bingos-sample';
 // import { bingos } from './data/bingos';
@@ -92,12 +93,14 @@ class Slide<T>
    * @param templateId the ID of the template element used as the base layout
    * @param markupId the ID of the template whose top-level children are markup to inject into the layout
    * @param bootstrap a function which takes a host element and initial state object and renders the visualization and hooks up controls
+   * @param layout a function which takes a host element and initial state object and renders the shared portions of a given layout
    * @param initialState an initial state object, passed to the bootstrapping function
    */
   constructor(
     public templateId: TemplateIds,
     public markupId: string,
     public bootstrap: (host: Element, initialState: T) => void,
+    public layout: (host: Element, initialState: T) => void,
     public initialState: T
   ) { }
 };
@@ -170,7 +173,8 @@ class SlideShow {
    * Queries the document for the active slide's markup template and creates a clone.
    * For each child element in the cloned markup template, look for an element with the same class
    * in the cloned layout template and replace the contents with the markup contents.
-   * Execute the active slide's bootstrap function on the cloned layout template.
+   * Execute the active slide's bootstrap function on the cloned layout template to bootstrap slide-specific functionality.
+   * Execute the active slide's layout function on cloned layout template to bootstrap shared functionality.
    * Inject the cloned layout template into the page.
    */
   private renderSlide() {
@@ -193,6 +197,7 @@ class SlideShow {
     }
 
     this.slide.bootstrap(clone, this.slide.initialState);
+    this.slide.layout(clone, this.slide.initialState);
 
     currentSlide.appendChild(clone);
   }
@@ -278,9 +283,9 @@ if (window.location.hash) {
  * Modify this array to add additional slides to the show.
  */
 let slides: Slide<any>[] = [
-  { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, initialState: clabbersSlideInitialState },
-  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, initialState: new TwoLetterState(dag) },
-  { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, initialState: {} },
+  { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, layout: explorationLayout, initialState: clabbersSlideInitialState },
+  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dag) },
+  { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
 ];
 
 /**

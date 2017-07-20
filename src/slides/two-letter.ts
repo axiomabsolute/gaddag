@@ -100,23 +100,5 @@ export function bootstrap(host: Element, initialState: InitialState) {
   host.querySelector('.two-letter-plays')
     .innerHTML = `${values(data).filter(f => f).length}`;
   
-
-  d3.select(host).select('.slide-explorations')
-    .classed('slide-explorations--expanded', initialState.expanded);
-  d3.select(host).select('.explorations-handle .collapse-status-icon')
-    .classed('fa-chevron-up', initialState.expanded)
-    .classed('fa-chevron-down', !initialState.expanded);
-
-  d3.select(host).select('.explorations-handle').on('click', () => {
-    let isCurrentlyExpanded = d3.select('.slide-explorations').classed('slide-explorations--expanded');
-    // Add --expanded
-    d3.select('.slide-explorations')
-      .classed('slide-explorations--expanded', !isCurrentlyExpanded);
-    // Set collapse icon
-    d3.select('.explorations-handle .collapse-status-icon')
-      .classed('fa-chevron-up', isCurrentlyExpanded)
-      .classed('fa-chevron-down', !isCurrentlyExpanded);
-  });
-
   update(gridArea, data, cellSize);
 }
