@@ -43,9 +43,9 @@ var watchFiles = [
 ];
 
 gulp.task("watch", ['default'],  function() {
-  gulp.watch('./src/*.ts', ['default']);
+  gulp.watch('./src/**/*.ts', ['default']);
 });
 
 gulp.task("watch-deploy", ['deploy'], function() {
-  gulp.watch('./src/*', ['deploy']);
+  gulp.watch(['./src/**/*.ts'], ['deploy']);
 });
