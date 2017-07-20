@@ -175,7 +175,7 @@
 
     .exploration-slide .explorations-content {
       width: 500px;
-      max-height: 250px;
+      height: 250px;
       overflow: auto;
     }
 
@@ -235,6 +235,18 @@
     </div>
   </template>
 
+  <template class="slide" id="two-letter-slide">
+    <div data-selector=".slide-title">Small Plays</div>
+    <div data-selector=".slide-text">
+      The smallest allowable plays in Scrabble are two-letter words. Given that the English alphabet has 26 letters
+      and that the game includes at least two of every letter (when you include the two blank tiles that may be used as any letter)
+      there are a total of <pre>26*26=676</pre> possible two-letter plays. Of these, only <span class="two-letter-plays strong" data-computed="twoLetterPlays"></span>
+      are valid words.
+    </div>
+    <div data-selector=".slide-controls"></div>
+    <div data-selector=".explorations-content"></div>
+  </template>
+
   <template id="layout-exploration-slide">
     <div class="exploration-slide">
       <div class="slide-header card">
@@ -250,7 +262,11 @@
           <div class="explorations-handle">
             <i class="collapse-status-icon fa"></i> Explorations
           </div>
-          <div class="explorations-content"></div>
+          <div class="explorations-content">
+            <p>
+              Not available for this slide
+            </p>
+          </div>
         </div>
       </div>
     </div>

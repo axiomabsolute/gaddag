@@ -5,7 +5,9 @@
         "src/data/bingos.ts",
         "src/data/words.ts",
         "src/gaddag.ts",
-        "src/main.ts"
+        "src/main.ts",
+        "src/slides/intro-slide.ts",
+        "src/slides/two-letter.ts"
     ],
     "compilerOptions":{
         "noImplicitAny": true,

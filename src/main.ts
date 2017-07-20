@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 
 import { flatten, Gaddag, GaddagNode, values } from './gaddag';
-import { bingosSample } from './data/bingos-sample';
+// import { bingosSample } from './data/bingos-sample';
 // import { bingos } from './data/bingos';
-// import { words } from './data/words';
+import { words } from './data/words';
 
-let wordList = bingosSample.words;
+let wordList = words.words;
 
 let dag = new Gaddag();
 console.log("------------------------");
@@ -49,7 +49,16 @@ console.log("------------------------");
 // console.log(`Number of words: ${dag.allWords().length}`);
 
 // console.log(`Depth: ${Object.keys(dag.getNodesByDepth()).length}`);
-// console.log(`Words of length 7: ${dag.wordsOfLength(7).length}`);
+
+// let lengthN = 3;
+// let wordsOfLengthN = dag.wordsOfLength(lengthN);
+// let wordListOfLengthN = wordList.filter(w => w.length == lengthN);
+// console.log(`Words of length ${lengthN}: ${wordsOfLengthN}`);
+// console.log("------------------------");
+// console.log(`Count of words of length ${lengthN}: ${wordsOfLengthN.length}`);
+// console.log(`Count of words of length should be ${lengthN}: ${wordListOfLengthN.length}`);
+// console.log(`Complete?: ${wordListOfLengthN.every(w => wordsOfLengthN.indexOf(w) > -1) && wordListOfLengthN.length === wordsOfLengthN.length}`);
+
 // console.log(`Expects graph ${dag.allWords().filter(w => w.length == 7).length}`);
 // console.log(`Expects wordlist ${wordList.filter(w => w.length == 7).length}`);
 
