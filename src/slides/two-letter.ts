@@ -2,30 +2,49 @@ import { Dictionary, Gaddag, keyValuePairs, values } from '../gaddag';
 
 import * as d3 from 'd3';
 
+let kvData: {key: string, value: number}[] = [];
+
 function update(
   frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>, data: Dictionary<number>,
   cellSize: number,
   isWordColor: string,
-  nonWordColor: string
+  nonWordColor: string,
+  collapseSecondLetter: boolean
 ) {
   let baseCharCode = 'a'.charCodeAt(0);
   let cellPadding = 3;
   let cellRadius = Math.floor((cellSize - (cellPadding * 2))/2);
+
+  kvData.splice(0, kvData.length);
+  if (!collapseSecondLetter) {
+    kvData.push(...keyValuePairs(data));
+  } else {
+    let collapsedValues = keyValuePairs(data).reduce( (p: {[index: string]: number}, n) => {
+      p[n.key[0]] = p[n.key[0]] || 0;
+      p[n.key[0]] = p[n.key[0]] + n.value;
+      return p;
+    }, {});
+    kvData.push(...keyValuePairs(collapsedValues));
+  }
+
   let wordNodes = frame.selectAll('.two-letter-word')
-    .data(keyValuePairs(data))
+    .data(kvData)
   
   wordNodes.enter()
-    .append('circle')
+    .append('rect')
     .merge(wordNodes)
     .attr('class', 'two-letter-word')
     .attr('title', d => d.key)
-    .attr('r', cellRadius)
+    .attr('height', cellRadius)
+    .attr('width', (d) => d.key.length > 1 ? cellRadius : 0)
     .attr('dx', cellPadding)
     .attr('dy', cellPadding)
     .attr('fill', d => d.value ? isWordColor : nonWordColor)
     .attr('transform', (d, i) => {
-      return `translate(${(d.key.charCodeAt(1) - baseCharCode) * cellSize},${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
-    });
+      return `translate(${( d.key.length > 1 ? (d.key.charCodeAt(1) - baseCharCode) : 0 ) * cellSize},${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+    })
+    .transition()
+    .attr('width', (d) => d.key.length > 1 ? cellRadius : cellSize * d.value);
   
   wordNodes.exit().remove();
 
@@ -81,7 +100,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
   let gridArea = frame
     .append('g')
     .attr('class', 'grid')
-    .attr('transform', `translate(${cellSize + 5 + axisMargin},${cellSize - 5 + axisMargin})`);
+    .attr('transform', `translate(${cellSize + axisMargin},${cellSize + axisMargin - (cellSize / 2)})`);
   
   topAxis.selectAll('.letter')
     .data(letters).enter()
@@ -148,5 +167,18 @@ export function bootstrap(host: Element, initialState: InitialState) {
   host.querySelector('.two-letter-plays')
     .innerHTML = `${values(data).filter(f => f).length}`;
   
-  update(gridArea, data, cellSize, isWordColor, nonWordColor);
+  let previousCollapseFirstLetter = false;
+  topAxis.on('click', function() {
+    frame.selectAll('.two-letter-word')
+      .transition()
+      .attr('transform', (d: {key: string}) => `translate(0,${(d.key.charCodeAt(0) - 'a'.charCodeAt(0)) * cellSize})`);
+  
+    setTimeout(
+      () => {
+        update(gridArea, data, cellSize,isWordColor, nonWordColor, !previousCollapseFirstLetter);
+        previousCollapseFirstLetter = !previousCollapseFirstLetter;
+      }, 300);
+  })
+  
+  update(gridArea, data, cellSize, isWordColor, nonWordColor, false);
 }

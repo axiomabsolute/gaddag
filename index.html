@@ -11,7 +11,6 @@
   <style>
     body {
       font-family: 'Dosis', sans-serif;
-      overflow-y: hidden;
     }
 
     .node circle {
@@ -54,6 +53,10 @@
       padding: .5em;
       box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
       border-radius: 2px;
+    }
+
+    .card.card--reversed {
+      box-shadow: 1px -2px 4px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
     }
 
     /* Base show styles */
@@ -148,6 +151,18 @@
       display: flex;
     }
 
+    @media (max-width: 1300px) { 
+      .exploration-slide .slide-body {
+        flex-direction: column;
+      }
+
+      .exploration-slide .slide-controls {
+        flex-basis: 0 !important;
+        flex-grow: 0;
+      }
+
+     }
+
     .exploration-slide .slide-controls {
       flex-basis: 300px;
       flex-grow: 0;
@@ -158,10 +173,10 @@
     }
 
     .exploration-slide .slide-explorations {
-      position: absolute;
+      position: fixed;
       bottom: -.5em;
       right: 4em;
-      background-color: white;
+      background-color: #EEE;
       transform: translate(0px, 235px);
     }
 
@@ -174,7 +189,7 @@
     }
 
     .exploration-slide .explorations-content {
-      width: 500px;
+      width: 700px;
       height: 250px;
       overflow: auto;
     }
@@ -265,7 +280,7 @@
         <div class="slide-visual card">
           <svg height="650" width="1000"></svg>
         </div>
-        <div class="slide-explorations card">
+        <div class="slide-explorations card card--reversed">
           <div class="explorations-handle">
             <i class="collapse-status-icon fa"></i> Explorations
           </div>
