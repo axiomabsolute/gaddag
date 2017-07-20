@@ -243,8 +243,11 @@
       there are a total of <pre>26*26=676</pre> possible two-letter plays. Of these, only <span class="two-letter-plays strong" data-computed="twoLetterPlays"></span>
       are valid words.
     </div>
-    <div data-selector=".slide-controls"></div>
-    <div data-selector=".explorations-content"></div>
+    <div data-selector=".explorations-content">
+      <p>
+        Clicking on an axis toggles collapsing the data along that dimension.
+      </p>
+    </div>
   </template>
 
   <template id="layout-exploration-slide">
@@ -254,7 +257,11 @@
         <div class="slide-text"></div>
       </div>
       <div class="slide-body">
-        <div class="slide-controls card"></div>
+        <div class="slide-controls card">
+          <div class="text-muted">
+            This visualization does not feature any parameters.
+          </div>
+        </div>
         <div class="slide-visual card">
           <svg height="650" width="1000"></svg>
         </div>
@@ -263,9 +270,9 @@
             <i class="collapse-status-icon fa"></i> Explorations
           </div>
           <div class="explorations-content">
-            <p>
-              Not available for this slide
-            </p>
+            <div class="text-muted">
+              There are no recommended explorations for this visualization.
+            </div>
           </div>
         </div>
       </div>
