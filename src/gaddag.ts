@@ -1,4 +1,13 @@
-type Dictionary<T> = { [index: string]: T }
+export class Dictionary<T> {
+  [index: string]: T;
+
+  public static ToLookup<T, U>(items: T[], keySelector: (item: T) => string, valueSelector: (item: T) => U): Dictionary<U> {
+    return items.reduce((result, item) => {
+      result[keySelector(item)] = valueSelector(item);
+      return result;
+    }, new Dictionary<U>());
+  }
+}
 
 /**
  * Monotonically increasing ID generator generator
@@ -64,6 +73,14 @@ function reverse(word: string) {
  */
 export function values<T>(dict: Dictionary<T>): T[] {
   return Object.keys(dict).map(k => dict[k]);
+}
+
+/**
+ * Returns array of key-value paris
+ * @param dict dict to map over
+ */
+export function keyValuePairs<T>(dict: Dictionary<T>): {key: string, value: T}[] {
+  return Object.keys(dict).map(k => { return {key: k, value: dict[k]}; });
 }
 
 /**
@@ -483,7 +500,7 @@ export class Gaddag {
    * @param length length of word to search for
    */
   public wordsOfLength(length: number): string[] {
-    return Gaddag.wordsOfLengthForNode(this.root, length);
+    return flatten(values(this.root.children).map( c => Gaddag.wordsOfLengthForNode(c, length-1)));
   }
 
   /**
@@ -494,9 +511,15 @@ export class Gaddag {
   private static wordsOfLengthForNode(node: GaddagNode, length: number): string[] {
     let children = values(node.children);
     if (length == 1) {
-      return children.filter(n => n.isCompleteWord).map(n => n.token);
+      if (node.token === Gaddag.TurnToken) {
+        return [];
+      }
+      return children.filter(n => n.isCompleteWord).map(n => n.token + node.token);
     }
-    return flatten(children.map(n => Gaddag.wordsOfLengthForNode(n, length - 1))).map(r => node.token + r);
+    if (node.token === Gaddag.TurnToken) {
+      return [];
+    }
+    return flatten(children.map(n => Gaddag.wordsOfLengthForNode(n, length - 1))).map(r => r + node.token);
   }
 
   /**
