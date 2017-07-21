@@ -2,19 +2,65 @@ import { Dictionary, Gaddag, keyValuePairs, values } from '../gaddag';
 
 import * as d3 from 'd3';
 
+const letters: string[] = [];
+let i = 'a'.charCodeAt(0);
+let j = 'z'.charCodeAt(0);
+for(;i <= j; i++) {
+  letters.push(String.fromCharCode(i));
+}
+let cellSize = 20,
+    axisMargin = 20,
+    isWordColor = 'red',
+    nonWordColor = 'black',
+    baseCharCode = 'a'.charCodeAt(0),
+    cellPadding = 3,
+    cellRadius = (cellSize - (cellPadding * 2));
+
+
+function truncate(value: number, decimals: number) {
+  decimals = decimals || 0;
+  let shift = 10 * decimals;
+  return Math.round(value * shift)/shift;
+}
+
+function range(start: number, max:number) {
+  let result = [];
+  for(;start<max;start++){
+    result.push(start);
+  }
+  return result;
+}
+
+var tooltip = d3.select(".tooltip")				
+  .style("opacity", 0);
+  
+
+function showTooltip(value: string) {
+  tooltip.transition()		
+          .duration(200)		
+          .style("opacity", .9);		
+  tooltip.html(value)	
+          .style("left", (d3.event.pageX) + "px")		
+          .style("top", (d3.event.pageY - 28) + "px");	
+}
+
+function hideTooltip() {
+  tooltip.transition()		
+    .duration(500)		
+    .style("opacity", 0);	
+}
+
 let kvData: {key: string, value: number}[] = [];
 
+
 function update(
-  frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>, data: Dictionary<number>,
-  cellSize: number,
+  frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
+  data: Dictionary<number>,
   isWordColor: string,
   nonWordColor: string,
-  collapseSecondLetter: boolean
+  collapseSecondLetter: boolean,
+  topAxis: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>
 ) {
-  let baseCharCode = 'a'.charCodeAt(0);
-  let cellPadding = 3;
-  let cellRadius = Math.floor((cellSize - (cellPadding * 2))/2);
-
   kvData.splice(0, kvData.length);
   if (!collapseSecondLetter) {
     kvData.push(...keyValuePairs(data));
@@ -27,26 +73,84 @@ function update(
     kvData.push(...keyValuePairs(collapsedValues));
   }
 
-  let wordNodes = frame.selectAll('.two-letter-word')
-    .data(kvData)
+  let oneLetterWords= kvData.filter(kv => kv.key.length == 1);
+  let twoLetterWords = kvData.filter(kv => kv.key.length == 2);
+
+  let twoLetterWordNodes = frame.selectAll('.two-letter-word')
+    .data(twoLetterWords)
   
-  wordNodes.enter()
+  twoLetterWordNodes.enter()
     .append('rect')
-    .merge(wordNodes)
+    .merge(twoLetterWordNodes)
+    .on('mouseover', d => showTooltip(`${d.key} - ${d.value ? 'valid' : 'invalid'}`))
+    .on('mouseout', hideTooltip)
     .attr('class', 'two-letter-word')
     .attr('title', d => d.key)
     .attr('height', cellRadius)
-    .attr('width', (d) => d.key.length > 1 ? cellRadius : 0)
     .attr('dx', cellPadding)
     .attr('dy', cellPadding)
     .attr('fill', d => d.value ? isWordColor : nonWordColor)
     .attr('transform', (d, i) => {
-      return `translate(${( d.key.length > 1 ? (d.key.charCodeAt(1) - baseCharCode) : 0 ) * cellSize},${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+      return `translate(0,${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+    })
+    .attr('width', cellRadius)
+    .transition()
+    .attr('transform', (d, i) => {
+      return `translate(${(d.key.charCodeAt(1) - baseCharCode) * cellSize},${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+    });
+  
+  twoLetterWordNodes.exit()
+    .transition()
+    .attr('transform', (d: {key: string}) => `translate(0,${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`)
+    .remove();
+
+  let oneLetterWordNodes = frame.selectAll('.one-letter-word')
+    .data(oneLetterWords)
+  
+  oneLetterWordNodes.enter()
+    .append('rect')
+    .merge(oneLetterWordNodes)
+    .on('mouseover', d => showTooltip(`${d.value} (~${truncate(d.value/26, 2)}%)`))
+    .on('mouseout', hideTooltip)
+    .attr('class', 'one-letter-word')
+    .attr('title', d => d.value)
+    .attr('height', cellRadius)
+    .attr('width', 0)
+    .attr('dx', cellPadding)
+    .attr('dy', cellPadding)
+    .attr('fill', d => d.value ? isWordColor : nonWordColor)
+    .attr('transform', (d, i) => {
+      return `translate(0,${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
     })
     .transition()
-    .attr('width', (d) => d.key.length > 1 ? cellRadius : cellSize * d.value);
+    .attr('width', d => d.value * cellSize);
   
-  wordNodes.exit().remove();
+  oneLetterWordNodes.exit()
+    .transition()
+    .attr('width', 0)
+    .remove();
+  
+  let topAxisLabels = collapseSecondLetter ?  range(1,27).map(i => `${i}`) : letters;
+  let topAxisTitle = collapseSecondLetter ? 'Count of 2-Letter Words Starting With' : 'Second Letter';
+
+  topAxis.selectAll('.letter').remove();
+  topAxis.selectAll('.letter')
+    .data(topAxisLabels).enter()
+    .append('text')
+    .attr('class', 'letter')
+    .attr('transform', (d, i) => `translate(${i*cellSize},${axisMargin})`)
+    .text(d => d);
+  
+  topAxis.select('.top-axis-label').remove();
+  
+  topAxis
+    .append('g')
+    .attr('class', 'top-axis-label')
+    .attr('text-anchor', 'middle')
+    .attr('transform', `translate(${13*cellSize},0)`)
+    .append('text')
+      .text(topAxisTitle);
+
 
 }
 
@@ -65,18 +169,6 @@ export function bootstrap(host: Element, initialState: InitialState) {
     width = rawWidth - margin.right - margin.left,
     height = rawHeight - margin.top - margin.bottom;
 
-  let cellSize = 20,
-      axisMargin = 20,
-      isWordColor = 'red',
-      nonWordColor = 'black';
-
-  let letters: string[] = [];
-  let i = 'a'.charCodeAt(0);
-  let j = 'z'.charCodeAt(0);
-  for(;i <= j; i++) {
-    letters.push(String.fromCharCode(i));
-  }
-
   let data = new Dictionary<number>();
   letters.forEach( l1 => letters.forEach(l2 => {
     let key = `${l1}${l2}`;
@@ -87,11 +179,6 @@ export function bootstrap(host: Element, initialState: InitialState) {
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
   
-  let topAxis = frame
-    .append('g')
-    .attr('class', 'top-axis')
-    .attr('transform', `translate(${cellSize + axisMargin},0)`);
-
   let leftAxis = frame
     .append('g')
     .attr('class', 'left-axis')
@@ -102,19 +189,10 @@ export function bootstrap(host: Element, initialState: InitialState) {
     .attr('class', 'grid')
     .attr('transform', `translate(${cellSize + axisMargin},${cellSize + axisMargin - (cellSize / 2)})`);
   
-  topAxis.selectAll('.letter')
-    .data(letters).enter()
-    .append('text')
-    .attr('transform', (d, i) => `translate(${i*cellSize},${axisMargin})`)
-    .text(d => d);
-  
-  topAxis
+  let topAxis = frame
     .append('g')
-    .attr('class', 'top-axis-label')
-    .attr('text-anchor', 'middle')
-    .attr('transform', `translate(${13*cellSize},0)`)
-    .append('text')
-      .text('Second letter');
+    .attr('class', 'top-axis')
+    .attr('transform', `translate(${cellSize + axisMargin},0)`);
 
   leftAxis.selectAll('.letter')
     .data(letters).enter()
@@ -164,21 +242,15 @@ export function bootstrap(host: Element, initialState: InitialState) {
     .attr('transform', `translate(${cellSize + 5},5)`)
   
   
+  let validTwoLetterPlays = values(data).filter(f => f).length;
   host.querySelector('.two-letter-plays')
-    .innerHTML = `${values(data).filter(f => f).length}`;
+    .innerHTML = `${validTwoLetterPlays} (about ${truncate(values(data).filter(f => f).length / (26*26), 2)}%)`;
   
   let previousCollapseFirstLetter = false;
   topAxis.on('click', function() {
-    frame.selectAll('.two-letter-word')
-      .transition()
-      .attr('transform', (d: {key: string}) => `translate(0,${(d.key.charCodeAt(0) - 'a'.charCodeAt(0)) * cellSize})`);
-  
-    setTimeout(
-      () => {
-        update(gridArea, data, cellSize,isWordColor, nonWordColor, !previousCollapseFirstLetter);
-        previousCollapseFirstLetter = !previousCollapseFirstLetter;
-      }, 300);
+    update(gridArea, data, isWordColor, nonWordColor, !previousCollapseFirstLetter, topAxis);
+    previousCollapseFirstLetter = !previousCollapseFirstLetter;
   })
   
-  update(gridArea, data, cellSize, isWordColor, nonWordColor, false);
+  update(gridArea, data, isWordColor, nonWordColor, false, topAxis);
 }
