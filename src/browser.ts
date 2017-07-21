@@ -240,6 +240,9 @@ class SlideShow {
         this.renderShowControls();
         this.renderSlide();
       });
+    
+    d3.select(this.host).select('.show-controls')
+      .classed('hidden', false);
 
     // Attach next slide handler
     d3.select('.next-slide').on('click', () => {
