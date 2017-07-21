@@ -27,7 +27,12 @@ gulp.task('default', ['build'], function() {
   return run()
 });
 
-gulp.task('deploy', [], function() {
+gulp.task('copy-data', function() {
+  gulp.src('./src/data/*')
+    .pipe(gulp.dest('dist/data'));
+});
+
+gulp.task('deploy', ['copy-data'], function() {
   return browserify()
     .add('src/browser.ts')
     .plugin(tsify, { noImplicitAny: true })

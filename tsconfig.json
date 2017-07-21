@@ -1,9 +1,9 @@
 {
     "files": [
         "src/browser.ts",
-        "src/data/bingos-sample.ts",
-        "src/data/bingos.ts",
-        "src/data/words.ts",
+        // "src/data/bingos-sample.ts",
+        // "src/data/bingos.ts",
+        // "src/data/words.ts",
         "src/gaddag.ts",
         "src/main.ts",
         "src/slides/intro-slide.ts",

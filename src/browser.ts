@@ -2,20 +2,19 @@ import { Gaddag, GaddagNode, permute, unique, values } from './gaddag';
 import { clabbersSlideInitialState, clabbersSlide } from './slides/intro-slide';
 import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './slides/two-letter'
 import { layout as explorationLayout } from './layouts/exploration-slide.layout';
-// Other word sets
-// import { bingosSample } from './data/bingos-sample';
-// import { bingos } from './data/bingos';
-import { words } from './data/words';
 import * as d3 from 'd3';
 
-let wordList = words.words;
-var timestart = new Date().getTime();
-
 let dag = new Gaddag();
-wordList.forEach(w => dag.addWord(w));
-console.log("------------------------\n");
-console.log(`Time: ${new Date().getTime() - timestart}ms`);
-console.log("------------------------\n");
+let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
+  var timestart = new Date().getTime();
+  return response.json().then((wordList: {words: string[]}) => {
+    wordList.words.forEach(w => dag.addWord(w));
+    console.log("------------------------\n");
+    console.log(`Time: ${new Date().getTime() - timestart}ms`);
+    console.log("------------------------\n");
+    return wordList.words;
+  });
+});
 
 type TemplateIds = '#layout-exploration-slide' | '#layout-message-slide';
 
@@ -223,7 +222,7 @@ if (window.location.hash) {
  */
 let slides: Slide<any>[] = [
   { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, layout: explorationLayout, initialState: clabbersSlideInitialState },
-  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dag) },
+  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dag, dagDataLoaded) },
   { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
 ];
 

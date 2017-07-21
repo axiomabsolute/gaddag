@@ -3,9 +3,9 @@ import * as fs from 'fs';
 import { flatten, Gaddag, GaddagNode, values } from './gaddag';
 // import { bingosSample } from './data/bingos-sample';
 // import { bingos } from './data/bingos';
-import { words } from './data/words';
+// import { words } from './data/words';
 
-let wordList = words.words;
+let wordList: string[] = JSON.parse(fs.readFileSync('src/data/words.json', 'utf8')).words;
 
 let dag = new Gaddag();
 console.log("------------------------");

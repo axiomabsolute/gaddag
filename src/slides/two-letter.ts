@@ -152,13 +152,10 @@ function update(
 }
 
 export class InitialState{
-  constructor(public gaddag: Gaddag, public expanded: boolean = false) {}
+  constructor(public gaddag: Gaddag, public dagDataLoaded: Promise<string[]>, public expanded: boolean = false) {}
 }
-export const initialState = new InitialState(null);
 
 export function bootstrap(host: Element, initialState: InitialState) {
-  let twoLetterWords = Dictionary.ToLookup(initialState.gaddag.wordsOfLength(2), i => i, i => true);
-
   let svg = d3.select(host).select("svg"),
     rawWidth = +svg.attr('width'),
     rawHeight = +svg.attr('height'),
@@ -166,88 +163,92 @@ export function bootstrap(host: Element, initialState: InitialState) {
     width = rawWidth - margin.right - margin.left,
     height = rawHeight - margin.top - margin.bottom;
 
-  let data = new Dictionary<number>();
-  letters.forEach( l1 => letters.forEach(l2 => {
-    let key = `${l1}${l2}`;
-    data[key] = twoLetterWords[key] ? 1 : 0;
-  }));
+  initialState.dagDataLoaded.then(() => {
+    let twoLetterWords = Dictionary.ToLookup(initialState.gaddag.wordsOfLength(2), i => i, i => true);
 
-  let frame = svg
-    .append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
-  
-  let leftAxis = frame
-    .append('g')
-    .attr('class', 'left-axis')
-    .attr('transform', `translate(0,${cellSize + axisMargin})`);
-  
-  let gridArea = frame
-    .append('g')
-    .attr('class', 'grid')
-    .attr('transform', `translate(${cellSize + axisMargin + cellPadding},${cellSize + axisMargin - (cellSize / 2)})`);
-  
-  let topAxis = frame
-    .append('g')
-    .attr('class', 'top-axis')
-    .attr('transform', `translate(${cellSize + axisMargin},0)`);
+    let data = new Dictionary<number>();
+    letters.forEach( l1 => letters.forEach(l2 => {
+      let key = `${l1}${l2}`;
+      data[key] = twoLetterWords[key] ? 1 : 0;
+    }));
 
-  leftAxis.selectAll('.letter')
-    .data(letters).enter()
-    .append('text')
-    .attr('transform', (d, i) => `translate(${axisMargin},${i*cellSize})`)
-    .text(d => d);
-  
-  leftAxis
-    .append('g')
-    .attr('class', 'left-axis-label')
-    .attr('text-anchor', 'middle')
-    .attr('transform', `translate(0,${13*cellSize}) rotate(-90)`)
-    .append('text')
-      .text('First letter');
-  
-  let legend = frame.append('g')
-    .attr('transform', `translate(${26*cellSize + (2 * (axisMargin + cellSize))},${axisMargin+cellSize})`)
-    .attr('class', 'legend');
+    let frame = svg
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+    
+    let leftAxis = frame
+      .append('g')
+      .attr('class', 'left-axis')
+      .attr('transform', `translate(0,${cellSize + axisMargin})`);
+    
+    let gridArea = frame
+      .append('g')
+      .attr('class', 'grid')
+      .attr('transform', `translate(${cellSize + axisMargin + cellPadding},${cellSize + axisMargin - (cellSize / 2)})`);
+    
+    let topAxis = frame
+      .append('g')
+      .attr('class', 'top-axis')
+      .attr('transform', `translate(${cellSize + axisMargin},0)`);
 
-  legend.append('g')
-    .attr('text-anchor', 'middle')
+    leftAxis.selectAll('.letter')
+      .data(letters).enter()
       .append('text')
-        .text('Legend:');
+      .attr('transform', (d, i) => `translate(${axisMargin},${i*cellSize})`)
+      .text(d => d);
+    
+    leftAxis
+      .append('g')
+      .attr('class', 'left-axis-label')
+      .attr('text-anchor', 'middle')
+      .attr('transform', `translate(0,${13*cellSize}) rotate(-90)`)
+      .append('text')
+        .text('First letter');
+    
+    let legend = frame.append('g')
+      .attr('transform', `translate(${26*cellSize + (2 * (axisMargin + cellSize))},${axisMargin+cellSize})`)
+      .attr('class', 'legend');
 
-  let positiveKey = legend.append('g')
-    .attr('transform', `translate(0,${cellSize})`)
-    .attr('class', 'is-word-key');
-  
-  positiveKey.append('circle')
-    .attr('r', 10)
-    .attr('fill', isWordColor);
-  
-  positiveKey.append('text')
-    .text('- is a word')
-    .attr('transform', `translate(${cellSize + 5},5)`)
-  
-  let negativeKey = legend.append('g')
-    .attr('transform', `translate(0,${3*cellSize})`)
-    .attr('class', 'is-not-word-key');
+    legend.append('g')
+      .attr('text-anchor', 'middle')
+        .append('text')
+          .text('Legend:');
 
-  negativeKey.append('circle')
-    .attr('r', 10)
-    .attr('fill', nonWordColor);
-  
-  negativeKey.append('text')
-    .text('- is not a word')
-    .attr('transform', `translate(${cellSize + 5},5)`)
-  
-  
-  let validTwoLetterPlays = values(data).filter(f => f).length;
-  host.querySelector('.two-letter-plays')
-    .innerHTML = `${validTwoLetterPlays} (about ${truncate(values(data).filter(f => f).length / (26*26), 2)}%)`;
-  
-  let previousCollapseFirstLetter = false;
-  topAxis.on('click', function() {
-    update(gridArea, data, isWordColor, nonWordColor, !previousCollapseFirstLetter, topAxis);
-    previousCollapseFirstLetter = !previousCollapseFirstLetter;
-  })
-  
-  update(gridArea, data, isWordColor, nonWordColor, false, topAxis);
+    let positiveKey = legend.append('g')
+      .attr('transform', `translate(0,${cellSize})`)
+      .attr('class', 'is-word-key');
+    
+    positiveKey.append('circle')
+      .attr('r', 10)
+      .attr('fill', isWordColor);
+    
+    positiveKey.append('text')
+      .text('- is a word')
+      .attr('transform', `translate(${cellSize + 5},5)`)
+    
+    let negativeKey = legend.append('g')
+      .attr('transform', `translate(0,${3*cellSize})`)
+      .attr('class', 'is-not-word-key');
+
+    negativeKey.append('circle')
+      .attr('r', 10)
+      .attr('fill', nonWordColor);
+    
+    negativeKey.append('text')
+      .text('- is not a word')
+      .attr('transform', `translate(${cellSize + 5},5)`)
+    
+    
+    let validTwoLetterPlays = values(data).filter(f => f).length;
+    host.querySelector('.two-letter-plays')
+      .innerHTML = `${validTwoLetterPlays} (about ${truncate(values(data).filter(f => f).length / (26*26), 2)}%)`;
+    
+    let previousCollapseFirstLetter = false;
+    topAxis.on('click', function() {
+      update(gridArea, data, isWordColor, nonWordColor, !previousCollapseFirstLetter, topAxis);
+      previousCollapseFirstLetter = !previousCollapseFirstLetter;
+    })
+    
+    update(gridArea, data, isWordColor, nonWordColor, false, topAxis);
+  });
 }
