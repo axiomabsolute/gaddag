@@ -20,11 +20,11 @@ function run() {
 }
 
 gulp.task("run", function() {
-  run();
+  return run();
 });
 
 gulp.task('default', ['build'], function() {
-  run()
+  return run()
 });
 
 gulp.task('deploy', [], function() {
