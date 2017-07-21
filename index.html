@@ -59,6 +59,10 @@
       user-select: none;
     }
 
+    .top-axis {
+      cursor: pointer;
+    }
+
     /* Components */
     .card {
       margin: .5em;
@@ -265,11 +269,18 @@
   <template class="slide" id="two-letter-slide">
     <div data-selector=".slide-title">Small Plays</div>
     <div data-selector=".slide-text">
-      The smallest allowable plays in Scrabble are two-letter words. Given that the English alphabet has 26 letters
-      and that the game includes at least two of every letter (when you include the two blank tiles that may be used as any letter)
-      there are a total of <strong>26*26=676</strong> possible two-letter plays. Of these, only <strong class="two-letter-plays strong" data-computed="twoLetterPlays"></strong>
-      are valid words. The invalid words are called <strong>phonies</strong>. These words may still be played, but if challenged by your opponent you
-      lose your turn.
+      <p>
+        Two-letter words are the smallest allowable plays in Scrabble. Given that the English alphabet has 26 letters
+        and that the game includes at least two of every letter (by including blank tiles)
+        there are a total of <strong>26*26=676</strong> possible two-letter plays. Of these, only <strong class="two-letter-plays strong" data-computed="twoLetterPlays"></strong>
+        are valid words. The invalid words are called <strong>phonies</strong>. These words may still be played, but the player risks losing the turn if the word
+        is challenged by an opponent.
+      </p>
+      <p>
+        Even in the simple case of two letters, finding valid words and correctly calling out an opponent's phonies can be challenging.
+        There are many more phony words than valid words, and many of the valid words are uncommon in everyday use, like <strong>aa</strong>,
+        a particular type of lava.
+      </p>
     </div>
     <div data-selector=".explorations-content">
       <p>

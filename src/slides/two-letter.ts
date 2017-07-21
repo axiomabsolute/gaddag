@@ -14,7 +14,7 @@ let cellSize = 20,
     nonWordColor = 'black',
     baseCharCode = 'a'.charCodeAt(0),
     cellPadding = 3,
-    cellRadius = (cellSize - (cellPadding * 2));
+    cellRadius = Math.round((cellSize - (cellPadding * 2))/2);
 
 
 function truncate(value: number, decimals: number) {
@@ -80,20 +80,19 @@ function update(
     .data(twoLetterWords)
   
   twoLetterWordNodes.enter()
-    .append('rect')
+    .append('circle')
     .merge(twoLetterWordNodes)
     .on('mouseover', d => showTooltip(`${d.key} - ${d.value ? 'valid' : 'invalid'}`))
     .on('mouseout', hideTooltip)
     .attr('class', 'two-letter-word')
     .attr('title', d => d.key)
-    .attr('height', cellRadius)
+    .attr('r', cellRadius)
     .attr('dx', cellPadding)
     .attr('dy', cellPadding)
     .attr('fill', d => d.value ? isWordColor : nonWordColor)
     .attr('transform', (d, i) => {
       return `translate(0,${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
     })
-    .attr('width', cellRadius)
     .transition()
     .attr('transform', (d, i) => {
       return `translate(${(d.key.charCodeAt(1) - baseCharCode) * cellSize},${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
@@ -120,7 +119,7 @@ function update(
     .attr('dy', cellPadding)
     .attr('fill', d => d.value ? isWordColor : nonWordColor)
     .attr('transform', (d, i) => {
-      return `translate(0,${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+      return `translate(0,${cellPadding + (d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
     })
     .transition()
     .attr('width', d => d.value * cellSize);
@@ -150,8 +149,6 @@ function update(
     .attr('transform', `translate(${13*cellSize},0)`)
     .append('text')
       .text(topAxisTitle);
-
-
 }
 
 export class InitialState{
@@ -187,7 +184,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
   let gridArea = frame
     .append('g')
     .attr('class', 'grid')
-    .attr('transform', `translate(${cellSize + axisMargin},${cellSize + axisMargin - (cellSize / 2)})`);
+    .attr('transform', `translate(${cellSize + axisMargin + cellPadding},${cellSize + axisMargin - (cellSize / 2)})`);
   
   let topAxis = frame
     .append('g')
