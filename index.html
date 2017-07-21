@@ -42,6 +42,18 @@
 
     /* Visualization Styles */
 
+    div.tooltip {	
+      position: absolute;			
+      text-align: center;			
+      /* width: 60px;					 */
+      /* height: 28px;					 */
+      padding: .5em;				
+      background: lightsteelblue;	
+      border: 0px;		
+      border-radius: 8px;			
+      pointer-events: none;			
+    }
+
     label {
       display: block;
     }
@@ -49,6 +61,10 @@
     .intro-node {
       cursor: pointer;
       user-select: none;
+    }
+
+    .top-axis {
+      cursor: pointer;
     }
 
     /* Components */
@@ -257,14 +273,25 @@
   <template class="slide" id="two-letter-slide">
     <div data-selector=".slide-title">Small Plays</div>
     <div data-selector=".slide-text">
-      The smallest allowable plays in Scrabble are two-letter words. Given that the English alphabet has 26 letters
-      and that the game includes at least two of every letter (when you include the two blank tiles that may be used as any letter)
-      there are a total of <pre>26*26=676</pre> possible two-letter plays. Of these, only <span class="two-letter-plays strong" data-computed="twoLetterPlays"></span>
-      are valid words.
+      <p>
+        Two-letter words are the smallest allowable plays in Scrabble. Given that the English alphabet has 26 letters
+        and that the game includes at least two of every letter (by including blank tiles)
+        there are a total of <strong>26*26=676</strong> possible two-letter plays. Of these, only <strong class="two-letter-plays strong" data-computed="twoLetterPlays"></strong>
+        are valid words. The invalid words are called <strong>phonies</strong>. These words may still be played, but the player risks losing the turn if the word
+        is challenged by an opponent.
+      </p>
+      <p>
+        Even in the simple case of two letters, finding valid words and correctly calling out an opponent's phonies can be challenging.
+        There are many more phony words than valid words, and many of the valid words are uncommon in everyday use, like <strong>aa</strong>,
+        a particular type of lava.
+      </p>
     </div>
     <div data-selector=".explorations-content">
       <p>
-        Clicking on an axis toggles collapsing the data along that dimension.
+        <strong>Click the horizontal axis<strong> to collapse the data along the first letter of each word.
+      </p>
+      <p>
+        <strong>Hover over marks</strong> to show details about each item.
       </p>
     </div>
   </template>
@@ -306,6 +333,8 @@
       </div>
     </div>
   </template>
+
+  <div class="tooltip"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
   <script src="https://use.fontawesome.com/f40c084173.js"></script>
