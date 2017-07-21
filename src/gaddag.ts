@@ -160,7 +160,8 @@ export class GaddagNode {
  */
 export class Gaddag {
   private idGenerator: () => number;
-  private root: GaddagNode;
+  private _root: GaddagNode;
+  public get root(): GaddagNode { return this._root; }
 
   /**
    * Token used to indicate a turn in the GADDAG; a separator between the reversed prefix and normal suffix portions of a path
@@ -172,7 +173,7 @@ export class Gaddag {
    * @returns the number of nodes in the graph
    */
   public size(): number {
-    return Gaddag.sizeNode(this.root, new Date());
+    return Gaddag.sizeNode(this._root, new Date());
   }
 
   /**
@@ -193,8 +194,8 @@ export class Gaddag {
    * @returns array of all nodes in the graph
    */
   public getNodes(): GaddagNode[] {
-    let result: Dictionary<GaddagNode> = {'root': this.root};
-    return values(Gaddag.getNodesFromNode(this.root)
+    let result: Dictionary<GaddagNode> = {'root': this._root};
+    return values(Gaddag.getNodesFromNode(this._root)
       .reduce( (p, n) => {
         p[n.id] = n;
         return p;
@@ -216,7 +217,7 @@ export class Gaddag {
    */
   public getNodesByDepth(): {[depth: string]: GaddagNode[]} {
     let flag = new Date();
-    return Gaddag.getNodesByDepthFromNode(this.root, 0, flag);
+    return Gaddag.getNodesByDepthFromNode(this._root, 0, flag);
   }
 
   /**
@@ -246,7 +247,7 @@ export class Gaddag {
    */
   public getEdges(): GaddagEdge[] {
     let result: Dictionary<GaddagEdge> = {};
-    let finalResult = values(Gaddag.getEdgesForNode(this.root)
+    let finalResult = values(Gaddag.getEdgesForNode(this._root)
       .reduce( (p, n) =>{
         p[`${n.source}-${n.target}`] = n;
         return p;
@@ -305,7 +306,7 @@ export class Gaddag {
         result[letter] = result[letter] + 1;
         return result;
       }, seed);
-      return Gaddag.walkWordsForHandFromNode(letters, this.root, "");
+      return Gaddag.walkWordsForHandFromNode(letters, this._root, "");
   }
 
   /**
@@ -337,7 +338,7 @@ export class Gaddag {
    * @returns array of all words containing ordered substring
    */
   public wordsContaining(substring: string): string[] {
-    return Gaddag.wordsContainingFromNode(substring, reverse(substring), this.root);
+    return Gaddag.wordsContainingFromNode(substring, reverse(substring), this._root);
   }
 
   /**
@@ -370,7 +371,7 @@ export class Gaddag {
    * @param prefix 
    */
   public wordsForPrefix(prefix: string): string[] {
-    return Gaddag.wordsForPrefixFromNode(prefix, reverse(prefix), this.root);
+    return Gaddag.wordsForPrefixFromNode(prefix, reverse(prefix), this._root);
   }
 
   private static wordsForPrefixFromNode(prefix: string, xiferp: string, node: GaddagNode): string[] {
@@ -394,7 +395,7 @@ export class Gaddag {
    * @param suffix 
    */
   public wordsForSuffix(suffix: string): string[] {
-    return Gaddag.wordsForSuffixFromNode(suffix, reverse(suffix), this.root);
+    return Gaddag.wordsForSuffixFromNode(suffix, reverse(suffix), this._root);
   }
 
   private static wordsForSuffixFromNode(suffix: string, xiffus: string, node: GaddagNode): string[] {
@@ -416,7 +417,7 @@ export class Gaddag {
    * @param word Word to check
    */
   public checkWord(word: string): boolean {
-    return Gaddag.checkWordNode(reverse(word), this.root);
+    return Gaddag.checkWordNode(reverse(word), this._root);
   }
 
   private static checkWordNode(word: string, node: GaddagNode): boolean {
@@ -438,11 +439,11 @@ export class Gaddag {
     if (word.length < 2) { return; }
     let reversed = reverse(word); // asked -> deksa
     // Add full prefix path
-    let degenerateCaseNode = this.addPath(this.root, reversed);
+    let degenerateCaseNode = this.addPath(this._root, reversed);
     degenerateCaseNode.isCompleteWord = true;
 
     // Add path for prefix + 1 letter suffix
-    let baseCaseNode = this.addPath(this.root, reversed.slice(1)) // eksa
+    let baseCaseNode = this.addPath(this._root, reversed.slice(1)) // eksa
     let baseCaseTurn = new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
     baseCaseNode.children[Gaddag.TurnToken] = baseCaseTurn;
     let previousNode = this.addPath(baseCaseTurn, word.slice(-1)); // d
@@ -456,7 +457,7 @@ export class Gaddag {
       let newFinalLetter = reversed[start-1];
       let previousFinalLetter = reversed[start-2];
 
-      let nextBaseNode = this.addPath(this.root, nextPrefix); // ksa
+      let nextBaseNode = this.addPath(this._root, nextPrefix); // ksa
       let nextCaseTurn = nextBaseNode.children[Gaddag.TurnToken] || new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
       nextBaseNode.children[Gaddag.TurnToken] = nextCaseTurn;
       let nextNode = this.addPath(nextCaseTurn, newFinalLetter) // e
@@ -500,7 +501,7 @@ export class Gaddag {
    * @param length length of word to search for
    */
   public wordsOfLength(length: number): string[] {
-    return flatten(values(this.root.children).map( c => Gaddag.wordsOfLengthForNode(c, length-1)));
+    return flatten(values(this._root.children).map( c => Gaddag.wordsOfLengthForNode(c, length-1)));
   }
 
   /**
@@ -528,6 +529,6 @@ export class Gaddag {
    */
   constructor() {
     this.idGenerator = makeIdGenerator();
-    this.root = new GaddagNode(this.idGenerator(), 'root');
+    this._root = new GaddagNode(this.idGenerator(), 'root');
   }
 }
