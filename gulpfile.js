@@ -1,10 +1,13 @@
-var gulp = require("gulp");
-var ts = require("gulp-typescript");
-var tsProject = ts.createProject("tsconfig.json");
-var exec = require('child_process').exec;
 var browserify = require('browserify');
-var tsify = require('tsify');
+var exec = require('child_process').exec;
+var gulp = require("gulp");
+var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
+var sourcemaps = require('gulp-sourcemaps');
+var ts = require("gulp-typescript");
+var tsify = require('tsify');
+var tsProject = ts.createProject("tsconfig.json");
+var uglify = require('gulp-uglify');
 
 gulp.task("build", function() {
     return tsProject.src()
@@ -33,12 +36,20 @@ gulp.task('copy-data', function() {
 });
 
 gulp.task('deploy', ['copy-data'], function() {
-  return browserify()
+  return browserify({
+      debug: true,
+      cache: {},
+      packageCache: {}
+    })
     .add('src/browser.ts')
     .plugin(tsify, { noImplicitAny: true })
     .bundle()
     .on('error', function (error) { console.error(error.toString()); })
     .pipe(source("bundle.js"))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./dist'));
 });
 
