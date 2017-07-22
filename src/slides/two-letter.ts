@@ -157,6 +157,7 @@ export class InitialState{
 
 export function bootstrap(host: Element, initialState: InitialState) {
   let svg = d3.select(host).select("svg"),
+    twoLetterPlaysPlaceholder = host.querySelector('.two-letter-plays'),
     rawWidth = +svg.attr('width'),
     rawHeight = +svg.attr('height'),
     margin = { top: 20, right: 120, bottom: 20, left: 120 },
@@ -238,9 +239,8 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .text('- is not a word')
       .attr('transform', `translate(${cellSize + 5},5)`)
     
-    
     let validTwoLetterPlays = values(data).filter(f => f).length;
-    host.querySelector('.two-letter-plays')
+    twoLetterPlaysPlaceholder
       .innerHTML = `${validTwoLetterPlays} (about ${truncate(values(data).filter(f => f).length / (26*26), 2)}%)`;
     
     let previousCollapseFirstLetter = false;

@@ -131,8 +131,8 @@ class SlideShow {
       }
     }
 
-    this.slide.bootstrap(clone, this.slide.initialState);
     this.slide.layout(clone, this.slide.initialState);
+    this.slide.bootstrap(clone, this.slide.initialState);
 
     currentSlide.appendChild(clone);
   }
