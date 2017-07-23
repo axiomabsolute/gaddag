@@ -296,6 +296,9 @@
     </div>
   </template>
 
+  <template class="slide" id="sparse-slide">
+  </template>
+
   <template id="layout-exploration-slide">
     <div class="exploration-slide">
       <div class="slide-header card">
@@ -309,7 +312,7 @@
           </div>
         </div>
         <div class="slide-visual card">
-          <svg height="650" width="1000"></svg>
+          <svg id="viz" height="650" width="1000"></svg>
         </div>
         <div class="slide-explorations card card--reversed">
           <div class="explorations-handle">
@@ -337,6 +340,10 @@
   <div class="tooltip"></div>
 
   <script src="https://use.fontawesome.com/f40c084173.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://vega.github.io/vega/vega-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.10/vega-lite.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.19/vega-embed.js"></script>
   <script src="./dist/bundle.js"></script>
 </body>
 

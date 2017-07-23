@@ -1,13 +1,15 @@
 {
     "files": [
+        "index.d.ts",
         "src/browser.ts",
         // "src/data/bingos-sample.ts",
         // "src/data/bingos.ts",
         // "src/data/words.ts",
         "src/gaddag.ts",
         "src/main.ts",
-        "src/slides/intro-slide.ts",
-        "src/slides/two-letter.ts",
+        "src/slides/intro.slide.ts",
+        "src/slides/two-letter.slide.ts",
+        "src/slides/sparse.slide.ts",
         "src/layouts/exploration-slide.layout.ts"
     ],
     "compilerOptions":{

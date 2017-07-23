@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/d3": "^4.9.0",
     "@types/node": "^8.0.10",
+    "@types/vega": "^0.0.28",
     "browserify": "^14.4.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.0",
@@ -16,6 +17,10 @@
     "gulp-uglify": "^3.0.0",
     "tsify": "^3.0.1",
     "typescript": "^2.4.1",
+    "vega": "^3.0.0-rc3",
+    "vega-embed": "^3.0.0-beta.19",
+    "vega-lite": "^2.0.0-beta.10",
+    "vega-tooltip": "^0.4.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
@@ -24,5 +29,6 @@
     "watch": "gulp watch",
     "deploy": "gulp deploy",
     "watch-deploy": "gulp watch-deploy"
-  }
+  },
+  "typings": "index.d.ts"
 }
