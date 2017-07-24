@@ -8,6 +8,7 @@ var ts = require("gulp-typescript");
 var tsify = require('tsify');
 var tsProject = ts.createProject("tsconfig.json");
 var uglify = require('gulp-uglify');
+var nodeResolve = require('resolve');
 
 gulp.task("build", function() {
     return tsProject.src()
@@ -35,12 +36,34 @@ gulp.task('copy-data', function() {
     .pipe(gulp.dest('dist/data'));
 });
 
-gulp.task('deploy', ['copy-data'], function() {
-  return browserify({
-      debug: true,
-      cache: {},
-      packageCache: {}
-    })
+gulp.task('vendor', function() {
+  var b = browserify();
+  getNPMPackageIds().forEach(function(id) {
+    b.require(nodeResolve.sync(id), { expose: id});
+  });
+  return b
+    .bundle()
+    .on('error', function(err) { console.log(err.message); this.emit('end'); })
+    .pipe(source('vendor.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('app', ['copy-data'], function() {
+  let b = browserify({
+    debug: true,
+    cache: {},
+    packageCache: {}
+  });
+
+  getNPMPackageIds().forEach(function(id) {
+    b.external(id);
+  });
+
+  return b
     .add('src/browser.ts')
     .plugin(tsify, {
       noImplicitAny: true
@@ -55,6 +78,8 @@ gulp.task('deploy', ['copy-data'], function() {
     .pipe(gulp.dest('./dist'));
 });
 
+gulp.task('deploy', ['vendor', 'app']);
+
 var watchFiles = [
   './src/*.ts',
   './index.html'
@@ -67,3 +92,15 @@ gulp.task("watch", ['default'],  function() {
 gulp.task("watch-deploy", ['deploy'], function() {
   gulp.watch(['./src/**/*.ts'], ['deploy']);
 });
+
+function getNPMPackageIds() {
+  // read package.json and get dependencies' package ids
+  var packageManifest = {};
+  try {
+    packageManifest = require('./package.json');
+  } catch (e) {
+    // does not have a package.json manifest
+  }
+  return Object.keys(packageManifest.dependencies) || [];
+
+}

@@ -4,10 +4,10 @@ declare class vega {
   static embed(el: Element | string, spec: string | any, opts?: any): any;
 }
 
-function update(
-  frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
-  data: {[length: number]: number},
-) {}
+// function update(
+//   frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
+//   data: {[length: number]: number},
+// ) {}
 
 export class InitialState{
   constructor( public dataLoaded: Promise<string[]>, public expanded: boolean = false) {}
@@ -23,7 +23,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
     let spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "width": 1000,
-      "height": 650,
+      "height": 600,
       "data": {
         "values": keyValuePairs<number>(wordsByLength)
       },
@@ -33,7 +33,6 @@ export function bootstrap(host: Element, initialState: InitialState) {
         "y": {"field": "value", "type": "quantitative"}
       }
     };
-
     vega.embed('.slide-visual', spec);
   })
 }

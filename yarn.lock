@@ -3228,11 +3228,11 @@ vega-dataflow@2:
     vega-statistics "1"
     vega-util "^1.4"
 
-"vega-datasets@github:vega/vega-datasets#gh-pages", vega-datasets@vega/vega-datasets#gh-pages:
+vega-datasets@vega/vega-datasets#gh-pages:
   version "1.8.0"
   resolved "https://codeload.github.com/vega/vega-datasets/tar.gz/26bddc53d6112cff239436cdc85f56249c39e9e0"
 
-vega-embed@^3.0.0-beta.19:
+vega-embed@^3.0.0-beta.18:
   version "3.0.0-beta.19"
   resolved "https://registry.yarnpkg.com/vega-embed/-/vega-embed-3.0.0-beta.19.tgz#c68dec612154839e784c18116b9680a1d695fbdf"
   dependencies:
