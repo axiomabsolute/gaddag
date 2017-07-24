@@ -1,6 +1,5 @@
 {
     "files": [
-        "index.d.ts",
         "src/browser.ts",
         // "src/data/bingos-sample.ts",
         // "src/data/bingos.ts",
@@ -16,7 +15,8 @@
         "noImplicitAny": true,
         "target": "es5",
         "typeRoots": [
-          "./node_modules/@types"
+          "./node_modules/@types",
+          "./typings"
         ]
     }
 }

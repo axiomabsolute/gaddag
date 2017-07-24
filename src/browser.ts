@@ -1,9 +1,9 @@
+/// <reference types="d3" />
 import { Gaddag, GaddagNode, permute, unique, values } from './gaddag';
 import { clabbersSlideInitialState, clabbersSlide } from './slides/intro.slide';
 import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './slides/two-letter.slide'
 import { bootstrap as sparseSlide, InitialState as SparseState } from './slides/sparse.slide';
 import { layout as explorationLayout } from './layouts/exploration-slide.layout';
-import * as d3 from 'd3';
 
 let dag = new Gaddag();
 let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {

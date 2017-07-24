@@ -1,5 +1,6 @@
-import * as vega from 'vega';
-import 'vega-embed';
+/// <reference types="vega" />
+/// <reference types="vega-lite" />
+import * as d3 from 'd3';
 import { Gaddag, keyValuePairs } from '../gaddag';
 
 function update(
