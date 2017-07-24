@@ -1,4 +1,6 @@
-import * as d3 from 'd3';
+import { ascending, schemeCategory20, select, selectAll } from 'd3';
+
+let d3 = { ascending, schemeCategory20, select, selectAll };
 
 export const clabbersSlideInitialState = { expanded: true };
 

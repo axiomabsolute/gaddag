@@ -1,10 +1,7 @@
 {
     "files": [
-        "index.d.ts",
+        "vendor.d.ts",
         "src/browser.ts",
-        // "src/data/bingos-sample.ts",
-        // "src/data/bingos.ts",
-        // "src/data/words.ts",
         "src/gaddag.ts",
         "src/main.ts",
         "src/slides/intro.slide.ts",
@@ -14,9 +11,6 @@
     ],
     "compilerOptions":{
         "noImplicitAny": true,
-        "target": "es5",
-        "typeRoots": [
-          "./node_modules/@types"
-        ]
+        "target": "es5"
     }
 }

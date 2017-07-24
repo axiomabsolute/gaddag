@@ -1,6 +1,8 @@
-import * as vega from 'vega';
-import 'vega-embed';
 import { Gaddag, keyValuePairs } from '../gaddag';
+
+declare class vega {
+  static embed(el: Element | string, spec: string | any, opts?: any): any;
+}
 
 function update(
   frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,

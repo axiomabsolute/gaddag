@@ -1,5 +1,7 @@
+import { hierarchy, select, tree } from 'd3';
 import { Gaddag, GaddagNode, values } from '../gaddag';
-import * as d3 from 'd3';
+
+let d3 = { hierarchy, select, tree };
 
 function diagonal(d: d3.HierarchyPointNode<{}>) {
   return "M" + d.y + "," + d.x

@@ -42,7 +42,9 @@ gulp.task('deploy', ['copy-data'], function() {
       packageCache: {}
     })
     .add('src/browser.ts')
-    .plugin(tsify, { noImplicitAny: true })
+    .plugin(tsify, {
+      noImplicitAny: true
+    })
     .bundle()
     .on('error', function (error) { console.error(error.toString()); })
     .pipe(source("bundle.js"))
