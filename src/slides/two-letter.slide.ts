@@ -1,7 +1,8 @@
-import { event, select } from 'd3';
+// import { event, select } from 'd3';
+import * as d3 from 'd3';
 import { Dictionary, Gaddag, keyValuePairs, values } from '../gaddag';
 
-let d3 = { event, select };
+// let d3 = { event, select };
 
 const letters: string[] = [];
 let i = 'a'.charCodeAt(0);
