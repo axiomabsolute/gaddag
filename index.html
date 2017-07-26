@@ -312,8 +312,21 @@
         with 8 letters. On the one hand, this makes finding longer words easier since there are simply more
         options. On the other hand, however, the number of <strong>invalid</strong> words grows at a much higher
         rate. This notion of <strong>sparseness</strong> makes finding longer playes more difficult, especially
-        for new players.
+        for new players, who are often simply overwhelmed by the number of invalid words .
       </p>
+    </div>
+    <div data-selector=".slide-controls">
+      <form class="pure-form pure-form-stacked">
+        <fieldset>
+          <label for="toggle-aggregation">Toggle Aggregation Type</label>
+          <button type="button" id="toggle-aggregation" class="pure-button">Show Counts By Length</button>
+        </fieldset>
+        <fieldset>
+          <label for="axis-power">Axis Power Scale Exponent</label>
+          <input id="axis-power" type="range" value="1" min=".1" max="1" step=".1">
+          <span class="pure-form-message">Range [.1, 1], currently <span class="current-axis-power">1</span></span>
+        </fieldset>
+      </form>
     </div>
     <div data-seledctor=".explorations-content">
       

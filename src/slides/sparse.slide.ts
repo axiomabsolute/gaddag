@@ -1,9 +1,12 @@
 import { Gaddag, keyValuePairs } from '../gaddag';
-import { axisBottom, axisLeft, max as d3Max, scaleBand, ScaleBand, ScaleLinear, scaleLinear, ScalePower, scalePow, select } from 'd3';
+import { truncate, showTooltip, hideTooltip } from '../browser';
+import * as d3 from 'd3';
 
 declare class vega {
   static embed(el: Element | string, spec: string | any, opts?: any): any;
 }
+
+let percentValid = (d: {key: string, value: number}) => d.value/Math.pow(26, +d.key);
 
 function update(
   frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
@@ -13,20 +16,19 @@ function update(
   }[],
   width: number,
   height: number,
-  x: ScaleBand<string>,
+  marginLeft: number,
+  x: d3.ScaleBand<string>,
+  powerScaleExponent: number,
   aggregate: (datum: {key: string, value: number}) => number
 ) {
-  let y: ScaleLinear<number, number> | ScalePower<number, number>;
-  if(aggregate !== null) {
-    let scale = scalePow();
-    scale.exponent(.3);
-    y = scale;
-  } else {
-    y = scaleLinear();
-  }
+  let y = d3.scalePow();
+  y.exponent(powerScaleExponent);
   y.range([height, 0]);
   
-  y.domain([0, d3Max(data, w => aggregate ? aggregate(w) : w.value)]);
+  y.domain([0, d3.max(data, w => aggregate ? aggregate(w) : w.value)]);
+
+  d3.select('#toggle-aggregation')
+    .text(() => aggregate ? "Show Percent Valid by Length" : "Show Valid Count by Length")
 
   let barNodes = frame.selectAll('.bar')
       .data(data);
@@ -35,10 +37,12 @@ function update(
     .enter().append('rect')
     .merge(barNodes)
       .attr('class', 'bar')
-      .attr('fill', 'black')
+      .attr('fill', d3.schemeCategory20[0])
       .attr('x', d => x(d.key))
       .attr('width', x.bandwidth())
       .attr('title', d => `${aggregate ? aggregate(d) : d.value}%`)
+      .on('mouseover', d => showTooltip( `${aggregate ? truncate(aggregate(d), 5) : d.value }`))
+      .on('mouseout', hideTooltip)
       .transition()
         .attr('y', d => aggregate ? y(aggregate(d)) : y(d.value))
         .attr('height', d => height - y(aggregate ? aggregate(d) : d.value));
@@ -47,7 +51,17 @@ function update(
     .remove();
   frame.append('g')
     .attr('class', 'left-axis')
-    .call(axisLeft(y));
+    .call(d3.axisLeft(y));
+  
+  frame.select('.left-axis-label')
+    .remove();
+  frame
+    .append('g')
+    .attr('text-anchor', 'middle')
+    .attr('transform', `translate(-${marginLeft/2},${height/2}) rotate(-90)`)
+    .attr('class', 'left-axis-label')
+      .append('text')
+      .text(aggregate ? "Percent Valid Words" : "Count of Words");
 }
 
 export class InitialState{
@@ -56,12 +70,14 @@ export class InitialState{
 
 export function bootstrap(host: Element, initialState: InitialState) {
 
-  let svg = select(host).select("svg"),
+  let svg = d3.select(host).select("svg"),
     rawWidth = +svg.attr('width'),
     rawHeight = +svg.attr('height'),
-    margin = { top: 20, right: 120, bottom: 20, left: 120 },
+    margin = { top: 20, right: 120, bottom: 120, left: 120 },
     width = rawWidth - margin.right - margin.left,
     height = rawHeight - margin.top - margin.bottom;
+  
+  let shouldAggregate = false;
   
   initialState.dataLoaded.then((wordList) => {
     let wordsByLength = keyValuePairs<number>(wordList.reduce((result: {[length: number]: number}, word) => {
@@ -74,7 +90,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`)
 
-  let x = scaleBand()
+  let x = d3.scaleBand()
     .range([0, width])
     .padding(0.1);
   
@@ -85,14 +101,42 @@ export function bootstrap(host: Element, initialState: InitialState) {
   frame.append('g')
     .attr('class', 'bottom-axis')
     .attr('transform', `translate(0,${height})`)
-    .call(axisBottom(x));
+    .call(d3.axisBottom(x));
   
-  update(frame, wordsByLength, width, height, x, null);
+  svg
+    .append('g')
+    .attr('class', 'bottom-axis-label')
+    .attr('text-anchor', 'middle')
+    .attr('transform', `translate(${margin.left + rawWidth/2}, ${rawHeight - (margin.bottom/2)})`)
+    .append('text')
+      .text('Word length');
+  
+  update(frame, wordsByLength, width, height, margin.left, x, 1, null);
 
   setTimeout(function(){
     let lastWord = wordsByLength[1];
-    update(frame, wordsByLength, width, height, x, d => d.value/Math.pow(26, +d.key));
+    shouldAggregate = !shouldAggregate;
+    update(frame, wordsByLength, width, height, margin.left, x, 1, shouldAggregate ? percentValid : null);
   }, 3000);
+
+  d3.select('#toggle-aggregation')
+    .text(() => shouldAggregate ? "Show Percent Valid by Length" : "Show Valid Count by Length")
+    .on('click', () => {
+      shouldAggregate = !shouldAggregate;
+      let exponent = +d3.select('#axis-power').attr('value');
+      update(frame, wordsByLength, width, height, margin.left, x, exponent, shouldAggregate ? percentValid : null);
+    });
+  
+  d3.select('#axis-power')
+    .on('input', function(){
+      let self: HTMLInputElement = <HTMLInputElement>this;
+      d3.select('.current-axis-power')
+        .text(self.value);
+    })
+    .on('change', function() {
+      let self: HTMLInputElement = <HTMLInputElement>this;
+      update(frame, wordsByLength, width, height, margin.left, x, +self.value, shouldAggregate ? percentValid : null);
+    });
   
   // let x = scaleBand()
   //   .range([0, width])

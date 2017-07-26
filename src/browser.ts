@@ -1,4 +1,4 @@
-import { select as d3Select, selectAll as d3SelectAll } from 'd3';
+import * as d3 from 'd3';
 import * as console from 'console';
 import { layout as explorationLayout } from './layouts/exploration-slide.layout';
 import { Gaddag, GaddagNode, permute, unique, values } from './gaddag';
@@ -6,10 +6,38 @@ import { clabbersSlideInitialState, clabbersSlide } from './slides/intro.slide';
 import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './slides/two-letter.slide'
 import { bootstrap as sparseSlide, InitialState as SparseState } from './slides/sparse.slide';
 
-let d3 = {
-  select: d3Select,
-  selectAll: d3SelectAll
-};
+export function truncate(value: number, decimals: number) {
+  decimals = decimals || 0;
+  let shift = 10 * decimals;
+  return Math.round(value * shift)/shift;
+}
+
+export function range(start: number, max:number) {
+  let result = [];
+  for(;start<max;start++){
+    result.push(start);
+  }
+  return result;
+}
+
+export var tooltip = d3.select(".tooltip")				
+  .style("opacity", 0);
+  
+
+export function showTooltip(value: string) {
+  tooltip.transition()		
+          .duration(200)		
+          .style("opacity", .9);		
+  tooltip.html(value)	
+          .style("left", (d3.event.pageX) + "px")		
+          .style("top", (d3.event.pageY - 28) + "px");	
+}
+
+export function hideTooltip() {
+  tooltip.transition()		
+    .duration(500)		
+    .style("opacity", 0);	
+}
 
 let dag = new Gaddag();
 let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {

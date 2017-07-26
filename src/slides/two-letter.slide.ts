@@ -1,6 +1,7 @@
 // import { event, select } from 'd3';
 import * as d3 from 'd3';
 import { Dictionary, Gaddag, keyValuePairs, values } from '../gaddag';
+import { showTooltip, hideTooltip, range, truncate } from '../browser';
 
 // let d3 = { event, select };
 
@@ -18,39 +19,6 @@ let cellSize = 20,
     cellPadding = 3,
     cellRadius = Math.round((cellSize - (cellPadding * 2))/2);
 
-
-function truncate(value: number, decimals: number) {
-  decimals = decimals || 0;
-  let shift = 10 * decimals;
-  return Math.round(value * shift)/shift;
-}
-
-function range(start: number, max:number) {
-  let result = [];
-  for(;start<max;start++){
-    result.push(start);
-  }
-  return result;
-}
-
-var tooltip = d3.select(".tooltip")				
-  .style("opacity", 0);
-  
-
-function showTooltip(value: string) {
-  tooltip.transition()		
-          .duration(200)		
-          .style("opacity", .9);		
-  tooltip.html(value)	
-          .style("left", (d3.event.pageX) + "px")		
-          .style("top", (d3.event.pageY - 28) + "px");	
-}
-
-function hideTooltip() {
-  tooltip.transition()		
-    .duration(500)		
-    .style("opacity", 0);	
-}
 
 let kvData: {key: string, value: number}[] = [];
 
