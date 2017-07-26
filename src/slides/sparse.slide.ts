@@ -1,5 +1,5 @@
 import { Gaddag, keyValuePairs } from '../gaddag';
-import { axisBottom, axisLeft, max as d3Max, scaleBand, ScaleBand, scaleLinear, scalePow, select } from 'd3';
+import { axisBottom, axisLeft, max as d3Max, scaleBand, ScaleBand, ScaleLinear, scaleLinear, ScalePower, scalePow, select } from 'd3';
 
 declare class vega {
   static embed(el: Element | string, spec: string | any, opts?: any): any;
@@ -16,10 +16,16 @@ function update(
   x: ScaleBand<string>,
   aggregate: (datum: {key: string, value: number}) => number
 ) {
-  let y = (aggregate !== null ? scalePow() : scaleLinear())
-    .range([height, 0]);
+  let y: ScaleLinear<number, number> | ScalePower<number, number>;
+  if(aggregate !== null) {
+    let scale = scalePow();
+    scale.exponent(.3);
+    y = scale;
+  } else {
+    y = scaleLinear();
+  }
+  y.range([height, 0]);
   
-  console.log(d3Max(data, w => aggregate ? aggregate(w) : w.value));
   y.domain([0, d3Max(data, w => aggregate ? aggregate(w) : w.value)]);
 
   let barNodes = frame.selectAll('.bar')
@@ -32,9 +38,10 @@ function update(
       .attr('fill', 'black')
       .attr('x', d => x(d.key))
       .attr('width', x.bandwidth())
-      .attr('y', d => aggregate ? y(aggregate(d)) : y(d.value))
       .attr('title', d => `${aggregate ? aggregate(d) : d.value}%`)
-      .attr('height', d => height - y(aggregate ? aggregate(d) : d.value));
+      .transition()
+        .attr('y', d => aggregate ? y(aggregate(d)) : y(d.value))
+        .attr('height', d => height - y(aggregate ? aggregate(d) : d.value));
     
   frame.select('.left-axis')
     .remove();
@@ -116,7 +123,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
 
     // let spec = {
     //   "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-    //   "width": 1000,
+    //   "width": 1(.5);00,
     //   "height": 600,
     //   "data": {
     //     "values": keyValuePairs<number>(wordsByLength)
