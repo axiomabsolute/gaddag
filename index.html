@@ -41,6 +41,9 @@
     }
 
     /* Visualization Styles */
+    .bar:hover {
+      fill: orangered;
+    }
 
     div.tooltip {	
       position: absolute;			
@@ -328,8 +331,20 @@
         </fieldset>
       </form>
     </div>
-    <div data-seledctor=".explorations-content">
-      
+    <div data-selector=".explorations-content">
+      <p>
+        Use the controls on the left to explore the relationship between the <strong>number</strong> of words of each length and
+        the relative <strong>sparseness</strong> of those words.
+      </p>
+      <p>
+        The button toggles the chart between displaying the count of words of each length and the percentage of words of that length
+        that are valid words.
+      </p>
+      <p>
+        The scale of both the counts and percentages is fairly large, spanning several orders of magnitude. To help ensure the smaller values
+        are still visibile, use the slider control to adjust the exponent used to generate the power scale in the y-axis. When the slider
+        is set to 1 the scale behaves like a linear scale. Lower the value to help emphasize the smaller values.
+      </p>
     </div>
   </template>
 

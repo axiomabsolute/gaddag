@@ -41,7 +41,7 @@ function update(
       .attr('x', d => x(d.key))
       .attr('width', x.bandwidth())
       .attr('title', d => `${aggregate ? aggregate(d) : d.value}%`)
-      .on('mouseover', d => showTooltip( `${aggregate ? truncate(aggregate(d), 5) : d.value }`))
+      .on('mouseover', d => showTooltip(`${aggregate ? truncate(aggregate(d), 5) : d.value }${aggregate ? '% valid words': ' valid words'}`))
       .on('mouseout', hideTooltip)
       .transition()
         .attr('y', d => aggregate ? y(aggregate(d)) : y(d.value))
