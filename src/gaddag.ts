@@ -321,13 +321,18 @@ export class Gaddag {
     if (sum(values(hand)) === 0) {
       return  node.isCompleteWord ? [progress] : [];
     }
-    let childrenInHand = Object.keys(node.children).filter( k => k in hand && hand[k] > 0);
+    let childrenInHand = Object.keys(node.children).filter(k => k !== Gaddag.TurnToken).filter( k => (k in hand && hand[k] > 0) || ('?' in hand && hand['?'] > 0));
     if (childrenInHand.length === 0) {
-      return  node.isCompleteWord ? [progress] : [];
+      let complete = node.isCompleteWord;
+      return complete ? [progress] : [];
     } 
     return flatten(childrenInHand.map( k => {
       let newHand = cloneDict(hand);
-      newHand[k] = newHand[k] - 1;
+      if (k in newHand) {
+        newHand[k] = newHand[k] - 1;
+      } else {
+        newHand['?'] = newHand['?'] - 1;
+      }
       return Gaddag.walkWordsForHandFromNode(newHand, node.children[k], k + progress);
     }));
   }

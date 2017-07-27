@@ -5,6 +5,7 @@ import { Gaddag, GaddagNode, permute, unique, values } from './gaddag';
 import { clabbersSlideInitialState, clabbersSlide } from './slides/intro.slide';
 import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './slides/two-letter.slide'
 import { bootstrap as sparseSlide, InitialState as SparseState } from './slides/sparse.slide';
+import { bootstrap as patternsSlide, InitialState as PatternsState } from './slides/patterns.slide';
 
 export function truncate(value: number, decimals: number) {
   decimals = decimals || 0;
@@ -258,7 +259,8 @@ if (window.location.hash) {
 let slides: Slide<any>[] = [
   { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, layout: explorationLayout, initialState: clabbersSlideInitialState },
   { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dag, dagDataLoaded) },
-  { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, true)},
+  { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, false) },
+  { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dag, dagDataLoaded, false) },
   { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
 ];
 

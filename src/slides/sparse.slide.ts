@@ -137,47 +137,5 @@ export function bootstrap(host: Element, initialState: InitialState) {
       let self: HTMLInputElement = <HTMLInputElement>this;
       update(frame, wordsByLength, width, height, margin.left, x, +self.value, shouldAggregate ? percentValid : null);
     });
-  
-  // let x = scaleBand()
-  //   .range([0, width])
-  //   .padding(0.1);
-  
-  // let y = scaleLinear()
-  //   .range([height, 0]);
-  
-  // x.domain(wordsByLength.map(w => w.key));
-  // y.domain([0, d3Max(wordsByLength, w => w.value)]);
-
-  // frame.selectAll('.bar')
-  //     .data(wordsByLength)
-  //   .enter().append('rect')
-  //     .attr('class', 'bar')
-  //     .attr('fill', 'black')
-  //     .attr('x', d => x(d.key))
-  //     .attr('width', x.bandwidth())
-  //     .attr('y', d => y(d.value))
-  //     .attr('height', d => height - y(d.value));
-    
-  // frame.append('g')
-  //   .attr('transform', `translate(0,${height})`)
-  //   .call(axisBottom(x));
-  
-  // frame.append('g')
-  //   .call(axisLeft(y));
-
-    // let spec = {
-    //   "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-    //   "width": 1(.5);00,
-    //   "height": 600,
-    //   "data": {
-    //     "values": keyValuePairs<number>(wordsByLength)
-    //   },
-    //   "mark": "bar",
-    //   "encoding": {
-    //     "x": {"field": "key", "type": "ordinal", "sort": "none"},
-    //     "y": {"field": "value", "type": "quantitative"}
-    //   }
-    // };
-    // vega.embed('.slide-visual', spec);
   });
 }

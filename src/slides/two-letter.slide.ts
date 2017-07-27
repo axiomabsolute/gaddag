@@ -22,7 +22,6 @@ let cellSize = 20,
 
 let kvData: {key: string, value: number}[] = [];
 
-
 function update(
   frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
   data: Dictionary<number>,
