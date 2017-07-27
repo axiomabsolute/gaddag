@@ -450,8 +450,8 @@ export class Gaddag {
 
     // Add path for prefix + 1 letter suffix
     let baseCaseNode = this.addPath(this._root, reversed.slice(1)) // eksa
-    let baseCaseTurn = new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
-    baseCaseNode.children[Gaddag.TurnToken] = baseCaseTurn;
+    baseCaseNode.children[Gaddag.TurnToken] = baseCaseNode.children[Gaddag.TurnToken] || new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
+    let baseCaseTurn = baseCaseNode.children[Gaddag.TurnToken];
     let previousNode = this.addPath(baseCaseTurn, word.slice(-1)); // d
     previousNode.isCompleteWord = true;
 
@@ -465,8 +465,8 @@ export class Gaddag {
 
       let nextBaseNode = this.addPath(this._root, nextPrefix); // ksa
       let nextCaseTurn = nextBaseNode.children[Gaddag.TurnToken] || new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
-      nextBaseNode.children[Gaddag.TurnToken] = nextCaseTurn;
       let nextNode = this.addPath(nextCaseTurn, newFinalLetter) // e
+      nextBaseNode.children[Gaddag.TurnToken] = nextCaseTurn;
       nextNode.children[previousFinalLetter] = previousNode;
       previousNode = nextNode;
     }
