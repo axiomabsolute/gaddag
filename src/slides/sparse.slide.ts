@@ -6,7 +6,7 @@ declare class vega {
   static embed(el: Element | string, spec: string | any, opts?: any): any;
 }
 
-let percentValid = (d: {key: string, value: number}) => d.value/Math.pow(26, +d.key);
+let percentValid = (d: {key: string, value: number}) => (d.value/Math.pow(26, +d.key))*100;
 
 function update(
   frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
@@ -41,7 +41,7 @@ function update(
       .attr('x', d => x(d.key))
       .attr('width', x.bandwidth())
       .attr('title', d => `${aggregate ? aggregate(d) : d.value}%`)
-      .on('mouseover', d => showTooltip(`${aggregate ? truncate(aggregate(d), 5) : d.value }${aggregate ? '% valid words': ' valid words'}`))
+      .on('mouseover', d => showTooltip(`${aggregate ? truncate(aggregate(d), 4) : d.value }${aggregate ? '% valid words': ' valid words'}`))
       .on('mouseout', hideTooltip)
       .transition()
         .attr('y', d => aggregate ? y(aggregate(d)) : y(d.value))

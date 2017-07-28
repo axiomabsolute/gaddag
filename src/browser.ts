@@ -9,7 +9,7 @@ import { bootstrap as patternsSlide, InitialState as PatternsState } from './sli
 
 export function truncate(value: number, decimals: number) {
   decimals = decimals || 0;
-  let shift = 10 * decimals;
+  let shift = Math.pow(10, decimals);
   return Math.round(value * shift)/shift;
 }
 
