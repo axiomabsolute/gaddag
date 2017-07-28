@@ -1,8 +1,12 @@
 import * as d3 from 'd3';
 import { Dictionary, Gaddag, unique } from '../gaddag';
 
+declare class vega {
+  static embed(el: Element | string | string, spec: string | any, opts?: any): Promise<any>;
+}
+
 function update(
-  frame: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
+  host: Element | string,
   data: any,
   width: number,
   height: number,
@@ -26,11 +30,71 @@ function update(
       let wordsMatchingComponentPattern = wordList.filter(w => componentPattern.test(w));
       let wordsMatchingComponentPatternWithTarget = wordsMatchingComponentPattern.filter(w => w.indexOf(v) >= 0);
       return {
+        'label': `p(${v})|${components}`,
         'target': v,
         'given': components,
-        'probability': wordsMatchingComponentPatternWithTarget.length / wordsMatchingComponentPattern.length
+        'probability': (wordsMatchingComponentPatternWithTarget.length / wordsMatchingComponentPattern.length) * 100
       };
     });
+
+    let spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "config": {
+        "axis": {
+          "titleFontSize": 14
+        }
+      },
+      "hconcat": [
+        {
+          "data": {"values": wordsMatchingPattern.map(w => { return { value: w} })},
+          "width": 50 + 25*9,
+          "height": 570,
+          "transform": [
+            { "calculate": "length(datum.value)", "as": "length" }
+          ],
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "bin": { "step": 1 },
+              "field": "length",
+              "type": "quantitative",
+              "tooltip": {"field": "length", "type": "quantitative"},
+            },
+            "y": {
+              "aggregate": "count",
+              "type": "quantitative",
+              "tooltip": {"field": "length", "type": "quantitative"},
+            }
+          }
+        },
+        {
+          "data": {"values": wordsBySubPatternComponents },
+          "width": 50 + 25*wordsBySubPatternComponents.length,
+          "height": 570,
+          "mark": "bar",
+          "tooltip": { "field": "probability", "type": "quantitative" },
+          "encoding": {
+            "x": {
+              "field": "label",
+              "type": "nominal"
+            },
+            "y": {
+              "field": "probability",
+              "type": "quantitative"
+            }
+          }
+        }
+      ]
+    };
+
+    let opts = {
+      renderer: 'svg',
+      actions: false,
+      height,
+      width
+    };
+
+    let viewPromise = vega.embed(host, spec, opts);
 
 }
 
@@ -47,13 +111,12 @@ export function bootstrap(host: Element, initialState: InitialState) {
     width = rawWidth - margin.right - margin.left,
     height = rawHeight - margin.top - margin.bottom;
 
-  let frame = svg
-    .append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`)
-  
   let data: any[] = [];
 
-  initialState.dataLoaded.then((wordList: string[]) => {
+  let patternElement = <HTMLInputElement>host.querySelector('#word-pattern');
+  let updateButton = d3.select(host).select('update-button');
+
+  initialState.dataLoaded.then(function(wordList: string[]){
     // let wordsWithFix = initialState.dag.wordsContaining('ing').filter(w => w.length <= 7);
     // let wordsContaining = initialState.dag.wordsForHand('ing????');
 
@@ -61,9 +124,13 @@ export function bootstrap(host: Element, initialState: InitialState) {
     // console.log(wordsContaining.filter(w => /i/.test(w) && /n/.test(w) && /g/.test(w)).length);
     // console.log("-----------------");
 
-    let pattern = 'ing';
+    d3.select(document.querySelector('.update-button'))
+      .on('click', function() {
 
-    update(frame, data, width, height, wordList, pattern);
+        update('.slide-visual', data, width, height, wordList, patternElement.value);
+      });
+
+    update('.slide-visual', data, width, height, wordList, patternElement.value);
   });
 
 
