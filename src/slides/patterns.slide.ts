@@ -1,8 +1,10 @@
 import * as d3 from 'd3';
 import { Dictionary, Gaddag, unique } from '../gaddag';
+import { showVegaTooltip, hideTooltip } from '../browser';
 
 declare class vega {
   static embed(el: Element | string | string, spec: string | any, opts?: any): Promise<any>;
+  static changeset(): any;
 }
 
 function update(
@@ -11,7 +13,8 @@ function update(
   width: number,
   height: number,
   wordList: string[],
-  pattern: string
+  pattern: string,
+  previousView: Promise<any> = null
 ) {
     let uniquePatternComponents = unique(pattern.split(''));
     let patternRegex = new RegExp(pattern);
@@ -19,6 +22,7 @@ function update(
     
     let wordsWithEachComponent = wordList.filter(w => componentRegex.test(w));
     let wordsMatchingPattern = wordsWithEachComponent.filter(w => patternRegex.test(w));
+    let wordsMatchingPatternObjects = wordsMatchingPattern.map(w => { return { value: w} });
     let wordsMatchingPatternByLength = wordsMatchingPattern.reduce((p: Dictionary<number>, n) => {
       p[n.length] = p[n.length] || 0;
       p[n.length] = p[n.length] + 1;
@@ -46,11 +50,14 @@ function update(
       },
       "hconcat": [
         {
-          "data": {"values": wordsMatchingPattern.map(w => { return { value: w} })},
+          "data": {
+            "name": "wordsMatchingPatternByLength"
+          },
           "width": 50 + 25*9,
           "height": 570,
           "transform": [
-            { "calculate": "length(datum.value)", "as": "length" }
+            { "calculate": "length(datum.value)", "as": "length" },
+            { "calculate": "'Count: '+length(datum.value)", "as": "formattedTooltip" }
           ],
           "mark": "bar",
           "encoding": {
@@ -58,21 +65,29 @@ function update(
               "bin": { "step": 1 },
               "field": "length",
               "type": "quantitative",
-              "tooltip": {"field": "length", "type": "quantitative"},
             },
             "y": {
               "aggregate": "count",
               "type": "quantitative",
-              "tooltip": {"field": "length", "type": "quantitative"},
+            },
+            "tooltip": {
+              // "aggregate": "count",
+              "field": "formattedTooltip",
+              "type": "nominal"
             }
           }
         },
         {
-          "data": {"values": wordsBySubPatternComponents },
+          "data": {
+            "name": "subPatternProbabilities"
+          },
           "width": 50 + 25*wordsBySubPatternComponents.length,
           "height": 570,
           "mark": "bar",
           "tooltip": { "field": "probability", "type": "quantitative" },
+          "transform": [
+            { "calculate": "'Probability: '+format(datum.probability, '.2f') + '%'", "as": "formattedTooltip" }
+          ],
           "encoding": {
             "x": {
               "field": "label",
@@ -81,6 +96,10 @@ function update(
             "y": {
               "field": "probability",
               "type": "quantitative"
+            },
+            "tooltip": {
+              "field": "formattedTooltip",
+              "type": "nominal"
             }
           }
         }
@@ -94,8 +113,30 @@ function update(
       width
     };
 
-    let viewPromise = vega.embed(host, spec, opts);
+    if (!previousView) {
+      previousView = vega.embed(host, spec, opts);
+    }
 
+    return previousView.then((view: any) => {
+      view.view.tooltipHandler(function(event: MouseEvent, item: any, text: string) {
+        if (text) {
+          showVegaTooltip(text, event);
+        } else {
+          hideTooltip();
+        }
+      });
+      let patternByLengthChanges = vega.changeset()
+        .remove((x: any) => true)
+        .insert(wordsMatchingPatternObjects);
+      let subPatternChanges = vega.changeset()
+        .remove((x: any) => true)
+        .insert(wordsBySubPatternComponents);
+      let newView = view.view
+        .change("wordsMatchingPatternByLength", patternByLengthChanges)
+        .change("subPatternProbabilities", subPatternChanges);
+      newView.run();
+      return view;
+    });
 }
 
 export class InitialState{
@@ -124,13 +165,13 @@ export function bootstrap(host: Element, initialState: InitialState) {
     // console.log(wordsContaining.filter(w => /i/.test(w) && /n/.test(w) && /g/.test(w)).length);
     // console.log("-----------------");
 
+    let viewPromise = update('.slide-visual', data, width, height, wordList, patternElement.value)
     d3.select(document.querySelector('.update-button'))
       .on('click', function() {
 
-        update('.slide-visual', data, width, height, wordList, patternElement.value);
+        update('.slide-visual', data, width, height, wordList, patternElement.value, viewPromise);
       });
 
-    update('.slide-visual', data, width, height, wordList, patternElement.value);
   });
 
 

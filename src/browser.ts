@@ -40,6 +40,15 @@ export function hideTooltip() {
     .style("opacity", 0);	
 }
 
+export function showVegaTooltip(value: string, event: MouseEvent) {
+  tooltip.transition()		
+          .duration(200)		
+          .style("opacity", .9);		
+  tooltip.html(value)	
+          .style("left", (event.pageX) + "px")		
+          .style("top", (event.pageY - 28) + "px");	
+}
+
 let dag = new Gaddag();
 let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
   var timestart = new Date().getTime();
