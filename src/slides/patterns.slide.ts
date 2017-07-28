@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { Dictionary, Gaddag, unique } from '../gaddag';
-import { showVegaTooltip, hideTooltip } from '../browser';
+import { Fix, showVegaTooltip, hideTooltip } from '../browser';
 
 declare class vega {
   static embed(el: Element | string | string, spec: string | any, opts?: any): Promise<any>;
@@ -12,16 +12,15 @@ function update(
   data: any,
   width: number,
   height: number,
-  wordList: string[],
+  rawWordList: string[],
   pattern: string,
   previousView: Promise<any> = null
 ) {
+    let wordList = rawWordList.filter(w => w.length >= 7);
     let uniquePatternComponents = unique(pattern.split(''));
-    let patternRegex = new RegExp(pattern);
-    let componentRegex = new RegExp(uniquePatternComponents.join('|'));
     
-    let wordsWithEachComponent = wordList.filter(w => componentRegex.test(w));
-    let wordsMatchingPattern = wordsWithEachComponent.filter(w => patternRegex.test(w));
+    let wordsWithEachComponent = wordList.filter(w => uniquePatternComponents.every(c => w.indexOf(c) >= 0));
+    let wordsMatchingPattern = wordsWithEachComponent.filter(w => w.match(pattern));
     let wordsMatchingPatternObjects = wordsMatchingPattern.map(w => { return { value: w} });
     let wordsMatchingPatternByLength = wordsMatchingPattern.reduce((p: Dictionary<number>, n) => {
       p[n.length] = p[n.length] || 0;
@@ -40,6 +39,12 @@ function update(
         'probability': (wordsMatchingComponentPatternWithTarget.length / wordsMatchingComponentPattern.length) * 100
       };
     });
+    wordsBySubPatternComponents.push({
+      'label': `p("${pattern}")|${pattern}`,
+      'target': `"${pattern}"`,
+      'given': `${pattern}`,
+      'probability': (wordsMatchingPattern.length / wordsWithEachComponent.length) * 100
+    })
 
     let spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -71,7 +76,6 @@ function update(
               "type": "quantitative",
             },
             "tooltip": {
-              // "aggregate": "count",
               "field": "formattedTooltip",
               "type": "nominal"
             }
@@ -86,7 +90,7 @@ function update(
           "mark": "bar",
           "tooltip": { "field": "probability", "type": "quantitative" },
           "transform": [
-            { "calculate": "'Probability: '+format(datum.probability, '.2f') + '%'", "as": "formattedTooltip" }
+            { "calculate": "'Pattern: ' + datum.label + '<br/>Probability: '+format(datum.probability, '.2f') + '%'", "as": "formattedTooltip" }
           ],
           "encoding": {
             "x": {
@@ -140,7 +144,7 @@ function update(
 }
 
 export class InitialState{
-  constructor( public dag: Gaddag, public dataLoaded: Promise<string[]>, public expanded: boolean = false) {}
+  constructor( public dataLoaded: Promise<[string[], Fix[]]>, public expanded: boolean = false) {}
 }
 
 export function bootstrap(host: Element, initialState: InitialState) {
@@ -157,14 +161,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
   let patternElement = <HTMLInputElement>host.querySelector('#word-pattern');
   let updateButton = d3.select(host).select('update-button');
 
-  initialState.dataLoaded.then(function(wordList: string[]){
-    // let wordsWithFix = initialState.dag.wordsContaining('ing').filter(w => w.length <= 7);
-    // let wordsContaining = initialState.dag.wordsForHand('ing????');
-
-    // console.log(wordsWithFix.length);
-    // console.log(wordsContaining.filter(w => /i/.test(w) && /n/.test(w) && /g/.test(w)).length);
-    // console.log("-----------------");
-
+  initialState.dataLoaded.then(function([wordList, fixes]){
     let viewPromise = update('.slide-visual', data, width, height, wordList, patternElement.value)
     d3.select(document.querySelector('.update-button'))
       .on('click', function() {

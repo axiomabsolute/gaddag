@@ -175,6 +175,10 @@
       flex-direction: row;
     }
 
+    .exploration-slide .slide-text {
+      overflow-y: auto;
+    }
+
     @media (max-width: 1300px) { 
       .exploration-slide .slide-body {
         flex-direction: column;
@@ -234,8 +238,8 @@
     <div data-selector=".slide-text">
       <p>
         At its core, Scrabble is a game of <em>anagrams</em>. Each player blindly draws seven tiles with letters inscribed on them from
-        a bag and tries to build up a crossword style board of interconnected words. A key component of the game is the ability to find
-        valid words within an otherwrise jumbled hand. This visulization explores the challenges of finding valid Scrabble moves and some
+        a bag and tries to build up a crossword style board of interconnected words. A key skill for players of the game is the ability to find
+        valid words within an otherwise jumbled hand. This visulization explores the challenges of finding valid Scrabble moves and some
         of the techniques players can use to do so efficiently.
       </p>
       <p>
@@ -261,7 +265,7 @@
         <strong>you may dismiss the panel by clicking on the chevron icon</strong> at the top of the panel.
       </p>
       <p>
-        Each visualization is designed to be interactive and parameter driven.  Parameters to the visualization will appear on the left-hand slide
+        Each visualization is designed to be interactive and parameter driven.  Parameters to the visualization will appear on the left-hand side
         of the screen. <strong>Try changing the value in the input field and clicking the update button</strong>.
       </p>
       <p>
@@ -281,8 +285,8 @@
         Two-letter words are the smallest allowable plays in Scrabble. Given that the English alphabet has 26 letters
         and that the game includes at least two of every letter (by including blank tiles)
         there are a total of <strong>26*26=676</strong> possible two-letter plays. Of these, only <strong class="two-letter-plays strong" data-computed="twoLetterPlays"></strong>
-        are valid words. The invalid words are called <strong>phonies</strong>. These words may still be played, but the player risks losing the turn if the word
-        is challenged by an opponent.
+        are valid words. The invalid words are called <strong>phonies</strong>. These words may still be played, but the player risks losing their turn if the word
+        is challenged by an opponent. A player who incorrectly challenges a word, that is who attempts to challenge a valid word, loses their turn instead.
       </p>
       <p>
         Even in the simple case of two letters, finding valid words and correctly calling out an opponent's phonies can be challenging.
@@ -334,26 +338,50 @@
     <div data-selector=".explorations-content">
       <p>
         Use the controls on the left to explore the relationship between the <strong>number</strong> of words of each length and
-        the relative <strong>sparseness</strong> of those words.
+        the relative <strong>sparseness</strong> of valid words.
       </p>
       <p>
         The button toggles the chart between displaying the count of words of each length and the percentage of words of that length
         that are valid words.
       </p>
       <p>
-        The scale of both the counts and percentages is fairly large, spanning several orders of magnitude. To help ensure the smaller values
+        The scale of both the counts and percentages of valid words is fairly large, spanning several orders of magnitude. To help ensure the smaller values
         are still visibile, use the slider control to adjust the exponent used to generate the power scale in the y-axis. When the slider
-        is set to 1 the scale behaves like a linear scale. Lower the value to help emphasize the smaller values.
+        is set to 1 the scale behaves like a linear scale. Lower the value to help emphasize the smaller values. Note that the marks along the y-axis compress
+        more and more as they reach the top of the chart.
       </p>
     </div>
   </template>
 
   <template class="slide" id="patterns-slide">
     <div data-selector=".slide-title">
-      Word Patterns
+      Patterns: Prefixes, Suffixes, and N-Grams
     </div>
     <div data-selector=".slide-text">
-      Text
+      <p>
+        Players often rely on simple linguistic patterns to help more efficiently identify valid plays. These patterns take the form of
+        <strong>prefixes</strong>, <strong>suffixes</strong>, and other common combinations of letters.
+      </p>
+      <p>
+        The suffix <code>-ing</code> is commly used in English to form the <strong>present participle</strong> of a verb, such as the form of
+        the verb "swim" in the sentence "I like swimming". It may also be added to a verb to make it behave like a noun, creating what is known as the <strong>gerund</strong>
+        form of the verb, such as the word "programming" in the sentence "Programming is fun". It is also quite commonly used independently in
+        both nouns and adjectives, such as "ceiling" and "morning".
+      </p>
+      <p>
+        There are several ways that players can use patterns to efficiently find valid words. Once a player has identified that they have a pattern in their hand,
+        they can ignore those letters and focus on the smaller set of remaining letters to find a smaller compatible word to
+        add the prefix or suffix on.  For example, if the player has the letters <code>ing</code> in their hand, they can focus on looking for a verb within the
+        remaining 4 letters of their hand, since most verbs can take the suffix <code>-ing</code>. Further, some combinations of letters are used almost exclusively
+        together in a particular pattern. For example, given that a word contains the letters "i", "n", and "g", the probability that those letters are used in the sequence "ing"
+        is nearly 80%.
+      </p>
+      <p>
+        Lastly, prefixes and suffixes are often used together. If a player can identify both a prefix and suffix in their hand they can sometimes find
+        existing words on the board that can simply be augmented with them to create larger plays. For example, with the letters <code>deer</code> in hand,
+        the player can form the prefix <code>re-</code> and suffix <code>-ed</code>, allowing them to play off of many English verbs simply by prepending and
+        appending the existing play.
+      </p>
     </div>
     <div data-selector=".slide-controls">
       <form class="pure-form pure-form-stacked">
@@ -365,7 +393,9 @@
       </form>
     </div>
     <div data-selector=".explorations-content">
-      Explorations
+      <p>
+        
+      </p>
     </div>
   </template>
 

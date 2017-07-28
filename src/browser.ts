@@ -7,6 +7,11 @@ import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './s
 import { bootstrap as sparseSlide, InitialState as SparseState } from './slides/sparse.slide';
 import { bootstrap as patternsSlide, InitialState as PatternsState } from './slides/patterns.slide';
 
+export class Fix {
+  public fixType: string;
+  public fix: string;
+}
+
 export function truncate(value: number, decimals: number) {
   decimals = decimals || 0;
   let shift = Math.pow(10, decimals);
@@ -49,16 +54,20 @@ export function showVegaTooltip(value: string, event: MouseEvent) {
           .style("top", (event.pageY - 28) + "px");	
 }
 
-let dag = new Gaddag();
+// let dag = new Gaddag();
 let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
-  var timestart = new Date().getTime();
-  return response.json().then((wordList: {words: string[]}) => {
-    wordList.words.forEach(w => dag.addWord(w));
-    console.log("------------------------\n");
-    console.log(`Time: ${new Date().getTime() - timestart}ms`);
-    console.log("------------------------\n");
-    return wordList.words;
-  });
+  return fetch('/dist/data/fixes.json').then((fixesResponse) => {
+    var timestart = new Date().getTime();
+    return response.json().then((wordList: {words: string[]}) => {
+      return fixesResponse.json().then((fixes: {fixes: Fix[]}): [string[], Fix[]] => {
+        // wordList.words.forEach(w => dag.addWord(w));
+        console.log("------------------------\n");
+        console.log(`Time: ${new Date().getTime() - timestart}ms`);
+        console.log("------------------------\n");
+        return [wordList.words, fixes.fixes];
+      })
+    });
+  })
 });
 
 type TemplateIds = '#layout-exploration-slide' | '#layout-message-slide';
@@ -267,9 +276,9 @@ if (window.location.hash) {
  */
 let slides: Slide<any>[] = [
   { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, layout: explorationLayout, initialState: clabbersSlideInitialState },
-  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dag, dagDataLoaded) },
+  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dagDataLoaded) },
   { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, false) },
-  { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dag, dagDataLoaded, false) },
+  { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dagDataLoaded, false) },
   { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
 ];
 

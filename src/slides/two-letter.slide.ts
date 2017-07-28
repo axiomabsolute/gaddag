@@ -1,7 +1,7 @@
 // import { event, select } from 'd3';
 import * as d3 from 'd3';
 import { Dictionary, Gaddag, keyValuePairs, values } from '../gaddag';
-import { showTooltip, hideTooltip, range, truncate } from '../browser';
+import { Fix, showTooltip, hideTooltip, range, truncate } from '../browser';
 
 // let d3 = { event, select };
 
@@ -121,7 +121,7 @@ function update(
 }
 
 export class InitialState{
-  constructor(public gaddag: Gaddag, public dagDataLoaded: Promise<string[]>, public expanded: boolean = false) {}
+  constructor(public dagDataLoaded: Promise<[string[], Fix[]]>, public expanded: boolean = false) {}
 }
 
 export function bootstrap(host: Element, initialState: InitialState) {
@@ -133,8 +133,8 @@ export function bootstrap(host: Element, initialState: InitialState) {
     width = rawWidth - margin.right - margin.left,
     height = rawHeight - margin.top - margin.bottom;
 
-  initialState.dagDataLoaded.then(() => {
-    let twoLetterWords = Dictionary.ToLookup(initialState.gaddag.wordsOfLength(2), i => i, i => true);
+  initialState.dagDataLoaded.then(([wordList, fixes]) => {
+    let twoLetterWords = Dictionary.ToLookup(wordList.filter(w => w.length === 2), i => i, i => true);
 
     let data = new Dictionary<number>();
     letters.forEach( l1 => letters.forEach(l2 => {

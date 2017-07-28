@@ -1,5 +1,5 @@
 import { Gaddag, keyValuePairs } from '../gaddag';
-import { truncate, showTooltip, hideTooltip } from '../browser';
+import { Fix, truncate, showTooltip, hideTooltip } from '../browser';
 import * as d3 from 'd3';
 
 declare class vega {
@@ -65,7 +65,7 @@ function update(
 }
 
 export class InitialState{
-  constructor( public dataLoaded: Promise<string[]>, public expanded: boolean = false) {}
+  constructor( public dataLoaded: Promise<[string[],  Fix[]]>, public expanded: boolean = false) {}
 }
 
 export function bootstrap(host: Element, initialState: InitialState) {
