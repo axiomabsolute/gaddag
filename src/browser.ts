@@ -6,12 +6,13 @@ import { clabbersSlideInitialState, clabbersSlide } from './slides/intro.slide';
 import { bootstrap as twoLetterSlide, InitialState as TwoLetterState } from './slides/two-letter.slide'
 import { bootstrap as sparseSlide, InitialState as SparseState } from './slides/sparse.slide';
 import { bootstrap as patternsSlide, InitialState as PatternsState } from './slides/patterns.slide';
+import { bootstrap as gaddagSlide, InitialState as GaddagState } from './slides/gaddag.slide';
 
 export class Fix {
   private predicate: RegExp;
   public formattedFix: string; 
   public test(text: string) { return this.predicate.test(text); }
-  constructor(public fixType: string, public fix: string) {
+  constructor(public fixType: string, public fix: string, public strict: boolean) {
     if (fixType === 'prefix') {
       this.predicate = new RegExp(`^${this.fix}`);
     } else if (fixType === 'suffix') {
@@ -65,17 +66,21 @@ export function showVegaTooltip(value: string, event: MouseEvent) {
           .style("top", (event.pageY - 28) + "px");	
 }
 
-// let dag = new Gaddag();
+let dag = new Gaddag();
 let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
   return fetch('/dist/data/fixes.json').then((fixesResponse) => {
     var timestart = new Date().getTime();
     return response.json().then((wordList: {words: string[]}) => {
       return fixesResponse.json().then((fixes: {fixes: Fix[]}): [string[], Fix[]] => {
         // wordList.words.forEach(w => dag.addWord(w));
+        // dag.addWord("hello");
+        // dag.addWord('call');
+        // dag.addWord('cale');
+        dag.addWord('care');
         console.log("------------------------\n");
         console.log(`Time: ${new Date().getTime() - timestart}ms`);
         console.log("------------------------\n");
-        return [wordList.words, fixes.fixes.map(f => new Fix(f.fixType, f.fix))];
+        return [wordList.words, fixes.fixes.map(f => new Fix(f.fixType, f.fix, f.strict))];
       })
     });
   })
@@ -290,6 +295,7 @@ let slides: Slide<any>[] = [
   { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dagDataLoaded, true) },
   { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, true) },
   { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dagDataLoaded, true) },
+  { templateId: '#layout-exploration-slide', markupId: '#gaddag-slide', bootstrap: gaddagSlide, layout: explorationLayout, initialState: new GaddagState(dagDataLoaded, dag, true) },
   { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
 ];
 

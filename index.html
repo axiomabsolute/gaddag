@@ -429,6 +429,47 @@
     </div>
   </template>
 
+  <template class="slide" id="gaddag-slide">
+    <div data-selector=".slide-title">
+      GADDAG
+    </div>
+    <div data-selector=".slide-text">
+      <p>
+        A <strong>GADDAG</strong> is a data structure <a href="http://ericsink.com/downloads/faster-scrabble-gordon.pdf">created by Steven Gordon</a> to
+        enable Scrabble playfinding and board analysis programs.
+      </p>
+      <p>
+        The data structure is a specialized form of a <a href="https://en.wikipedia.org/wiki/Trie">trie</a> which stores a path for each word in a lexicon
+        starting from each letter in that word. For each position in each word, a path is stored starting at the position and walking backwards to the beginning
+        of the word. This path is known as the <strong>prefix</strong>. At that point, a special token called the <strong>turn token</strong>, represented by the
+        character <code>></code>, is inserted. Following the turn token, the remainder of the word is inserted in the original order. This portion of the path is
+        known as the <strong>suffix</strong>. These prefixes and suffixes are not to be confused with their linguistic counterparts, and are used solely to refer
+        to portions of a word relative to how they're stored in the GADDAG.
+      </p>
+      <p>
+        There are two benefits to this trie layout. First, it enables a deterministic, efficient algorithm to generate all valid words given a lexicon and player hand.
+        Second, it enables a significant amount of the trie to be shared be re-using the nodes used to represent the suffixes of a word.
+      </p>
+      <p>
+        The GADDAG is one of two primary data structures used in Scrabble playing AIs for move generation, and in particular is used in the
+        <a href="http://people.csail.mit.edu/jasonkb/quackle/doc/how_quackle_plays_scrabble.html">Quackle</a> system. The visualization below illustrates some of the
+        basic move finding and work validation operations supported by the GADDAG.
+      </p>
+    </div>
+    <div data-selector=".slide-controls">
+      <form class="pure-form pure-form-stacked">
+        <fieldset>
+          <label for="toggle-aggregation">Pattern</label>
+          <input type="text" value="ing" id="word-pattern">
+          <button class="update-button pure-button" type="button">Update</button>
+        </fieldset>
+      </form>
+    </div>
+    <div data-selector=".explorations-content">
+
+    </div>
+  </template>
+
   <template id="layout-exploration-slide">
     <div class="exploration-slide">
       <div class="slide-header card">

@@ -11,11 +11,10 @@ function update(
   host: Element | string,
   width: number,
   height: number,
-  rawWordList: string[],
+  wordList: string[],
   fixes: Fix[],
   pattern: string
 ) {
-    let wordList = rawWordList.filter(w => w.length >= 4);
     let uniquePatternComponents = unique(pattern.split(''));
     
     let wordsWithEachComponent = wordList.filter(w => uniquePatternComponents.every(c => w.indexOf(c) >= 0));
@@ -168,7 +167,8 @@ export function bootstrap(host: Element, initialState: InitialState) {
   let patternElement = <HTMLInputElement>host.querySelector('#word-pattern');
   let updateButton = d3.select(host).select('update-button');
 
-  initialState.dataLoaded.then(function([wordList, fixes]){
+  initialState.dataLoaded.then(function([rawWordList, fixes]){
+    let wordList = rawWordList.filter(w => w.length >= 4);
     let viewPromise = update('.slide-visual', width, height, wordList, fixes, patternElement.value.toLowerCase())
     d3.select(document.querySelector('.update-button'))
       .on('click', function() {
