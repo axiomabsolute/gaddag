@@ -172,6 +172,7 @@
 
     .exploration-slide .slide-text {
       font-size: 18px;
+      padding-right: .5em;
     }
 
     .exploration-slide .slide-body {
@@ -325,7 +326,8 @@
         with 8 letters. On the one hand, this makes finding longer words easier since there are simply more
         options. On the other hand, however, the number of <strong>invalid</strong> words grows at a much higher
         rate. This notion of <strong>sparseness</strong> makes finding longer playes more difficult, especially
-        for new players, who are often simply overwhelmed by the number of invalid words .
+        for new players, who are often simply overwhelmed by the number of invalid words. This visualization illustrates
+        the inverse relationship between the number of words by length and the sparseness of valid words by length.
       </p>
     </div>
     <div data-selector=".slide-controls">
@@ -335,7 +337,7 @@
           <button type="button" id="toggle-aggregation" class="pure-button">Show Counts By Length</button>
         </fieldset>
         <fieldset>
-          <label for="axis-power">Axis Power Scale Exponent</label>
+          <label for="axis-power">Y-Axis Power Scale Exponent</label>
           <input id="axis-power" type="range" value="1" min=".1" max="1" step=".1">
           <span class="pure-form-message">Range [.1, 1], currently <span class="current-axis-power">1</span></span>
         </fieldset>
@@ -344,15 +346,16 @@
     <div data-selector=".explorations-content">
       <p>
         Use the controls on the left to explore the relationship between the <strong>number</strong> of words of each length and
-        the relative <strong>sparseness</strong> of valid words.
+        the relative <strong>sparseness</strong> of valid words of that length.
       </p>
       <p>
         The button toggles the chart between displaying the count of words of each length and the percentage of words of that length
-        that are valid words.
+        that are valid words. Notice that while there are many more 8-letter than 2-letter words, valid 8-letter words are in fact
+        much more sparse.
       </p>
       <p>
         The scale of both the counts and percentages of valid words is fairly large, spanning several orders of magnitude. To help ensure the smaller values
-        are still visibile, use the slider control to adjust the exponent used to generate the power scale in the y-axis. When the slider
+        are still visible, use the <strong>Y-Axis Power Scale Exponent</strong> slider control to adjust the exponent used to generate the power scale in the y-axis. When the slider
         is set to 1 the scale behaves like a linear scale. Lower the value to help emphasize the smaller values. Note that the marks along the y-axis compress
         more and more as they reach the top of the chart.
       </p>
@@ -376,17 +379,17 @@
       </p>
       <p>
         There are several ways that players can use patterns to efficiently find valid words. Once a player has identified that they have a pattern in their hand,
-        they can ignore those letters and focus on the smaller set of remaining letters to find a smaller compatible word to
-        add the prefix or suffix on.  For example, if the player has the letters <code>ing</code> in their hand, they can focus on looking for a verb within the
+        they can ignore those letters and focus on the remaining letters to find a smaller compatible word to
+        add the prefix or suffix to.  For example, if the player has the letters <code>ing</code> in their hand, they can focus on looking for a verb within the
         remaining 4 letters of their hand, since most verbs can take the suffix <code>-ing</code>. Further, some combinations of letters are used almost exclusively
         together in a particular pattern. For example, given that a word contains the letters "i", "n", and "g", the probability that those letters are used in the sequence "ing"
         is nearly 80%.
       </p>
       <p>
         Lastly, prefixes and suffixes are often used together. If a player can identify both a prefix and suffix in their hand they can sometimes find
-        existing words on the board that can simply be augmented with them to create larger plays. For example, with the letters <code>deer</code> in hand,
+        existing words on the board that can simply be augmented to create larger plays. For example, with the letters <code>deer</code> in hand,
         the player can form the prefix <code>re-</code> and suffix <code>-ed</code>, allowing them to play off of many English verbs simply by prepending and
-        appending the existing play.
+        appending the prefix and suffix to the existing play.
       </p>
     </div>
     <div data-selector=".slide-controls">
@@ -400,23 +403,28 @@
     </div>
     <div data-selector=".explorations-content">
       <p>
-        First, using the default pattern parameter <code>ing</code>, note the first bar of the left hand chart of the visualization. This bar represents
+        Using the default pattern parameter <code>ing</code>, note the first bar of the left hand chart of the visualization. This bar represents
         the probability of a word containing the exact sequence <code>ing</code> given that it contains each letter of the sequence individually. Thus,
         the word <code>singer</code> would be counted, but <code>gin</code> would not. Hovering over the bar, note that nearly 79% of words with "i", "n",
-        and "g" in them contain the exact sequence "ing". Also note from the second bar of the same chart that nearly 60% of words with "n" and "g" also contain an "i".
+        and "g" in them contain the exact sequence "ing". This means that if a player has the letters "i", "n", and "g" in hand then most valid plays containing
+        those letters contain the exact pattern "ing". Also note from the second bar of the same chart that nearly 60% of words with "n" and "g"
+        also contain an "i". This means that most valid words containing "n" and "g" also contain an "i".
       </p>
       <p>
         The second chart highlights the relationship between different patterns. For example, the most common pattern to pair with <code>ing</code> is the suffix
-        <code>-s</code>, as in the word <code>fittings</code>. This chart can be used to help pick likely valid combinations of prefixes and suffixes.
+        <code>-s</code>, as in the word <code>fittings</code>. This chart suggests likely combinations of prefixes and suffixes that may be combined to produce valid
+        plays.
       </p>
       <p>
-        Try updating the pattern parameter to <code>qu</code>, two letters in the English language with an extremely high coocurrence rate.
+        Try updating the pattern parameter to <code>qu</code>, two letters in the English language with an extremely high coocurrence rate. Given that a word contains the
+        letters "q" and "u", how likely is it that the word contains the exact sequence "qu"?
       </p>
       <p>
-        Try an unusual combination of letters, such as <code>syr</code>, which shows up in words such as <code>syringe</code>.
+        Try an unusual combination of letters, such as <code>syr</code>, which shows up in words such as <code>syringe</code>. Given that a word contains "s", "y", and "r"
+        independently, how likely is it that it contains the exact sequence "syr"?
       </p>
       <p>
-        Try a scientific prefix, like <code>bio-</code>, as in <code>biology</code>
+        Try a technical suffix, like <code>nym-</code>. What words might be formed by combining that suffix with the suggested prefixes?
       </p>
     </div>
   </template>

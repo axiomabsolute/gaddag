@@ -113,12 +113,6 @@ export function bootstrap(host: Element, initialState: InitialState) {
   
   update(frame, wordsByLength, width, height, margin.left, x, 1, null);
 
-  setTimeout(function(){
-    let lastWord = wordsByLength[1];
-    shouldAggregate = !shouldAggregate;
-    update(frame, wordsByLength, width, height, margin.left, x, 1, shouldAggregate ? percentValid : null);
-  }, 3000);
-
   d3.select('#toggle-aggregation')
     .text(() => shouldAggregate ? "Show Percent Valid by Length" : "Show Valid Count by Length")
     .on('click', () => {
