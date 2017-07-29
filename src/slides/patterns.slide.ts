@@ -13,8 +13,7 @@ function update(
   height: number,
   rawWordList: string[],
   fixes: Fix[],
-  pattern: string,
-  previousView: Promise<any> = null
+  pattern: string
 ) {
     let wordList = rawWordList.filter(w => w.length >= 7);
     let uniquePatternComponents = unique(pattern.split(''));
@@ -60,13 +59,13 @@ function update(
       "hconcat": [
         {
           "data": {
-            "name": "wordsMatchingPatternByLength"
+            "values": wordsMatchingPatternObjects
           },
-          "width": 50 + 25*9,
+          "width": 50 + 25*4,
           "height": 570,
           "transform": [
             { "calculate": "length(datum.value)", "as": "length" },
-            { "calculate": "'Word Length: ' + datum.length ", "as": "formattedTooltip" }
+            { "calculate": "'Word Length: ' + datum.length + '<br />Count: @count'", "as": "formattedTooltip" }
           ],
           "mark": "bar",
           "encoding": {
@@ -87,7 +86,7 @@ function update(
         },
         {
           "data": {
-            "name": "subPatternProbabilities"
+            "values": wordsBySubPatternComponents
           },
           "width": 50 + 25*wordsBySubPatternComponents.length,
           "height": 570,
@@ -113,19 +112,31 @@ function update(
         },
         {
           "data": {
-            "name": "wordsMatchingPatternByFix"
+            "values": wordsMatchingPatternByFix
           },
           "height": 570,
+          "width": 500,
           "mark": "bar",
+          "transform": [
+            { "calculate": "'Pattern: ' + datum.fix + '<br />Count: @count'", "as": "formattedTooltip" }
+          ],
           "encoding": {
             "x": {
               "field": "fix",
-              "type": "nominal"
+              "type": "nominal",
+              "sort": {
+                "op": "count",
+                "field": "fix",
+                "order": "descending"
+              }
             },
             "y": {
               "aggregate": "count",
-              "type": "quantitative",
-              "sort": "descending"
+              "type": "quantitative"
+            },
+            "tooltip": {
+              "field": "formattedTooltip",
+              "type": "nominal"
             }
           }
         }
@@ -139,37 +150,19 @@ function update(
       width
     };
 
-    if (!previousView) {
-      previousView = vega.embed(host, spec, opts);
-    }
-
-    return previousView.then((view: any) => {
+    vega.embed(host, spec, opts).then(view => {
       view.view.tooltipHandler(function(event: MouseEvent, item: any, text: string) {
-        if (text) {
-          showVegaTooltip(text, event);
-        } else {
-          hideTooltip();
-        }
+          if (text) {
+            if (text.match('@count')) {
+              text = text.replace('@count', item.datum['count_*']);
+            }
+            showVegaTooltip(text, event);
+          } else {
+            hideTooltip();
+          }
+        });
+        return view;
       });
-      let patternByLengthChanges = vega.changeset()
-        .remove((x: any) => true)
-        .insert(wordsMatchingPatternObjects);
-
-      let subPatternChanges = vega.changeset()
-        .remove((x: any) => true)
-        .insert(wordsBySubPatternComponents);
-      
-      let wordsByFixChanges = vega.changeset()
-        .remove((x: any) => true)
-        .insert(wordsMatchingPatternByFix);
-
-      let newView = view.view
-        .change("wordsMatchingPatternByLength", patternByLengthChanges)
-        .change("subPatternProbabilities", subPatternChanges)
-        .change("wordsMatchingPatternByFix", wordsByFixChanges);;
-      newView.run();
-      return view;
-    });
 }
 
 export class InitialState{
@@ -193,7 +186,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
     d3.select(document.querySelector('.update-button'))
       .on('click', function() {
 
-        update('.slide-visual', width, height, wordList, fixes, patternElement.value, viewPromise);
+        update('.slide-visual', width, height, wordList, fixes, patternElement.value);
       });
   });
 
