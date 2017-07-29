@@ -79,7 +79,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
   
   let shouldAggregate = false;
   
-  initialState.dataLoaded.then((wordList) => {
+  initialState.dataLoaded.then(([wordList, fixes]) => {
     let wordsByLength = keyValuePairs<number>(wordList.reduce((result: {[length: number]: number}, word) => {
       result[word.length] = result[word.length] || 0;
       result[word.length] = result[word.length] + 1;
