@@ -52,11 +52,15 @@ function update(
 
     let nodes = frame.selectAll('.node')
       .data(nodeData);
+    
+    let newNodeGroups = nodes.enter().append('g');
 
-    let nodeGroups = nodes
-      .enter().append('g')
+    let nodeGroups = newNodeGroups
       .merge(nodes)
         .attr('class', d => {
+          if (d.node === dag.root) {
+            return 'node dag-root';
+          }
           if (d.node.token === Gaddag.TurnToken) {
             return 'node dag-node node--turn';
           }
@@ -67,10 +71,13 @@ function update(
         })
         .attr('transform', d => `translate(${d.x},${d.y})`);
     
-    nodeGroups
+    newNodeGroups
       .append('circle')
         .attr('r', '8')
         .attr('fill', (d) => {
+          if (d.node === dag.root) {
+            return 'black';
+          }
           if (d.node.token === Gaddag.TurnToken) {
             return d3.schemeCategory10[1];
           }
@@ -80,7 +87,7 @@ function update(
           return d3.schemeCategory10[0];
         });
     
-    nodeGroups
+    newNodeGroups
       .append('text')
       .attr('dy', 3)
       .attr('x', d => d.node.children ? -12 : 12)
@@ -99,6 +106,7 @@ export class InitialState{
 export function bootstrap(host: Element, initialState: InitialState) {
 
   let svg = d3.select(host).select("svg"),
+    d3Host = d3.select(host),
     rawWidth = +svg.attr('width'),
     rawHeight = +svg.attr('height'),
     margin = { top: 60, right: 120, bottom: 120, left: 120 },
@@ -114,9 +122,14 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .attr('transform', `translate(${margin.left},${margin.top})`) ;
 
   initialState.dataLoaded.then(() => {
+    d3.select(document.querySelector('.add-word-button'))
+      .on('click', function() {
+        let wordToAdd = (<HTMLInputElement>document.querySelector('#add-word')).value;
+        if (!wordToAdd) { return; }
+        initialState.dag.addWord(wordToAdd);
+        update(frame, width, height, initialState.dag, '')
+      });
 
     update(frame, width, height, initialState.dag, '')
   })
-
-  // console.log(dag.wordsForHandByPermutation('tion'));
 }
