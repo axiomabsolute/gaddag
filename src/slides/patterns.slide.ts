@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { Dictionary, Gaddag, unique } from '../gaddag';
+import { Dictionary, Gaddag, unique, flatten } from '../gaddag';
 import { Fix, showVegaTooltip, hideTooltip } from '../browser';
 
 declare class vega {
@@ -9,10 +9,10 @@ declare class vega {
 
 function update(
   host: Element | string,
-  data: any,
   width: number,
   height: number,
   rawWordList: string[],
+  fixes: Fix[],
   pattern: string,
   previousView: Promise<any> = null
 ) {
@@ -44,7 +44,11 @@ function update(
       'target': `"${pattern}"`,
       'given': `${pattern}`,
       'probability': (wordsMatchingPattern.length / wordsWithEachComponent.length) * 100
-    })
+    });
+    let wordsMatchingPatternByFix = flatten(
+      fixes.filter(f => f.fix !== pattern).map(fix => wordsMatchingPattern.filter(w => fix.test(w)).map(w => {
+        return {word: w, fix: fix.fix, fixType: fix.fixType};
+    })));
 
     let spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -62,7 +66,7 @@ function update(
           "height": 570,
           "transform": [
             { "calculate": "length(datum.value)", "as": "length" },
-            { "calculate": "'Count: '+length(datum.value)", "as": "formattedTooltip" }
+            { "calculate": "'Word Length: ' + datum.length ", "as": "formattedTooltip" }
           ],
           "mark": "bar",
           "encoding": {
@@ -106,6 +110,24 @@ function update(
               "type": "nominal"
             }
           }
+        },
+        {
+          "data": {
+            "name": "wordsMatchingPatternByFix"
+          },
+          "height": 570,
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "field": "fix",
+              "type": "nominal"
+            },
+            "y": {
+              "aggregate": "count",
+              "type": "quantitative",
+              "sort": "descending"
+            }
+          }
         }
       ]
     };
@@ -132,12 +154,19 @@ function update(
       let patternByLengthChanges = vega.changeset()
         .remove((x: any) => true)
         .insert(wordsMatchingPatternObjects);
+
       let subPatternChanges = vega.changeset()
         .remove((x: any) => true)
         .insert(wordsBySubPatternComponents);
+      
+      let wordsByFixChanges = vega.changeset()
+        .remove((x: any) => true)
+        .insert(wordsMatchingPatternByFix);
+
       let newView = view.view
         .change("wordsMatchingPatternByLength", patternByLengthChanges)
-        .change("subPatternProbabilities", subPatternChanges);
+        .change("subPatternProbabilities", subPatternChanges)
+        .change("wordsMatchingPatternByFix", wordsByFixChanges);;
       newView.run();
       return view;
     });
@@ -156,19 +185,16 @@ export function bootstrap(host: Element, initialState: InitialState) {
     width = rawWidth - margin.right - margin.left,
     height = rawHeight - margin.top - margin.bottom;
 
-  let data: any[] = [];
-
   let patternElement = <HTMLInputElement>host.querySelector('#word-pattern');
   let updateButton = d3.select(host).select('update-button');
 
   initialState.dataLoaded.then(function([wordList, fixes]){
-    let viewPromise = update('.slide-visual', data, width, height, wordList, patternElement.value)
+    let viewPromise = update('.slide-visual', width, height, wordList, fixes, patternElement.value)
     d3.select(document.querySelector('.update-button'))
       .on('click', function() {
 
-        update('.slide-visual', data, width, height, wordList, patternElement.value, viewPromise);
+        update('.slide-visual', width, height, wordList, fixes, patternElement.value, viewPromise);
       });
-
   });
 
 

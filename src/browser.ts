@@ -8,8 +8,17 @@ import { bootstrap as sparseSlide, InitialState as SparseState } from './slides/
 import { bootstrap as patternsSlide, InitialState as PatternsState } from './slides/patterns.slide';
 
 export class Fix {
-  public fixType: string;
-  public fix: string;
+  private predicate: RegExp;
+  public test(text: string) { return this.predicate.test(text); }
+  constructor(public fixType: string, public fix: string) {
+    if (fixType === 'prefix') {
+      this.predicate = new RegExp(`^${this.fix}`);
+    } else if (fixType === 'suffix') {
+      this.predicate = new RegExp(`^${this.fix}$`);
+    } else {
+      this.predicate = new RegExp(`${this.fix}`);
+    }
+  }
 }
 
 export function truncate(value: number, decimals: number) {
@@ -64,7 +73,7 @@ let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
         console.log("------------------------\n");
         console.log(`Time: ${new Date().getTime() - timestart}ms`);
         console.log("------------------------\n");
-        return [wordList.words, fixes.fixes];
+        return [wordList.words, fixes.fixes.map(f => new Fix(f.fixType, f.fix))];
       })
     });
   })
