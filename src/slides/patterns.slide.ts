@@ -46,10 +46,10 @@ function update(
     });
     let wordsMatchingPatternByFix = flatten(
       fixes.filter(f => f.fix !== pattern).map(fix => wordsMatchingPattern.filter(w => fix.test(w)).map(w => {
-        return {word: w, fix: fix.fix, fixType: fix.fixType};
+        return {word: w, fix: fix.fix, fixType: fix.fixType, formattedFix: fix.formattedFix};
     })));
 
-    let spec = {
+    let spec: any = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "config": {
         "axis": {
@@ -62,7 +62,7 @@ function update(
             "values": wordsMatchingPatternObjects
           },
           "width": 50 + 25*4,
-          "height": 570,
+          "height": 530,
           "transform": [
             { "calculate": "length(datum.value)", "as": "length" },
             { "calculate": "'Word Length: ' + datum.length + '<br />Count: @count'", "as": "formattedTooltip" }
@@ -70,11 +70,13 @@ function update(
           "mark": "bar",
           "encoding": {
             "x": {
+              "axis": { "title": "Word Length" },
               "bin": { "step": 1 },
               "field": "length",
               "type": "quantitative",
             },
             "y": {
+              "axis": { "title": "Count" },
               "aggregate": "count",
               "type": "quantitative",
             },
@@ -89,7 +91,7 @@ function update(
             "values": wordsBySubPatternComponents
           },
           "width": 50 + 25*wordsBySubPatternComponents.length,
-          "height": 570,
+          "height": 530,
           "mark": "bar",
           "tooltip": { "field": "probability", "type": "quantitative" },
           "transform": [
@@ -97,10 +99,12 @@ function update(
           ],
           "encoding": {
             "x": {
+              "axis": { "title": "Pattern" },
               "field": "label",
               "type": "nominal"
             },
             "y": {
+              "axis": { "title": "Probability" },
               "field": "probability",
               "type": "quantitative"
             },
@@ -114,26 +118,33 @@ function update(
           "data": {
             "values": wordsMatchingPatternByFix
           },
-          "height": 570,
+          "height": 530,
           "width": 500,
           "mark": "bar",
           "transform": [
-            { "calculate": "'Pattern: ' + datum.fix + '<br />Count: @count'", "as": "formattedTooltip" }
+            { "calculate": "'Pattern: ' + datum.formattedFix + '<br />' + datum.fixType + '<br />Count: @count'", "as": "formattedTooltip" }
           ],
           "encoding": {
             "x": {
-              "field": "fix",
+              "axis": { "title": "Pattern" },
+              "field": "formattedFix",
               "type": "nominal",
               "sort": {
                 "op": "count",
-                "field": "fix",
+                "field": "formattedFix",
                 "order": "descending"
               }
             },
             "y": {
+              "axis": { "title": "Count" },
               "aggregate": "count",
-              "type": "quantitative"
+              "type": "quantitative",
+              "scale": { "type": "log" }
             },
+            "color": { 
+              "field": "fixType",
+              "type": "nominal"
+             },
             "tooltip": {
               "field": "formattedTooltip",
               "type": "nominal"

@@ -9,15 +9,17 @@ import { bootstrap as patternsSlide, InitialState as PatternsState } from './sli
 
 export class Fix {
   private predicate: RegExp;
+  public formattedFix: string; 
   public test(text: string) { return this.predicate.test(text); }
   constructor(public fixType: string, public fix: string) {
     if (fixType === 'prefix') {
       this.predicate = new RegExp(`^${this.fix}`);
     } else if (fixType === 'suffix') {
-      this.predicate = new RegExp(`^${this.fix}$`);
+      this.predicate = new RegExp(`${this.fix}$`);
     } else {
       this.predicate = new RegExp(`${this.fix}`);
     }
+    this.formattedFix = `${this.fixType === 'suffix' ? '-' : ''}${this.fix}${this.fixType === 'prefix' ? '-' : ''}`;
   }
 }
 
