@@ -76,7 +76,7 @@ let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
         // dag.addWord("hello");
         // dag.addWord('call');
         // dag.addWord('cale');
-        dag.addWord('care');
+        dag.addWord('call');
         console.log("------------------------\n");
         console.log(`Time: ${new Date().getTime() - timestart}ms`);
         console.log("------------------------\n");

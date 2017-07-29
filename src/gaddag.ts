@@ -465,10 +465,11 @@ export class Gaddag {
 
       let nextBaseNode = this.addPath(this._root, nextPrefix); // ksa
       let nextCaseTurn = nextBaseNode.children[Gaddag.TurnToken] || new GaddagNode(this.idGenerator(), Gaddag.TurnToken, {});
-      let nextNode = this.addPath(nextCaseTurn, newFinalLetter) // e
       nextBaseNode.children[Gaddag.TurnToken] = nextCaseTurn;
-      nextNode.children[previousFinalLetter] = previousNode;
-      previousNode = nextNode;
+      let newFinalNode = new GaddagNode(this.idGenerator(), newFinalLetter, {}, false);
+      newFinalNode.children[previousFinalLetter] = previousNode;
+      nextCaseTurn.children[newFinalLetter] = newFinalNode;
+      previousNode = newFinalNode;
     }
   }
 
@@ -483,7 +484,6 @@ export class Gaddag {
       if ( !(char in prevNode.children) ) {
         let newNode = new GaddagNode(this.idGenerator(), char);
         prevNode.children[char] = newNode;
-        return newNode;
       }
       return prevNode.children[char];
     }, startingNode);
