@@ -287,9 +287,9 @@ if (window.location.hash) {
  */
 let slides: Slide<any>[] = [
   { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, layout: explorationLayout, initialState: clabbersSlideInitialState },
-  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dagDataLoaded) },
-  { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, false) },
-  { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dagDataLoaded, false) },
+  { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dagDataLoaded, true) },
+  { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, true) },
+  { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dagDataLoaded, true) },
   { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
 ];
 

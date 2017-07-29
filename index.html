@@ -241,13 +241,14 @@
     <div data-selector=".slide-title">A Game of Anagrams</div>
     <div data-selector=".slide-text">
       <p>
-        At its core, Scrabble is a game of <em>anagrams</em>. Each player blindly draws seven tiles with letters inscribed on them from
-        a bag and tries to build up a crossword style board of interconnected words. A key skill for players of the game is the ability to find
+        At its core, Scrabble is a game of <em>anagrams</em>. Each player blindly draws letter tiles from a bag to build up a hand of 7 tiles and
+        tries to build up a crossword style board of interconnected words. A key skill for players of the game is the ability to find
         valid words within an otherwise jumbled hand. This visulization explores the challenges of finding valid Scrabble moves and some
-        of the techniques players can use to do so efficiently.
+        of the techniques players can use to efficiently find words.
       </p>
       <p>
-        Below is a sample visualization that describes the structure and setup used in the rest of the presentation.
+        Below is a sample visualization that describes the structure and setup used in the rest of the presentation. The visualization below shows a grid
+        representing every possible two-letter word, with valid words highlighted by a colored dot and invalid words represented by a gray dot.
       </p>
     </div>
     <div data-selector=".slide-controls">
@@ -300,7 +301,8 @@
     </div>
     <div data-selector=".explorations-content">
       <p>
-        <strong>Click the horizontal axis title</strong> to collapse the data along the first letter of each word.
+        <strong>Click the horizontal axis title</strong> to collapse the data along the first letter of each word. The resulting visualization shows the number of valid words
+        per starting letter. Note that the horizontal axis has a fixed length of 26, since there are 26 possible letters to pair with each starting letter.
       </p>
       <p>
         <strong>Hover over marks</strong> to show details about each item.

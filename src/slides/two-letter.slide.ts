@@ -13,8 +13,8 @@ for(;i <= j; i++) {
 }
 let cellSize = 20,
     axisMargin = 20,
-    isWordColor = 'red',
-    nonWordColor = 'black',
+    isWordColor = d3.schemeCategory10[0],
+    nonWordColor = '#AAA',
     baseCharCode = 'a'.charCodeAt(0),
     cellPadding = 3,
     cellRadius = Math.round((cellSize - (cellPadding * 2))/2);
@@ -60,11 +60,11 @@ function update(
     .attr('dy', cellPadding)
     .attr('fill', d => d.value ? isWordColor : nonWordColor)
     .attr('transform', (d, i) => {
-      return `translate(0,${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+      return `translate(0,${5+(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
     })
     .transition()
     .attr('transform', (d, i) => {
-      return `translate(${(d.key.charCodeAt(1) - baseCharCode) * cellSize},${(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
+      return `translate(${(d.key.charCodeAt(1) - baseCharCode) * cellSize},${5+(d.key.charCodeAt(0) - baseCharCode) * cellSize})`;
     });
   
   twoLetterWordNodes.exit()
@@ -78,7 +78,7 @@ function update(
   oneLetterWordNodes.enter()
     .append('rect')
     .merge(oneLetterWordNodes)
-    .on('mouseover', d => showTooltip(`${d.value} (~${truncate(d.value/26, 2)}%)`))
+    .on('mouseover', d => showTooltip(`${d.value} valid words (~${truncate(100*(d.value/26), 2)}%)`))
     .on('mouseout', hideTooltip)
     .attr('class', 'one-letter-word')
     .attr('title', d => d.value)
@@ -98,7 +98,7 @@ function update(
     .attr('width', 0)
     .remove();
   
-  let topAxisLabels = collapseSecondLetter ?  range(1,27).map(i => `${i}`) : letters;
+  let topAxisLabels = collapseSecondLetter ?  range(0,27).map(i => `${i}`) : letters;
   let topAxisTitle = collapseSecondLetter ? 'Count of 2-Letter Words Starting With' : 'Second Letter';
 
   topAxis.selectAll('.letter').remove();
@@ -176,7 +176,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
         .text('First letter');
     
     let legend = frame.append('g')
-      .attr('transform', `translate(${26*cellSize + (2 * (axisMargin + cellSize))},${axisMargin+cellSize})`)
+      .attr('transform', `translate(${27*cellSize + (2 * (axisMargin + cellSize))},${axisMargin+cellSize})`)
       .attr('class', 'legend');
 
     legend.append('g')
@@ -210,7 +210,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
     
     let validTwoLetterPlays = values(data).filter(f => f).length;
     twoLetterPlaysPlaceholder
-      .innerHTML = `${validTwoLetterPlays} (about ${truncate(values(data).filter(f => f).length / (26*26), 2)}%)`;
+      .innerHTML = `${validTwoLetterPlays} (about ${truncate(100*(values(data).filter(f => f).length / (26*26)), 1)}%)`;
     
     let previousCollapseFirstLetter = false;
     topAxis.on('click', function() {
