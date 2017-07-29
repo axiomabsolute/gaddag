@@ -398,7 +398,23 @@
     </div>
     <div data-selector=".explorations-content">
       <p>
-        
+        First, using the default pattern parameter <code>ing</code>, note the first bar of the left hand chart of the visualization. This bar represents
+        the probability of a word containing the exact sequence <code>ing</code> given that it contains each letter of the sequence individually. Thus,
+        the word <code>singer</code> would be counted, but <code>gin</code> would not. Hovering over the bar, note that nearly 79% of words with "i", "n",
+        and "g" in them contain the exact sequence "ing". Also note from the second bar of the same chart that nearly 60% of words with "n" and "g" also contain an "i".
+      </p>
+      <p>
+        The second chart highlights the relationship between different patterns. For example, the most common pattern to pair with <code>ing</code> is the suffix
+        <code>-s</code>, as in the word <code>fittings</code>. This chart can be used to help pick likely valid combinations of prefixes and suffixes.
+      </p>
+      <p>
+        Try updating the pattern parameter to <code>qu</code>, two letters in the English language with an extremely high coocurrence rate.
+      </p>
+      <p>
+        Try an unusual combination of letters, such as <code>syr</code>, which shows up in words such as <code>syringe</code>.
+      </p>
+      <p>
+        Try a scientific prefix, like <code>bio-</code>, as in <code>biology</code>
       </p>
     </div>
   </template>

@@ -15,7 +15,7 @@ function update(
   fixes: Fix[],
   pattern: string
 ) {
-    let wordList = rawWordList.filter(w => w.length >= 7);
+    let wordList = rawWordList.filter(w => w.length >= 4);
     let uniquePatternComponents = unique(pattern.split(''));
     
     let wordsWithEachComponent = wordList.filter(w => uniquePatternComponents.every(c => w.indexOf(c) >= 0));
@@ -39,7 +39,7 @@ function update(
       };
     });
     wordsBySubPatternComponents.push({
-      'label': `p("${pattern}")|${pattern}`,
+      'label': `p(${pattern})|${pattern}`,
       'target': `"${pattern}"`,
       'given': `${pattern}`,
       'probability': (wordsMatchingPattern.length / wordsWithEachComponent.length) * 100
@@ -59,39 +59,10 @@ function update(
       "hconcat": [
         {
           "data": {
-            "values": wordsMatchingPatternObjects
-          },
-          "width": 50 + 25*4,
-          "height": 530,
-          "transform": [
-            { "calculate": "length(datum.value)", "as": "length" },
-            { "calculate": "'Word Length: ' + datum.length + '<br />Count: @count'", "as": "formattedTooltip" }
-          ],
-          "mark": "bar",
-          "encoding": {
-            "x": {
-              "axis": { "title": "Word Length" },
-              "bin": { "step": 1 },
-              "field": "length",
-              "type": "quantitative",
-            },
-            "y": {
-              "axis": { "title": "Count" },
-              "aggregate": "count",
-              "type": "quantitative",
-            },
-            "tooltip": {
-              "field": "formattedTooltip",
-              "type": "nominal"
-            }
-          }
-        },
-        {
-          "data": {
             "values": wordsBySubPatternComponents
           },
           "width": 50 + 25*wordsBySubPatternComponents.length,
-          "height": 530,
+          "height": 500,
           "mark": "bar",
           "tooltip": { "field": "probability", "type": "quantitative" },
           "transform": [
@@ -101,7 +72,12 @@ function update(
             "x": {
               "axis": { "title": "Pattern" },
               "field": "label",
-              "type": "nominal"
+              "type": "nominal",
+              "sort": {
+                "op": "max",
+                "field": "probability",
+                "order": "descending"
+              }
             },
             "y": {
               "axis": { "title": "Probability" },
@@ -118,8 +94,8 @@ function update(
           "data": {
             "values": wordsMatchingPatternByFix
           },
-          "height": 530,
-          "width": 500,
+          "width": 850,
+          "height": 500,
           "mark": "bar",
           "transform": [
             { "calculate": "'Pattern: ' + datum.formattedFix + '<br />' + datum.fixType + '<br />Count: @count'", "as": "formattedTooltip" }
@@ -193,11 +169,11 @@ export function bootstrap(host: Element, initialState: InitialState) {
   let updateButton = d3.select(host).select('update-button');
 
   initialState.dataLoaded.then(function([wordList, fixes]){
-    let viewPromise = update('.slide-visual', width, height, wordList, fixes, patternElement.value)
+    let viewPromise = update('.slide-visual', width, height, wordList, fixes, patternElement.value.toLowerCase())
     d3.select(document.querySelector('.update-button'))
       .on('click', function() {
 
-        update('.slide-visual', width, height, wordList, fixes, patternElement.value);
+        update('.slide-visual', width, height, wordList, fixes, patternElement.value.toLowerCase());
       });
   });
 
