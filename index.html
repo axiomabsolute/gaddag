@@ -11,6 +11,7 @@
   <style>
     body {
       font-family: 'Dosis', sans-serif;
+      background-color: #DDD;
     }
 
     .node text {
@@ -68,6 +69,7 @@
       padding: .5em;
       box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
       border-radius: 2px;
+      background-color: white;
     }
 
     .card.card--reversed {
@@ -375,16 +377,17 @@
       <p>
         At its core, Scrabble is a game of <em>anagrams</em>. Each player blindly draws letter tiles from a bag to build up a hand of 7 tiles and
         tries to build up a crossword style board of interconnected words. A key skill for players of the game is the ability to find
-        valid words within an otherwise jumbled hand. This visulization explores the challenges of finding valid Scrabble moves and some
-        of the techniques players can use to efficiently find words using the <a href="http://dreamsteep.com/projects/the-english-open-word-list.html">English Open Word List (EOWL)</a>,
-        an open source word list that may be freely used to build electronic and traditional word games.
+        valid words within an otherwise jumbled hand. This presentation explores the challenges of finding valid Scrabble moves and some
+        of the techniques players can use to efficiently find valid words. The visualizations use the
+        <a href="http://dreamsteep.com/projects/the-english-open-word-list.html">English Open Word List (EOWL)</a>, an open source word list that may
+        be freely used to build electronic and traditional word games.
       </p>
       <div>
         <a href="#page-0" id="about-this-presentation" class="pure-button">About This Presentation</a>
       </div>
       <p>
-        Below is a sample visualization that describes the structure and setup used in the rest of the presentation. The visualization below shows a grid
-        representing every possible two-letter word, with valid words highlighted by a colored dot and invalid words represented by a gray dot.
+        Below is a sample visualization that describes the structure and setup used in the rest of the presentation. The floating "Explorations" panel at
+        the bottom right of the screen provides more details about the structure of the slide show and the interactions supported by each slide.
       </p>
     </div>
     <div data-selector=".slide-controls">
@@ -402,11 +405,12 @@
     <div data-selector=".explorations-content">
       <p>
         Throughout this presentation, helpful information will appear in this explorations panel. If you find the panel is in your way,
-        <strong>you may dismiss the panel by clicking on the chevron icon</strong> at the top of the panel.
+        <strong>you may dismiss the panel by clicking on the title or Schevron icon</strong> at the top of the panel.
       </p>
       <p>
         Each visualization is designed to be interactive and parameter driven.  Parameters to the visualization will appear on the left-hand side
-        of the screen. <strong>Try changing the value in the input field and clicking the update button</strong>.
+        of the screen. <strong>Try changing the value in the input field and clicking the update button</strong>. This updates the visualization to
+        display the entered letters in a jumbled order. After a brief delay, the letters unscramble themselves to match the order of the input.
       </p>
       <p>
         Any interactions that are not obvious will be described here. For example, <strong>try clicking on one of the colored circles</strong> in the
@@ -430,17 +434,20 @@
       </p>
       <p>
         Even in the simple case of two letters, finding valid words and correctly calling out an opponent's phonies can be challenging.
-        There are many more phony words than valid words, and many of the valid words are uncommon in everyday use, like <strong>aa</strong>,
-        a particular type of lava.
+        There are many more phony words than valid words, and many of the valid words are not common in everyday use, like the very first two-letter word,
+        <strong>aa</strong>, which is a particular type of lava.
       </p>
     </div>
     <div data-selector=".explorations-content">
       <p>
         <strong>Click the horizontal axis title</strong> to collapse the data along the first letter of each word. The resulting visualization shows the number of valid words
-        per starting letter. Note that the horizontal axis has a fixed length of 26, since there are 26 possible letters to pair with each starting letter.
+        per starting letter. Note that the horizontal axis has a fixed length of 26, since there are 26 possible letters to pair with each starting letter. Some letters, like
+        <code>a</code> may be paired with many other letters to form two-letter words. Others, like <code>c</code>, have very few two-letter combinations. The letter
+        <code>v</code> is never used as the first letter of a two letter word!
       </p>
       <p>
-        <strong>Hover over marks</strong> to show details about each item.
+        <strong>Hover over marks</strong> to show details about each item, either the individual word's validity or the percentage of two letter words starting with the given letter
+        that are valid words, depending on whether the horizontal categorical axis is collapsed.
       </p>
     </div>
   </template>
@@ -458,10 +465,17 @@
       <p>
         As length increases, the number of valid words of that length generally increases, peaking at words
         with 8 letters. On the one hand, this makes finding longer words easier since there are simply more
-        options. On the other hand, however, the number of <strong>invalid</strong> words grows at a much higher
+        options. On the other hand, however, the number of <em>invalid</em> words grows at a much higher
         rate. This notion of <strong>sparseness</strong> makes finding longer playes more difficult, especially
         for new players, who are often simply overwhelmed by the number of invalid words. This visualization illustrates
         the inverse relationship between the number of words by length and the sparseness of valid words by length.
+      </p>
+      <p>
+        Note that restrictions on the number of letters available for gameplay are <em>not</em> taken into account when computing
+        the total set of possible plays of each word length. Computing the exact number of possible plays for longer length words
+        presents an interesting combinatorial challenge, complicated significantly by the presence of blank tiles, that is beyond
+        the scope of this presentation. Instead, a simple upper-bound estimate which assumes that there are always enough letter
+        tiles such that a word can have any letter in any position is used.
       </p>
     </div>
     <div data-selector=".slide-controls">
@@ -479,8 +493,8 @@
     </div>
     <div data-selector=".explorations-content">
       <p>
-        Use the controls on the left to explore the relationship between the <strong>number</strong> of words of each length and
-        the relative <strong>sparseness</strong> of valid words of that length.
+        Use the controls on the left to explore the relationship between the <em>number</em> of words of each length and
+        the relative <em>sparseness</em> of valid words of that length.
       </p>
       <p>
         The button toggles the chart between displaying the count of words of each length and the percentage of words of that length
@@ -490,7 +504,7 @@
       <p>
         The scale of both the counts and percentages of valid words is fairly large, spanning several orders of magnitude. To help ensure the smaller values
         are still visible, use the <strong>Y-Axis Power Scale Exponent</strong> slider control to adjust the exponent used to generate the power scale in the y-axis. When the slider
-        is set to 1 the scale behaves like a linear scale. Lower the value to help emphasize the smaller values. Note that the marks along the y-axis compress
+        is set to 1 the scale behaves linearly, while lower exponents help emphasize the smaller values. Note that the marks along the y-axis compress
         more and more as they reach the top of the chart.
       </p>
     </div>
@@ -506,7 +520,7 @@
         <strong>prefixes</strong>, <strong>suffixes</strong>, and other common combinations of letters.
       </p>
       <p>
-        The suffix <code>-ing</code> is commly used in English to form the <strong>present participle</strong> of a verb, such as the form of
+        The suffix <code>-ing</code> is commly used in English to form the <a href="https://en.wikipedia.org/wiki/-ing">present participle</a> of a verb, such as the form of
         the verb "swim" in the sentence "I like swimming". It may also be added to a verb to make it behave like a noun, creating what is known as the <strong>gerund</strong>
         form of the verb, such as the word "programming" in the sentence "Programming is fun". It is also quite commonly used independently in
         both nouns and adjectives, such as "ceiling" and "morning".
@@ -546,19 +560,22 @@
       <p>
         Using the default pattern parameter <code>ing</code>, note the first bar of the left hand chart of the visualization. This bar represents
         the probability of a word containing the exact sequence <code>ing</code> given that it contains each letter of the sequence individually. Thus,
-        the word <code>singer</code> would be counted, but <code>gin</code> would not. Hovering over the bar, note that nearly 79% of words with "i", "n",
-        and "g" in them contain the exact sequence "ing". This means that if a player has the letters "i", "n", and "g" in hand then most valid plays containing
-        those letters contain the exact pattern "ing". Also note from the second bar of the same chart that nearly 60% of words with "n" and "g"
-        also contain an "i". This means that most valid words containing "n" and "g" also contain an "i".
+        the word <code>singer</code> would be counted, but <code>gin</code> would not. Hovering over the bar displays a tooltip with relevant values. Note that
+        nearly 79% of words with "i", "n",  and "g" in them contain the exact sequence "ing". This means that if a player has the letters "i", "n", and "g" in hand
+        then most valid plays containing those letters contain the exact pattern "ing", allowing them to focus their search efforts. Also note from the second bar
+        of the same chart that nearly 60% of words with "n" and "g" also contain an "i". This means that most valid words containing "n" and "g" also contain an "i",
+        implying that if a player has an "n" and "g" in hand but does <em>not</em> have an "i" then they are less likely to have a valid word in hand.
       </p>
       <p>
         The second chart highlights the relationship between different patterns. For example, the most common pattern to pair with <code>ing</code> is the suffix
-        <code>-s</code>, as in the word <code>fittings</code>. This chart suggests likely combinations of prefixes and suffixes that may be combined to produce valid
-        plays.
+        <code>-s</code> (as in the word <code>fittings</code>), with 1922 valid words. This chart suggests companion prefixes and suffixes which may likely be combined
+        with the user entered pattern to form a valid word. Words constructed by combining a <strong>stem</strong> with a prefix or suffix are known as
+        <a href="https://en.wikipedia.org/wiki/Affix">affix morphemes</a>.
       </p>
       <p>
-        Try updating the pattern parameter to <code>qu</code>, two letters in the English language with an extremely high coocurrence rate. Given that a word contains the
-        letters "q" and "u", how likely is it that the word contains the exact sequence "qu"?
+        Try updating the pattern parameter to <code>qu</code>, a two letter pattern with an exremely high coocurrence reate in the English language. Given that a word
+        contains the letters "q" and "u", how likely is it that the word contains the exact sequence "qu"? Given that a word contains the letter "q", how likely is it
+        that it contains a "u"? Does that relationship hold the other way around?
       </p>
       <p>
         Try an unusual combination of letters, such as <code>syr</code>, which shows up in words such as <code>syringe</code>. Given that a word contains "s", "y", and "r"
@@ -572,7 +589,7 @@
 
   <template class="slide" id="gaddag-slide">
     <div data-selector=".slide-title">
-      GADDAG
+      Computer Aided Play Finding with a GADDAG
     </div>
     <div data-selector=".slide-text">
       <p>
@@ -580,17 +597,27 @@
         enable Scrabble playfinding and board analysis programs.
       </p>
       <p>
-        The data structure is a specialized form of a <a href="https://en.wikipedia.org/wiki/Trie">trie</a> which stores a path for each word in a lexicon
-        starting from each letter in that word. For each position in each word, a path is stored starting at the position and walking backwards to the beginning
+        The data structure is a specialized form of a <a href="https://en.wikipedia.org/wiki/Trie">trie</a> which stores multiple paths for each word for more
+        efficient query capabilities. For each position in each word, a path is stored starting at the position and walking backwards to the beginning
         of the word. This path is known as the <strong>prefix</strong>. At that point, a special token called the <strong>turn token</strong>, represented by the
-        character <code>></code>, is inserted. Following the turn token, the remainder of the word is inserted in the original order. This portion of the path is
-        known as the <strong>suffix</strong>. These prefixes and suffixes are not to be confused with their linguistic counterparts, and are used solely to refer
-        to portions of a word relative to how they're stored in the GADDAG.
+        character <code>></code>, is inserted. Following the turn token, the remainder of the word is inserted in the original order that it appeared for the word.
+        This portion of the path is known as the <strong>suffix</strong>. These prefixes and suffixes are not to be confused with their linguistic counterparts, and
+        are used solely to refer to portions of a word relative to how they're stored in the GADDAG.
       </p>
       <p>
-        There are two benefits to this trie layout. First, it enables a deterministic, efficient algorithm to generate all valid words given a lexicon and player hand.
-        Second, it enables a significant amount of the trie to be shared be re-using the nodes used to represent the suffixes of a word. This partial minimization of
-        the trie, which suffix nodes reused within a word's subtree, restructures the trie as a directed acyclic graph (DAG).
+        To read an individual path for a word, start at a <strong>turn node</strong>, represented in orange, and follow the edges backward towards the root node on the
+        left. These letters, in the order they are traversed from the turn node, form the prefix of the words stored along that path. Returning to the same turn node,
+        follow the edges leading away from the root node towards a green node, which represents the end of a valid word. This portion forms the suffix of a word stored
+        along that path. Combining the computed prefix and suffix forms a complete valid word. For example, starting at the top-most turn node in the default visualization,
+        follow the edges to the left that lead back to the root node. This process yield the prefix <code>c</code>. Returning to the same root node at the top, follow the
+        edges leading to the right towards a complete word. In this case, there is only one path, which yields the suffix <code>all</code>. Since the final node is a
+        complete word (represented by a green dot), the combination of the prefix and suffix yields a complete word, <code>call</code>.
+      </p>
+      <p>
+        This layout may seem overly verbose and unintuitive, but there are two benefits to this trie layout. First, it enables a deterministic, efficient algorithm to
+        generate all valid words given a lexicon, a player's hand, and optionally an existing board position, allowing the system to search for words by starting at any
+        point within the word. Second, it enables a significant amount of the trie to be minimized during construction by re-using the nodes used to represent the suffixes
+        of a word. This partial minimization of the trie, which suffix nodes reused within a word's subtree, restructures the trie as a directed acyclic graph (DAG).
       </p>
       <p>
         The GADDAG is one of two primary data structures used in Scrabble playing AIs for move generation, and in particular is used in the
@@ -642,27 +669,33 @@
         <code>lac</code>, <code>ac</code>, and <code>c</code>. Each such reversed prefix path is followed by a special separator node
         indicated by the <code>></code> character, called the <strong>turn token</strong>. Following the turn token for each path is
         the remainder of the word. For instance, the prefix path <code>ac</code> is followed by the turn token <code>></code> and
-        then by the suffix path <code>ll</code>.
+        then by the suffix path <code>ll</code>. Traversing the structure from the root to a turn token yields a reversed prefix for a word.
+        Traversing from a turn token to a complete word node yields a word suffix (in the order it originally appeared in the word). Combining
+        these two yields a complete word.
       </p>
       <p>
         The control panel contains several input boxes and associated buttons. Each input and button combination corresponds to one of
-        the basic operations supported by the GADDAG. Each input and button combination is described below:
+        the basic operations supported by the GADDAG. Words that match the given query are displayed below the legend in a list. Each
+        input and button combination is described below:
       </p>
       <ol>
         <li>
-          Adds a word to the trie, constructing the nodes and edges necessary to represent the newly added word.
+          Adds a word to the GADDAG, constructing the nodes and edges necessary to represent the newly added word.
         </li>
         <li>
-          Checks whether a word is valid by searching for it in the trie.
+          Checks whether a word is valid by searching for the exact sequence provided in the GADDAG.
         </li>
         <li>
-          Finds all words with the given prefix.
+          Finds all words with the given prefix by first searching for the exact sequence in reverse, then returning
+          all possible suffix paths if the next node is a turn token, otherwise halting.
         </li>
         <li>
-          Finds all words with the given suffix.
+          Finds all words with the given suffix by traversing from the root along the supplied suffix in reverse, halting if any letter
+          along the way is not found, then traversing all paths until a complete word node is found.
         </li>
         <li>
-          Finds all words containing the given pattern.
+          Finds all words containing the given pattern by initially treating the pattern a prefix, then continuing to traverse all paths until
+          a turn token is found, then traversing the graph the turn token to find all paths.
         </li>
         <li>
           Finds all words that match a given hand. Use the <code>?</code> character to represent a blank tile (that is, a tile which
@@ -673,6 +706,22 @@
         Each operation highlights relevant nodes traversed during the operation. Nodes that are not traversed are grayed out. The legend
         on the right side of the visualization describes the meaning of each color. The <code>Clear</code> button clears the current path
         highlighting.
+      </p>
+      <p>
+        Add the words <code>care</code>, <code>card</code>, and <code>falls</code>. How many paths are searched to look for the prefix
+        <code>cal</code>? How about just <code>ca</code>? What does the path look like when searching for the suffix <code>s</code>?
+      </p>
+      <p>
+        Clear the path highlighting by clicking the "clear" button (you may have to scroll the page to reach it).  Pay very close attention to
+        the graph when performing this next operation: add the word <code>fall</code>. What changed? Did the structure of the graph change?
+        It shouldn't! This operation shows the efficiency of how overlapping words are encoded in the GADDAG. When one word completely overlaps
+        another, (as is the case for <code>falls</code> and the newly added word <code>fall</code>) the strucutre of the GADDAG does not change?
+        at all, rather existing nodes are simply marked as representing complete words. In this case, two nodes change color from blue to green.
+      </p>
+      <p>
+        How many words match the hand <code>acdeflrs?</code>? Node that the <code>?</code> character in the hand represents a blank tile for this
+        operation only. Note that this operation highlights many more paths within the GADDAG, producing many more false starts (with more nodes
+        highlighted in red to indicate a halted search traversal path).
       </p>
     </div>
   </template>
@@ -687,21 +736,28 @@
         challenge, namely the task of finding valid words within a jumbled set of letters.
       </p>
       <p>
-        For human players, the overwhelming <strong>sparseness</strong> of valid words among the vast set of playable words (though potentially
-        <strong>phony</strong>) words becomes the bottleneck for word finding. One technique to aid human players is to focus on common linguistic
-        patterns within the host language to build compound words out of prefixes, suffixes, and smaller valid words. Furthermore, considering the
+        For human players, the overwhelming <strong>sparseness</strong> of valid words among the vast set of playable (though potentially
+        <strong>phony</strong>) words becomes the bottleneck for play finding. One technique to aid human players is to focus on common linguistic
+        patterns within the host language to build compound words and affix morphemes out of prefixes, suffixes, and smaller valid words. Furthermore, considering the
         relationships among the letters within a particular pattern can help human guide how human players search for valid words, prioritizing the
-        most common letter configurations. These techniques provide a useful starting point, but necessarily make a trade-off as the player's focus
-        shifts away from the valuable set of words which to not contain such patterns.
+        most common letter configurations. Lastly, combining multiple affixes and knowing which affixes may be commonly combined can help players construct even larger
+        plays. These techniques provide a useful starting point, but necessarily make a trade-off as the player's focus shifts away from the valuable set of words which
+        do not contain such patterns.
       </p>
       <p>
-        Computer AIs can evaluate moves much more quickly, and have the benefit of perfect recall. The GADDAG data structure provides one method of
-        storing a lexicon in such a way that valid plays may be efficiently searched for by prefix, suffix, containment, or with hand restrictions.
+        Computer AIs can evaluate plays much more quickly than human players, and have the benefit of perfect recall. The GADDAG data structure provides one method of
+        storing a lexicon in such a way that valid plays may be efficiently searched for by prefix, suffix, substring containment, or with hand restrictions.
         While this gives computer AIs some advantages, there are still many aspects of advanced Scrabble gameplay that are not covered by the
         techniques demonstrated here. Evaluating and choosing the best play is much more complicated, and involves considering the active board shape,
-        tracking the remaining letters based on the currently visible letters on the board and in the player's hand, managing the remaining letters
-        after a play (a process called <strong>rack management</strong>), and much more. The top tier
-        <a href="https://en.wikipedia.org/wiki/Maven_%28Scrabble%29">Maven</a> Scrabble playing AI incorporates these aspects and many more.
+        tracking the remaining letters based on the currently visible letters, managing the player's remaining letters after a play to enable better subsequent plays
+        (a process called <strong>rack management</strong>), and much more. The top tier
+        <a href="https://en.wikipedia.org/wiki/Maven_%28Scrabble%29">Maven</a> Scrabble playing AI incorporates these aspects and many more. Interestingly, though the GADDAG
+        offers better performance, Maven uses a <a href="https://en.wikipedia.org/wiki/Maven_(Scrabble)">more memory compact, less runtime efficient</a> data structure known as a
+        <a href="https://en.wikipedia.org/wiki/Suffix_automaton">Directed Acyclic Word Graph (DAWG)</a> to enable smaller build artifact sizes for downloaded games.
+      </p>
+      <p>
+        Despite advances in game playing AI systems, Scrabble continues to be a fun and challenging game for players and a rich, interesting topic of study for data scientists,
+        statisticians, and mathematicians.
       </p>
     </div>
   </template>

@@ -439,11 +439,10 @@ export class Gaddag {
     let result = [];
     if (node.isCompleteWord) {
       node.meta['step'] = step;
-      node.meta['result'] = 'success';
       result.push('');
     }
     node.meta['step'] = step;
-    node.meta['result'] = 'step';
+    node.meta['result'] = node.isCompleteWord ? 'success' : 'step';
     return result.concat(flatten(Object.keys(node.children).map(k => Gaddag.walkSuffixesFromNode(node.children[k], step + 1).map(r => k + r))));
   }
 
