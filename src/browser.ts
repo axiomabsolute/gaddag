@@ -227,6 +227,21 @@ class SlideShow {
     // Render the current slide
     this.renderSlide();
 
+    // Connect about button & back buttons
+    d3.select('#about-this-presentation')
+      .on('click', () => {
+        this.goToPage(0);
+        this.renderShowControls();
+        this.renderSlide();
+      });
+
+    window.addEventListener("hashchange", (e) => {
+      let slideNumber = +location.hash.split('page-')[1] || 0;
+      this.goToPage(slideNumber);
+      this.renderShowControls();
+      this.renderSlide();
+    });
+
     // Render the show controls and attach click event handlers
     d3.select(this.host).select('.page-dots')
       .selectAll('.page-dot')

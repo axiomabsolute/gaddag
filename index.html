@@ -265,7 +265,7 @@
             <li>
               Each slide features a section of recommended explorations, suggesting certain configurations of parameters and sequences of user interactions to help users explore that
               particular slide. These recommended exploations are shown in a floating panel titled "Explorations". Users may click the title of this panel to collapse it off-screen at
-              any time, and click it again to expand it. Details on a slide-by-slide basis are provided below.
+              any time, and click it again to expand it. Details on a slide-by-slide basis are provided below. This section is the primary method of guiding the user through each slide.
             </li>
           </ul>
         </li>
@@ -292,6 +292,68 @@
               This slide visualizes the set of possible two-letter words as a 26 by 26 grid of dots. Each dot is colored according to whether the word in that position is a valid play
               according to the EOWL word list.
             </li>
+            <li>This visualization does not use any parameters.</li>
+            <li>
+              This visualization features two UI actions. Users may click on the horizontal axis title to collapse the data along that axis, transforming the visualization from a grid
+              to a histogram of words by their first letter. Users may hover over the marks of either chart to display either the individual word validity or the aggregate ratio of 
+              valid words to possible words, as appropriate to the visualization's state. Both interactions are described in the recommended explorations section.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Sparseness
+          <ul>
+            <li>
+              This slide visualizes the relative sparseness of valid plays within the playable word space, broken down by word length.
+            </li>
+            <li>
+              The visualization features two parameters, which are bound to controls in the left panel. The first control toggles the visualization state from showing raw counts
+              to a ratio of valid words to possible words, similar to the previous slide, but not broken down by first letter. the second control is bound to the exponent used to
+              generate the vertical y-axis of the chart. This axis uses a power scale, allowing users to lower the exponent in order to emphasize smaller values in the graph. Both
+              interactions are mentioned in the explorations section.
+            </li>
+            <li>
+              Users may also hover each mark in the graph to display a tooltip annotation containing the actual numbers used to generate the bar heights.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Patterns: Prefies, Suffixes, and Other Patterns
+          <ul>
+            <li>
+              This slide shows a breakdown of the lexicon according to a combination of common prefixes, suffixes, and infix patterns, along with user provided patterns. It contains two
+              visualizations, which are described in detail in the top portion of that slide.
+            </li>
+            <li>
+              The slide features one parameter, labeled pattern, which is used as a filter against the lexicon. The pattern paremter is bound to an input control in the controls section.
+            </li>
+            <li>
+              Tooltip annotations are shown on each sub-visualization by hovering over the marks. In the second chart, marks are colored according to whether the pattern is a prefix, suffix,
+              or an infix pattern.
+            </li>
+          </ul>
+        </li>
+        <li>
+          GADDAG
+          <ul>
+            <li>
+              This slide shows a network diagram of a specialized directed acyclic graph, known as a GADDAG, <a href="http://ericsink.com/downloads/faster-scrabble-gordon.pdf">created by Steven Gordon</a>.
+              The underlying data structure is used to dynamically drive the visualization, acting as the primary parameter.
+            </li>
+            <li>
+              The slide features several UI interactions which correspond to insert and query operations on the underlying GADDAG. As users query the GADDAG, nodes are highlighted within along the search
+              path used to complete the query. The nodes are colored according to their role within the query, highlighting whether the visited node was directly related to the query parameter, a step in completing
+              query, a termination point (where the graph was effectively culled to halt further traveral), or a successful node where a result was found. Highlighting is automatically cleared between
+              queries, and may be manually cleared via the clear button. The structure of the GADDAG and each operation are described in the top panel and explorations sections for this slide.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Conclusion
+          <ul>
+            <li>
+              This is a simple text-only message slide that concludes the presentation.
+            </li>
           </ul>
         </li>
       </ol>
@@ -317,6 +379,9 @@
         of the techniques players can use to efficiently find words using the <a href="http://dreamsteep.com/projects/the-english-open-word-list.html">English Open Word List (EOWL)</a>,
         an open source word list that may be freely used to build electronic and traditional word games.
       </p>
+      <div>
+        <a href="#page-0" id="about-this-presentation" class="pure-button">About This Presentation</a>
+      </div>
       <p>
         Below is a sample visualization that describes the structure and setup used in the rest of the presentation. The visualization below shows a grid
         representing every possible two-letter word, with valid words highlighted by a colored dot and invalid words represented by a gray dot.
@@ -433,7 +498,7 @@
 
   <template class="slide" id="patterns-slide">
     <div data-selector=".slide-title">
-      Patterns: Prefixes, Suffixes, and N-Grams
+      Patterns: Prefixes, Suffixes, and Other Patterns
     </div>
     <div data-selector=".slide-text">
       <p>
@@ -467,6 +532,13 @@
           <label for="word-pattern">Pattern</label>
           <input type="text" value="ing" id="word-pattern">
           <button class="update-button pure-button" type="button">Update</button>
+        </fieldset>
+        <hr />
+        <fieldset>
+          <legend>
+            <span class="pure-form-message">The label <code>p(ing)|ing</code> may be read as "the probability that the exact pattern 'ing' occurs given that
+             the letters 'i', 'n', and 'g' occur in any position within a word".</span>
+          </legend>
         </fieldset>
       </form>
     </div>
@@ -517,7 +589,8 @@
       </p>
       <p>
         There are two benefits to this trie layout. First, it enables a deterministic, efficient algorithm to generate all valid words given a lexicon and player hand.
-        Second, it enables a significant amount of the trie to be shared be re-using the nodes used to represent the suffixes of a word.
+        Second, it enables a significant amount of the trie to be shared be re-using the nodes used to represent the suffixes of a word. This partial minimization of
+        the trie, which suffix nodes reused within a word's subtree, restructures the trie as a directed acyclic graph (DAG).
       </p>
       <p>
         The GADDAG is one of two primary data structures used in Scrabble playing AIs for move generation, and in particular is used in the
