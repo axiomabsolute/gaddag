@@ -4,8 +4,8 @@ import { Fix } from '../browser';
 
 function diagonal(source: VisualNode, target: VisualNode) {
   return "M" + target.x + "," + target.y
-    + "C" + (source.x + 100) + "," + target.y
-    + " " + (source.x + 100) + "," + source.y
+    + "C" + (source.x + 30) + "," + target.y
+    + " " + (source.x + 30) + "," + source.y
     + " " + source.x + "," + source.y;
 }
 
@@ -31,6 +31,8 @@ function update(
   dag: Gaddag,
   displaySearchPath: boolean
 ) {
+  console.log(width);
+  console.log(height);
   frame.html('');
   let dagEdges = dag.getEdges();
   let root = dag.root;
