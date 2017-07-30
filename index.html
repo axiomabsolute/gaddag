@@ -447,14 +447,14 @@
     <div data-selector=".slide-controls">
       <form class="pure-form pure-form-stacked">
         <fieldset>
-          <label for="check-validity">Check Validity</label>
-          <input type="text" value="call" id="check-validity">
-          <button class="check-validity-button pure-button" type="button">Check</button>
-        </fieldset>
-        <fieldset>
           <label for="add-word">Add Word</label>
           <input type="text" value="" id="add-word">
           <button class="add-word-button pure-button" type="button">Add</button>
+        </fieldset>
+        <fieldset>
+          <label for="check-validity">Check Validity</label>
+          <input type="text" value="call" id="check-validity">
+          <button class="check-validity-button pure-button" type="button">Check</button>
         </fieldset>
         <fieldset>
           <label for="prefix-words">Words for Prefix</label>
@@ -471,10 +471,54 @@
           <input type="text" value="" id="words-containing">
           <button class="words-containing-button pure-button" type="button">Search</button>
         </fieldset>
+        <fieldset>
+          <label for="words-for-hand">Words for Hand</label>
+          <input type="text" value="" id="words-for-hand">
+          <button class="words-for-hand-button pure-button" type="button">Search</button>
+        </fieldset>
+        <fieldset>
+          <button class="clear-highlight-button pure-button" type="button">Clear</button>
+        </fieldset>
       </form>
     </div>
     <div data-selector=".explorations-content">
-
+      <p>
+        By default, the GADDAG in the visualization contains a single word, <code>call</code>. Starting at the root, there is a path
+        for each possible prefix for the word, in reverse order. That is, for the word "call", there is a path for <code>llac</code>,
+        <code>lac</code>, <code>ac</code>, and <code>c</code>. Each such reversed prefix path is followed by a special separator node
+        indicated by the <code>></code> character, called the <strong>turn token</strong>. Following the turn token for each path is
+        the remainder of the word. For instance, the prefix path <code>ac</code> is followed by the turn token <code>></code> and
+        then by the suffix path <code>ll</code>.
+      </p>
+      <p>
+        The control panel contains several input boxes and associated buttons. Each input and button combination corresponds to one of
+        the basic operations supported by the GADDAG. Each input and button combination is described below:
+      </p>
+      <ol>
+        <li>
+          Adds a word to the trie, constructing the nodes and edges necessary to represent the newly added word.
+        </li>
+        <li>
+          Checks whether a word is valid by searching for it in the trie.
+        </li>
+        <li>
+          Finds all words with the given prefix.
+        </li>
+        <li>
+          Finds all words with the given suffix.
+        </li>
+        <li>
+          Finds all words containing the given pattern.
+        </li>
+        <li>
+          Finds all words that match a given hand.
+        </li>
+      </ol>
+      <p>
+        Each operation highlights relevant nodes traversed during the operation. Nodes that are not traversed are grayed out. The legend
+        on the right side of the visualization describes the meaning of each color. The <code>Clear</code> button clears the current path
+        highlighting.
+      </p>
     </div>
   </template>
 

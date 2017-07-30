@@ -317,7 +317,7 @@ export class Gaddag {
         result[letter] = result[letter] + 1;
         return result;
       }, seed);
-      return Gaddag.walkWordsForHandFromNode(letters, this._root, "", mustUseAllNonBlanks);
+      return Gaddag.walkWordsForHandFromNode(letters, this._root, "", mustUseAllNonBlanks, 0);
   }
 
   /**
@@ -328,16 +328,24 @@ export class Gaddag {
    * @param progress word as seen thus far in the walk
    * @return array of words from the perspective of given node
    */
-  private static walkWordsForHandFromNode(hand: Dictionary<number>, node: GaddagNode, progress: string, mustUseAllNonBlanks: boolean = false): string[] {
+  private static walkWordsForHandFromNode(hand: Dictionary<number>, node: GaddagNode, progress: string, mustUseAllNonBlanks: boolean = false, step: number = 0): string[] {
     let allNonBlanksUsed = mustUseAllNonBlanks ? sum(Object.keys(hand).filter(k => k !== '?').map(k => hand[k])) === 0 : true;
     if (sum(values(hand)) === 0) {
+      node.meta['step'] = step;
+      node.meta['result'] = node.isCompleteWord ? 'success' : 'halt';
       return  node.isCompleteWord ? [progress] : [];
     }
-    let childrenInHand = Object.keys(node.children).filter(k => k !== Gaddag.TurnToken).filter( k => (k in hand && hand[k] > 0) || ('?' in hand && hand['?'] > 0));
+    let childrenInHand = Object.keys(node.children)
+      .filter(k => k !== Gaddag.TurnToken)
+      .filter( k => (k in hand && hand[k] > 0) || ('?' in hand && hand['?'] > 0));
     if (childrenInHand.length === 0) {
       let complete = node.isCompleteWord;
+      node.meta['step'] = step;
+      node.meta['result'] = (node.isCompleteWord && allNonBlanksUsed) ? 'success' : 'halt';
       return (complete && allNonBlanksUsed) ? [progress] : [];
     } 
+    node.meta['step'] = step;
+    node.meta['result'] = (node.isCompleteWord && allNonBlanksUsed) ? 'success' : 'step';
     return (node.isCompleteWord && allNonBlanksUsed ? [progress] : []).concat(flatten(childrenInHand.map( k => {
       let newHand = cloneDict(hand);
       if (k in newHand && newHand[k] > 0) {
@@ -345,7 +353,7 @@ export class Gaddag {
       } else {
         newHand['?'] = newHand['?'] - 1;
       }
-      return Gaddag.walkWordsForHandFromNode(newHand, node.children[k], k + progress, mustUseAllNonBlanks);
+      return Gaddag.walkWordsForHandFromNode(newHand, node.children[k], k + progress, mustUseAllNonBlanks, step + 1);
     })));
   }
 

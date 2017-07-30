@@ -9,6 +9,17 @@ function diagonal(source: VisualNode, target: VisualNode) {
     + " " + source.x + "," + source.y;
 }
 
+let legendItems = [
+  { 'result': '', 'description': 'Prefix or Suffix Node', 'color': d3.schemeCategory10[0] },
+  { 'result': '', 'description': 'Turn Node', 'color': d3.schemeCategory10[1] },
+  { 'result': '', 'description': 'Complete Word', 'color': d3.schemeCategory10[2] },
+  { 'result': 'halt', 'description': 'Traversal Failure Point', 'color': d3.schemeCategory10[3] },
+  { 'result': 'step', 'description': 'Intermediary Node', 'color': d3.schemeCategory10[4] },
+  { 'result': 'success', 'description': 'Matching Word Node', 'color': d3.schemeCategory10[5] },
+  { 'result': 'query', 'description': 'Node Matching Query Input', 'color': d3.schemeCategory10[6] },
+  { 'result': undefined, 'description': 'Untraversed Node', 'color': '#DDD' },
+];
+
 class VisualNode {
   constructor(public node: GaddagNode, public x: number, public y: number) { }
 }
@@ -86,7 +97,7 @@ function update(
         return d3.schemeCategory10[6];
       }
       if (displaySearchPath) {
-        return '#333';
+        return '#DDD';
       }
       if (d.node === dag.root) {
         return 'black';
@@ -98,21 +109,6 @@ function update(
         return d3.schemeCategory10[2];
       }
       return d3.schemeCategory10[0];
-    })
-    .attr('opacity', d => {
-      if (d.node.meta['result'] === 'halt') {
-        return 1;
-      }
-      if (d.node.meta['result'] === 'step') {
-        return 1;
-      }
-      if (d.node.meta['result'] === 'success') {
-        return 1;
-      }
-      if (d.node.meta['result'] === 'query') {
-        return 1;
-      }
-      return .5;
     });
 
   newNodeGroups
@@ -149,14 +145,39 @@ export function bootstrap(host: Element, initialState: InitialState) {
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
+  let legend = svg.append('g')
+    .attr('transform', `translate(${width + 20},${margin.top*2})`)
+    .attr('class', 'legend');
+
   initialState.dataLoaded.then(() => {
+    let legendTitle = legend
+      .append('g')
+      .attr('class', 'legend-title')
+      .attr('text-anchor', 'middle')
+      .attr('font-weight', 'bold')
+        .append('text')
+          .text('Legend:');
+    legendItems.forEach( (d, i) => {
+      let legendItem = legend.append('g')
+        .attr('class', 'legend-group-item')
+        .attr('transform', () => `translate(5,${(25*(i+1)) + 5})`)
+
+      legendItem.append('circle')
+        .attr('r', 10)
+        .attr('fill', () => d.color);
+      
+      legendItem.append('text')
+        .text(() => d.description)
+        .attr('transform', () => `translate(20,5)`)
+    });
+
     d3.select(document.querySelector('.add-word-button'))
       .on('click', function () {
         let wordToAdd = (<HTMLInputElement>document.querySelector('#add-word')).value;
         if (!wordToAdd) { return; }
         initialState.dag.addWord(wordToAdd);
         initialState.dag.clearMeta();
-        update(frame, width, height, initialState.dag, false)
+        update(frame, width, height, initialState.dag, false);
       });
 
     d3.select(document.querySelector('.check-validity-button'))
@@ -165,7 +186,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
         if (!wordToCheck) { return; }
         initialState.dag.clearMeta();
         initialState.dag.checkWord(wordToCheck);
-        update(frame, width, height, initialState.dag, true)
+        update(frame, width, height, initialState.dag, true);
       });
 
     d3.select(document.querySelector('.prefix-words-button'))
@@ -174,7 +195,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
         if (!prefixToSearch) { return; }
         initialState.dag.clearMeta();
         initialState.dag.wordsForPrefix(prefixToSearch);
-        update(frame, width, height, initialState.dag, true)
+        update(frame, width, height, initialState.dag, true);
       });
 
     d3.select(document.querySelector('.suffix-words-button'))
@@ -183,7 +204,7 @@ export function bootstrap(host: Element, initialState: InitialState) {
         if (!suffixToSearch) { return; }
         initialState.dag.clearMeta();
         initialState.dag.wordsForSuffix(suffixToSearch);
-        update(frame, width, height, initialState.dag, true)
+        update(frame, width, height, initialState.dag, true);
       });
 
     d3.select(document.querySelector('.words-containing-button'))
@@ -192,7 +213,22 @@ export function bootstrap(host: Element, initialState: InitialState) {
         if (!substringToSearch) { return; }
         initialState.dag.clearMeta();
         initialState.dag.wordsContaining(substringToSearch);
-        update(frame, width, height, initialState.dag, true)
+        update(frame, width, height, initialState.dag, true);
+      });
+
+    d3.select(document.querySelector('.words-for-hand-button'))
+      .on('click', function () {
+        let handtoSearch = (<HTMLInputElement>document.querySelector('#words-for-hand')).value;
+        if (!handtoSearch) { return; }
+        initialState.dag.clearMeta();
+        initialState.dag.wordsForHand(handtoSearch, false);
+        update(frame, width, height, initialState.dag, true);
+      });
+
+    d3.select(document.querySelector('.clear-highlight-button'))
+      .on('click', function () {
+        initialState.dag.clearMeta();
+        update(frame, width, height, initialState.dag, false);
       });
 
     update(frame, width, height, initialState.dag, false)
