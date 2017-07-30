@@ -188,8 +188,9 @@ class SlideShow {
     if (this.slide.markupId) {
       let newSlideMarkupTemplate: any = document.querySelector(this.slide.markupId);
       let newSlideMarkupNode: Element = document.importNode(newSlideMarkupTemplate.content, true);
-      for (var i = 0; i < newSlideMarkupNode.children.length; i++) {
-        let child = newSlideMarkupNode.children[i];
+      let newSlideMarkupChildren = newSlideMarkupNode.querySelectorAll('div[data-selector]');
+      for (var i = 0; i < newSlideMarkupChildren.length; i++) {
+        let child = newSlideMarkupChildren[i];
         if (child.hasAttribute('data-selector')) {
           let node = clone.querySelector(`${child.getAttribute('data-selector')}`);
           node.innerHTML = child.innerHTML;
