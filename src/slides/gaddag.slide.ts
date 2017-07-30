@@ -82,6 +82,9 @@ function update(
       if (d.node.meta['result'] === 'success') {
         return d3.schemeCategory10[5];
       }
+      if (d.node.meta['result'] === 'query') {
+        return d3.schemeCategory10[6];
+      }
       if (displaySearchPath) {
         return '#333';
       }
@@ -104,6 +107,9 @@ function update(
         return 1;
       }
       if (d.node.meta['result'] === 'success') {
+        return 1;
+      }
+      if (d.node.meta['result'] === 'query') {
         return 1;
       }
       return .5;

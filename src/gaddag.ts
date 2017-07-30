@@ -387,7 +387,7 @@ export class Gaddag {
       return [];
     }
     node.meta['step'] = step;
-    node.meta['result'] = 'step';
+    node.meta['result'] = 'query';
     return Gaddag.wordsContainingFromNode(substring, gnirtsbus.substr(1), node.children[firstChar], step + 1);
   }
 
@@ -423,7 +423,7 @@ export class Gaddag {
       return [];
     }
     node.meta['step'] = step;
-    node.meta['result'] = 'step';
+    node.meta['result'] = 'query';
     return Gaddag.wordsForPrefixFromNode(prefix, xiferp.substr(1), node.children[firstChar], step + 1);
   }
 
@@ -468,7 +468,7 @@ export class Gaddag {
       return [];
     }
     node.meta['step'] = step;
-    node.meta['result'] = 'step';
+    node.meta['result'] = 'query';
     return Gaddag.wordsForSuffixFromNode(suffix, xiffus.substr(1), node.children[firstChar], step + 1);
   }
 
