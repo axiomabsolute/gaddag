@@ -355,7 +355,7 @@ export class Gaddag {
    * @returns array of all words containing ordered substring
    */
   public wordsContaining(substring: string): string[] {
-    return Gaddag.wordsContainingFromNode(substring, reverse(substring), this._root);
+    return Gaddag.wordsContainingFromNode(substring, reverse(substring), this._root, 0);
   }
 
   /**
@@ -367,20 +367,20 @@ export class Gaddag {
    * @param node current node
    * @returns array of words containing substring from the perspective of the node
    */
-  private static wordsContainingFromNode(substring: string, gnirtsbus: string, node: GaddagNode): string[] {
+  private static wordsContainingFromNode(substring: string, gnirtsbus: string, node: GaddagNode, step: number): string[] {
     if (gnirtsbus.length === 0) {
       let result = node.isCompleteWord ? [ substring ] : [];
       let suffixes = flatten(Object.keys(node.children).map(key => {
         if (key === Gaddag.TurnToken) {
-          return Gaddag.walkSuffixesFromNode(node.children[key]).map(s => substring + s);
+          return Gaddag.walkSuffixesFromNode(node.children[key], step + 1).map(s => substring + s);
         }
-        return Gaddag.wordsContainingFromNode(key + substring, gnirtsbus, node.children[key]);
+        return Gaddag.wordsContainingFromNode(key + substring, gnirtsbus, node.children[key], step + 1);
       }));
       return unique(result.concat(suffixes));
     }
     let firstChar = gnirtsbus[0];
     if (!(firstChar in node.children)) { return []; }
-    return Gaddag.wordsContainingFromNode(substring, gnirtsbus.substr(1), node.children[firstChar]);
+    return Gaddag.wordsContainingFromNode(substring, gnirtsbus.substr(1), node.children[firstChar], step + 1);
   }
 
   /**
@@ -388,23 +388,46 @@ export class Gaddag {
    * @param prefix 
    */
   public wordsForPrefix(prefix: string): string[] {
-    return Gaddag.wordsForPrefixFromNode(prefix, reverse(prefix), this._root);
+    return Gaddag.wordsForPrefixFromNode(prefix, reverse(prefix), this._root, 0);
   }
 
-  private static wordsForPrefixFromNode(prefix: string, xiferp: string, node: GaddagNode): string[] {
+  private static wordsForPrefixFromNode(prefix: string, xiferp: string, node: GaddagNode, step: number): string[] {
     if (xiferp.length === 0) {
+      node.meta['step'] = step;
+      node.meta['result'] = node.isCompleteWord ? 
+        'success' :
+        'step';
       let result = node.isCompleteWord ? [ prefix ] : [];
-      if (!(Gaddag.TurnToken in node.children)) { return result; }
-      return result.concat(Gaddag.walkSuffixesFromNode(node.children[Gaddag.TurnToken]).map(s => prefix + s));
+      if (!(Gaddag.TurnToken in node.children)) {
+        node.meta['result'] = 'halt';
+        return result;
+      }
+      node.meta['step'] = step;
+      node.meta['result'] = 'step';
+      node.children[Gaddag.TurnToken].meta['step'] = step + 1;
+      node.children[Gaddag.TurnToken].meta['result'] = 'step';
+      return result.concat(Gaddag.walkSuffixesFromNode(node.children[Gaddag.TurnToken], step + 2).map(s => prefix + s));
     }
     let firstChar = xiferp[0];
-    if (!(firstChar in node.children)) { return []; }
-    return Gaddag.wordsForPrefixFromNode(prefix, xiferp.substr(1), node.children[firstChar]);
+    if (!(firstChar in node.children)) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'halt';
+      return [];
+    }
+    node.meta['step'] = step;
+    node.meta['result'] = 'step';
+    return Gaddag.wordsForPrefixFromNode(prefix, xiferp.substr(1), node.children[firstChar], step + 1);
   }
 
-  private static walkSuffixesFromNode(node: GaddagNode): string[] {
-    if (node.isCompleteWord) { return ['']; }
-    return flatten(Object.keys(node.children).map(k => Gaddag.walkSuffixesFromNode(node.children[k]).map(r => k + r)));
+  private static walkSuffixesFromNode(node: GaddagNode, step: number): string[] {
+    if (node.isCompleteWord) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'success';
+      return [''];
+    }
+    node.meta['step'] = step;
+    node.meta['result'] = 'step';
+    return flatten(Object.keys(node.children).map(k => Gaddag.walkSuffixesFromNode(node.children[k], step + 1).map(r => k + r)));
   }
 
   /**
