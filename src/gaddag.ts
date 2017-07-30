@@ -126,7 +126,18 @@ export class GaddagEdge {
  */
 export class GaddagNode {
   private countFlag: Date;
-  constructor(public id: number, public token: string, public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) { }
+  public meta: Dictionary<any>;
+
+  /**
+   * Remove all keys from meta data dictionary
+   */
+  public clearMeta(){
+    Object.keys(this.meta).forEach(k => delete this.meta[k]);
+  }
+
+  constructor(public id: number, public token: string, public children: Dictionary<GaddagNode> = {}, public isCompleteWord: boolean = false) {
+    this.meta = {};
+  }
 
   /**
    * Sets the counter for this node and returns 1 if the node was not already counted
@@ -423,16 +434,32 @@ export class Gaddag {
    * @param word Word to check
    */
   public checkWord(word: string): boolean {
-    return Gaddag.checkWordNode(reverse(word), this._root);
+    return Gaddag.checkWordNode(reverse(word), this._root, 0);
   }
 
-  private static checkWordNode(word: string, node: GaddagNode): boolean {
+  private static checkWordNode(word: string, node: GaddagNode, step: number): boolean {
     let firstChar = word[0];
-    if (!(firstChar in node.children)) { return false; }
+    if (!(firstChar in node.children)) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'halt';
+      return false;
+    }
     let nextNode = node.children[firstChar];
-    if (word.length === 1 && !nextNode.isCompleteWord) { return false; } 
-    if (word.length === 1 && nextNode.isCompleteWord) { return true; }
-    return Gaddag.checkWordNode(word.substr(1), nextNode);
+    if (word.length === 1 && !nextNode.isCompleteWord) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'halt';
+      return false;
+    } 
+    if (word.length === 1 && nextNode.isCompleteWord) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'step';
+      nextNode.meta['step'] = step + 1;
+      nextNode.meta['result'] = 'success';
+      return true;
+    }
+    node.meta['step'] = step;
+    node.meta['result'] = 'step';
+    return Gaddag.checkWordNode(word.substr(1), nextNode, step + 1);
   }
 
   /**
@@ -527,6 +554,13 @@ export class Gaddag {
       return [];
     }
     return flatten(children.map(n => Gaddag.wordsOfLengthForNode(n, length - 1))).map(r => r + node.token);
+  }
+
+  /**
+   * Clear the metadata for all nodes in the graph
+   */
+  public clearMeta(): void {
+    this.getNodes().forEach(n => n.clearMeta());
   }
 
   /**
