@@ -180,6 +180,15 @@ export function bootstrap(host: Element, initialState: InitialState) {
         update(frame, width, height, initialState.dag, true)
       });
 
+    d3.select(document.querySelector('.words-containing-button'))
+      .on('click', function () {
+        let substringToSearch = (<HTMLInputElement>document.querySelector('#words-containing')).value;
+        if (!substringToSearch) { return; }
+        initialState.dag.clearMeta();
+        initialState.dag.wordsContaining(substringToSearch);
+        update(frame, width, height, initialState.dag, true)
+      });
+
     update(frame, width, height, initialState.dag, false)
   })
 }

@@ -369,6 +369,8 @@ export class Gaddag {
    */
   private static wordsContainingFromNode(substring: string, gnirtsbus: string, node: GaddagNode, step: number): string[] {
     if (gnirtsbus.length === 0) {
+      node.meta['step'] = step;
+      node.meta['result'] = node.isCompleteWord ? 'success' :  'step';
       let result = node.isCompleteWord ? [ substring ] : [];
       let suffixes = flatten(Object.keys(node.children).map(key => {
         if (key === Gaddag.TurnToken) {
@@ -379,7 +381,13 @@ export class Gaddag {
       return unique(result.concat(suffixes));
     }
     let firstChar = gnirtsbus[0];
-    if (!(firstChar in node.children)) { return []; }
+    if (!(firstChar in node.children)) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'halt';
+      return [];
+    }
+    node.meta['step'] = step;
+    node.meta['result'] = 'step';
     return Gaddag.wordsContainingFromNode(substring, gnirtsbus.substr(1), node.children[firstChar], step + 1);
   }
 
