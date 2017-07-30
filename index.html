@@ -138,7 +138,10 @@
     }
 
     .message-slide .slide-text {
-      font-size: 16px;
+      font-size: 18px;
+      padding-left: 5em;
+      padding-right: 5em;
+      overflow-y: auto;
     }
 
     /* Exploration layout */
@@ -226,6 +229,84 @@
     </div>
   </div>
 
+  <template id="about-slide">
+    <div data-selector=".slide-title">
+      About This Presentation
+    </div>
+    <div data-selector=".slide-text">
+      <p>
+        This presentation explores the word-building boardgame Scrabble using the <a href="http://dreamsteep.com/projects/the-english-open-word-list.html">English Open Word List (EOWL)</a>,
+        an open source word list that may be freely used to build electronic and traditional word games. Importantly, this project does <em>not</em> use the official Scrabble dictionary,
+        which does not have an open license.
+      </p>
+      <p>
+        The presentation is structured as an interactive slide show. The show has two primary sections: a dynamic section where each slide of the show is rendered and a static section which
+        persists between slides showing the shows navigation controls. Each slide contains four distinc sections.  The top section contains the slide's title and description. The left
+        section contains user input controls which are bound to parameters specific to each slide. The central section contains the D3, Vega, or Vega-Lite driven visualization for the
+        slide. Lastly, a floating, collaptible panel titled "Explorations" contains suggested, guided advice for users as they progress through the show. The first slide, shown as the landing
+        page, explains each of the sections in more detail and provides a simple example visualization to guide the user through each section.
+      </p>
+      <h4>Outline</h4>
+      <p>
+        The following is an outline of the annotations, parameters, triggers, and UI events available on each slide of the presentation.
+      </p>
+      <ol>
+        <li>
+          Across the presentation
+          <ul>
+            <li>
+              Users may navigate through the presentation using the up and down arrow buttons on the right-hand side of the screen. They may also jump to specific scenes by clicking
+              the numbered circle for the desired scene.
+            </li>
+            <li>
+              Each slide features a custom set of controls specific to the parameters of that slide. They are displayed on the left-hand side. Details on a slide-by-slide basis are
+              provided below.
+            </li>
+            <li>
+              Each slide features a section of recommended explorations, suggesting certain configurations of parameters and sequences of user interactions to help users explore that
+              particular slide. These recommended exploations are shown in a floating panel titled "Explorations". Users may click the title of this panel to collapse it off-screen at
+              any time, and click it again to expand it. Details on a slide-by-slide basis are provided below.
+            </li>
+          </ul>
+        </li>
+        <li>
+          A game of Anagrams
+          <ul>
+            <li>
+              This slide visualizes a set of letters as a row of circles in a random order. After a brief delay upon loading, the letters unscramble to reveal the word "SCRABBLE".
+            </li>
+            <li>
+              Users may input text on the left-hand side in the control panel and click the button to update the set of letters used. The letters are displayed in a random order and
+              unscramble themselves after a brief delay.
+            </li>
+            <li>
+              Users may click the circles containing the letters to randomize the order of the letters.
+            </li>
+            <li>This slide does not feature any annotations</li>
+          </ul>
+        </li>
+        <li>
+          Small Plays
+          <ul>
+            <li>
+              This slide visualizes the set of possible two-letter words as a 26 by 26 grid of dots. Each dot is colored according to whether the word in that position is a valid play
+              according to the EOWL word list.
+            </li>
+          </ul>
+        </li>
+      </ol>
+      <h4>Technologies used to build and host</h4>
+      <p>
+        The presentation is built using a combination of the <a href="https://d3js.org/">d3.js</a>, <a href="https://vega.github.io/vega/">vega</a>, and
+        <a href="https://vega.github.io/vega-lite/">vega-lite</a> libraries. Some basic styling is provided by the <a href="https://purecss.io/forms/">PureCSS</a> framework, and icon fonts
+        by <a href="http://fontawesome.io/">FontAwesome</a>. The general font is <a href="https://fonts.google.com/specimen/Dosis">Dosis</a>, provided via Google Web Fonts The slideshow
+        framework and GADDAG implementations were written from scratch using only D3 and native HTML5 browser capabilities. The full source code is available via GitHub at
+        <a href="https://github.com/axiomabsolute/gaddag">axiomabsolute/gaddag</a>, and is hosted on my personal statically served website via <a href="https://www.netlify.com/">Netlify</a>
+        at <a href="https://axioms.me/gaddag">axioms.me</a>.
+      </p>
+    </div>
+  </template>
+
   <template class="slide" id="clabbers-slide">
     <div data-selector=".slide-title">A Game of Anagrams</div>
     <div data-selector=".slide-text">
@@ -233,7 +314,8 @@
         At its core, Scrabble is a game of <em>anagrams</em>. Each player blindly draws letter tiles from a bag to build up a hand of 7 tiles and
         tries to build up a crossword style board of interconnected words. A key skill for players of the game is the ability to find
         valid words within an otherwise jumbled hand. This visulization explores the challenges of finding valid Scrabble moves and some
-        of the techniques players can use to efficiently find words.
+        of the techniques players can use to efficiently find words using the <a href="http://dreamsteep.com/projects/the-english-open-word-list.html">English Open Word List (EOWL)</a>,
+        an open source word list that may be freely used to build electronic and traditional word games.
       </p>
       <p>
         Below is a sample visualization that describes the structure and setup used in the rest of the presentation. The visualization below shows a grid
@@ -244,7 +326,6 @@
       <form class="pure-form pure-form-stacked">
         <fieldset>
           <legend>
-            Visualization Parameters
             <span class="pure-form-message">Changes to these form fields will automatically update the visualization.</span>
           </legend>
           <label for="anagram-letters">Letters to Show</label>
@@ -511,13 +592,43 @@
           Finds all words containing the given pattern.
         </li>
         <li>
-          Finds all words that match a given hand.
+          Finds all words that match a given hand. Use the <code>?</code> character to represent a blank tile (that is, a tile which
+          matches any letter, e.g. <code>?all</code> would match both <code>call</code> and <code>fall</code>).
         </li>
       </ol>
       <p>
         Each operation highlights relevant nodes traversed during the operation. Nodes that are not traversed are grayed out. The legend
         on the right side of the visualization describes the meaning of each color. The <code>Clear</code> button clears the current path
         highlighting.
+      </p>
+    </div>
+  </template>
+
+  <template id="conclusion-slide">
+    <div data-selector=".slide-title">
+      Conclusion
+    </div>
+    <div data-selector=".slide-text">
+      <p>
+        Identifying valid Scrabble moves presents a challenge to both human and AI players. This presentation explored one small aspect of that
+        challenge, namely the task of finding valid words within a jumbled set of letters.
+      </p>
+      <p>
+        For human players, the overwhelming <strong>sparseness</strong> of valid words among the vast set of playable words (though potentially
+        <strong>phony</strong>) words becomes the bottleneck for word finding. One technique to aid human players is to focus on common linguistic
+        patterns within the host language to build compound words out of prefixes, suffixes, and smaller valid words. Furthermore, considering the
+        relationships among the letters within a particular pattern can help human guide how human players search for valid words, prioritizing the
+        most common letter configurations. These techniques provide a useful starting point, but necessarily make a trade-off as the player's focus
+        shifts away from the valuable set of words which to not contain such patterns.
+      </p>
+      <p>
+        Computer AIs can evaluate moves much more quickly, and have the benefit of perfect recall. The GADDAG data structure provides one method of
+        storing a lexicon in such a way that valid plays may be efficiently searched for by prefix, suffix, containment, or with hand restrictions.
+        While this gives computer AIs some advantages, there are still many aspects of advanced Scrabble gameplay that are not covered by the
+        techniques demonstrated here. Evaluating and choosing the best play is much more complicated, and involves considering the active board shape,
+        tracking the remaining letters based on the currently visible letters on the board and in the player's hand, managing the remaining letters
+        after a play (a process called <strong>rack management</strong>), and much more. The top tier
+        <a href="https://en.wikipedia.org/wiki/Maven_%28Scrabble%29">Maven</a> Scrabble playing AI incorporates these aspects and many more.
       </p>
     </div>
   </template>
@@ -529,9 +640,14 @@
         <div class="slide-text"></div>
       </div>
       <div class="slide-body">
-        <div class="slide-controls card">
-          <div class="text-muted">
-            This visualization does not feature any parameters.
+        <div class="card">
+          <h4>
+            Visualization Parameters
+          </h4>
+          <div class="slide-controls">
+            <div class="text-muted">
+              This visualization does not feature any parameters.
+            </div>
           </div>
         </div>
         <div class="slide-visual card">

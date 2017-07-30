@@ -72,10 +72,6 @@ let dagDataLoaded = fetch('/dist/data/words.json').then((response) => {
     var timestart = new Date().getTime();
     return response.json().then((wordList: {words: string[]}) => {
       return fixesResponse.json().then((fixes: {fixes: Fix[]}): [string[], Fix[]] => {
-        // wordList.words.forEach(w => dag.addWord(w));
-        // dag.addWord("hello");
-        // dag.addWord('call');
-        // dag.addWord('cale');
         dag.addWord('call');
         console.log("------------------------\n");
         console.log(`Time: ${new Date().getTime() - timestart}ms`);
@@ -239,7 +235,7 @@ class SlideShow {
       .attr('href', (d, i) => `#page-${i}`)
       .attr('class', (d, i) => 'page-dot')
       .classed('page-dot--active', (d, i) => i == this._slideNumber)
-      .text((d, i) => i + 1)
+      .text((d, i) => i)
       .on('click', (d, i) => {
         this.goToPage(i);
         this.renderShowControls();
@@ -269,18 +265,9 @@ class SlideShow {
 }
 
 /**
- * Placeholder for future slide types
- * @param host host element to inject into
- */
-function helloWorldSlide(host: Element) {
-  d3.select(host).select('.slide-title').text("Hello");
-  d3.select(host).select('.slide-text').text("World!");
-}
-
-/**
  * Set initial page based on URL hash location
  */
-let initialPage = 0;
+let initialPage = 1;
 if (window.location.hash) {
   let splits = window.location.hash.split('page-');
   initialPage = splits.length > 1 ? parseInt(splits[1]) : 0;
@@ -291,12 +278,13 @@ if (window.location.hash) {
  * Modify this array to add additional slides to the show.
  */
 let slides: Slide<any>[] = [
+  { templateId: '#layout-message-slide', markupId: '#about-slide', bootstrap: () => {}, layout: () => {}, initialState: {} },
   { templateId: '#layout-exploration-slide', markupId: '#clabbers-slide', bootstrap: clabbersSlide, layout: explorationLayout, initialState: clabbersSlideInitialState },
   { templateId: '#layout-exploration-slide', markupId: '#two-letter-slide', bootstrap: twoLetterSlide, layout: explorationLayout, initialState: new TwoLetterState(dagDataLoaded, true) },
   { templateId: '#layout-exploration-slide', markupId: '#sparse-slide', bootstrap: sparseSlide, layout: explorationLayout, initialState: new SparseState(dagDataLoaded, true) },
   { templateId: '#layout-exploration-slide', markupId: '#patterns-slide', bootstrap: patternsSlide, layout: explorationLayout, initialState: new PatternsState(dagDataLoaded, true) },
   { templateId: '#layout-exploration-slide', markupId: '#gaddag-slide', bootstrap: gaddagSlide, layout: explorationLayout, initialState: new GaddagState(dagDataLoaded, dag, true) },
-  { templateId: '#layout-message-slide', markupId: null, bootstrap: helloWorldSlide, layout: () => {}, initialState: {} },
+  { templateId: '#layout-message-slide', markupId: '#conclusion-slide', bootstrap: () => {}, layout: () => {}, initialState: {} },
 ];
 
 /**
