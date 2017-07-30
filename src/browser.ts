@@ -67,8 +67,8 @@ export function showVegaTooltip(value: string, event: MouseEvent) {
 }
 
 let dag = new Gaddag();
-let dagDataLoaded = fetch('dist/data/words.json').then((response) => {
-  return fetch('dist/data/fixes.json').then((fixesResponse) => {
+let dagDataLoaded = fetch('./dist/data/words.json').then((response) => {
+  return fetch('./dist/data/fixes.json').then((fixesResponse) => {
     var timestart = new Date().getTime();
     return response.json().then((wordList: {words: string[]}) => {
       return fixesResponse.json().then((fixes: {fixes: Fix[]}): [string[], Fix[]] => {
