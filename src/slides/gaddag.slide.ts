@@ -162,6 +162,15 @@ export function bootstrap(host: Element, initialState: InitialState) {
         update(frame, width, height, initialState.dag, true)
       });
 
+    d3.select(document.querySelector('.suffix-words-button'))
+      .on('click', function () {
+        let suffixToSearch = (<HTMLInputElement>document.querySelector('#suffix-words')).value;
+        if (!suffixToSearch) { return; }
+        initialState.dag.clearMeta();
+        initialState.dag.wordsForSuffix(suffixToSearch);
+        update(frame, width, height, initialState.dag, true)
+      });
+
     update(frame, width, height, initialState.dag, false)
   })
 }

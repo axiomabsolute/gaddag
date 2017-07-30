@@ -412,21 +412,33 @@ export class Gaddag {
    * @param suffix 
    */
   public wordsForSuffix(suffix: string): string[] {
-    return Gaddag.wordsForSuffixFromNode(suffix, reverse(suffix), this._root);
+    return Gaddag.wordsForSuffixFromNode(suffix, reverse(suffix), this._root, 0);
   }
 
-  private static wordsForSuffixFromNode(suffix: string, xiffus: string, node: GaddagNode): string[] {
+  private static wordsForSuffixFromNode(suffix: string, xiffus: string, node: GaddagNode, step: number): string[] {
     if (xiffus.length === 0) {
+      node.meta['step'] = step;
+      node.meta['result'] = node.isCompleteWord ? 'success' : 'step';
       let result = node.isCompleteWord ? [ suffix ] : [];
+      if (Gaddag.TurnToken in node.children) {
+        node.children[Gaddag.TurnToken].meta['step'] = step + 1;
+        node.children[Gaddag.TurnToken].meta['result'] = 'halt';
+      }
       return result.concat( // If the suffix alone is a complete word, include it in the results
         flatten( // For each child node, find *their* suffixes, flatten, and prepend them to the suffixes found so far
           Object.keys(node.children)
             .filter(key => key != Gaddag.TurnToken) // We want only the complete suffix paths - no turns
-            .map(key => Gaddag.wordsForSuffixFromNode(key + suffix, xiffus, node.children[key]))))
+            .map(key => Gaddag.wordsForSuffixFromNode(key + suffix, xiffus, node.children[key], step + 1))))
     }
     let firstChar = xiffus[0];
-    if (!(firstChar in node.children)) { return []; }
-    return Gaddag.wordsForSuffixFromNode(suffix, xiffus.substr(1), node.children[firstChar]);
+    if (!(firstChar in node.children)) {
+      node.meta['step'] = step;
+      node.meta['result'] = 'halt';
+      return [];
+    }
+    node.meta['step'] = step;
+    node.meta['result'] = 'step';
+    return Gaddag.wordsForSuffixFromNode(suffix, xiffus.substr(1), node.children[firstChar], step + 1);
   }
 
   /**
