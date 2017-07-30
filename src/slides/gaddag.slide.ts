@@ -20,6 +20,20 @@ let legendItems = [
   { 'result': undefined, 'description': 'Untraversed Node', 'color': '#DDD' },
 ];
 
+function displayResults(
+  element: d3.Selection<Element | d3.EnterElement | Document | Window, {}, null, undefined>,
+  results: string[]
+) {
+  element
+    .append('text')
+    .text('Query Results:');
+  results.forEach((result, i) => {
+    element.append('text')
+      .text(result)
+      .attr('transform', `translate(10,${(14 * (i+1) + 10)})`);
+  });
+}
+
 class VisualNode {
   constructor(public node: GaddagNode, public x: number, public y: number) { }
 }
@@ -172,12 +186,17 @@ export function bootstrap(host: Element, initialState: InitialState) {
         .text(() => d.description)
         .attr('transform', () => `translate(20,5)`)
     });
+    
+    let resultsBlock = legend.append('g')
+      .attr('class', 'results-block')
+      .attr('transform', () => `translate(5,${(legendItems.length * 25) + 50})`);
 
     d3.select(document.querySelector('.add-word-button'))
       .on('click', function () {
         let wordToAdd = (<HTMLInputElement>document.querySelector('#add-word')).value;
         if (!wordToAdd) { return; }
         initialState.dag.addWord(wordToAdd);
+        resultsBlock.html('');
         initialState.dag.clearMeta();
         update(frame, width, height, initialState.dag, false);
       });
@@ -186,8 +205,10 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .on('click', function () {
         let wordToCheck = (<HTMLInputElement>document.querySelector('#check-validity')).value;
         if (!wordToCheck) { return; }
+        resultsBlock.html('');
         initialState.dag.clearMeta();
-        initialState.dag.checkWord(wordToCheck);
+        let result = initialState.dag.checkWord(wordToCheck);
+        displayResults(resultsBlock, [`Is ${wordToCheck} valid: ${result}`]);
         update(frame, width, height, initialState.dag, true);
       });
 
@@ -195,8 +216,10 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .on('click', function () {
         let prefixToSearch = (<HTMLInputElement>document.querySelector('#prefix-words')).value;
         if (!prefixToSearch) { return; }
+        resultsBlock.html('');
         initialState.dag.clearMeta();
-        initialState.dag.wordsForPrefix(prefixToSearch);
+        let results = initialState.dag.wordsForPrefix(prefixToSearch);
+        displayResults(resultsBlock, results);
         update(frame, width, height, initialState.dag, true);
       });
 
@@ -204,8 +227,10 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .on('click', function () {
         let suffixToSearch = (<HTMLInputElement>document.querySelector('#suffix-words')).value;
         if (!suffixToSearch) { return; }
+        resultsBlock.html('');
         initialState.dag.clearMeta();
-        initialState.dag.wordsForSuffix(suffixToSearch);
+        let results = initialState.dag.wordsForSuffix(suffixToSearch);
+        displayResults(resultsBlock, results);
         update(frame, width, height, initialState.dag, true);
       });
 
@@ -213,8 +238,10 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .on('click', function () {
         let substringToSearch = (<HTMLInputElement>document.querySelector('#words-containing')).value;
         if (!substringToSearch) { return; }
+        resultsBlock.html('');
         initialState.dag.clearMeta();
-        initialState.dag.wordsContaining(substringToSearch);
+        let results = initialState.dag.wordsContaining(substringToSearch);
+        displayResults(resultsBlock, results);
         update(frame, width, height, initialState.dag, true);
       });
 
@@ -222,13 +249,16 @@ export function bootstrap(host: Element, initialState: InitialState) {
       .on('click', function () {
         let handtoSearch = (<HTMLInputElement>document.querySelector('#words-for-hand')).value;
         if (!handtoSearch) { return; }
+        resultsBlock.html('');
         initialState.dag.clearMeta();
-        initialState.dag.wordsForHand(handtoSearch, false);
+        let results = initialState.dag.wordsForHand(handtoSearch, false);
+        displayResults(resultsBlock, results);
         update(frame, width, height, initialState.dag, true);
       });
 
     d3.select(document.querySelector('.clear-highlight-button'))
       .on('click', function () {
+        resultsBlock.html('');
         initialState.dag.clearMeta();
         update(frame, width, height, initialState.dag, false);
       });

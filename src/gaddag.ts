@@ -436,14 +436,15 @@ export class Gaddag {
   }
 
   private static walkSuffixesFromNode(node: GaddagNode, step: number): string[] {
+    let result = [];
     if (node.isCompleteWord) {
       node.meta['step'] = step;
       node.meta['result'] = 'success';
-      return [''];
+      result.push('');
     }
     node.meta['step'] = step;
     node.meta['result'] = 'step';
-    return flatten(Object.keys(node.children).map(k => Gaddag.walkSuffixesFromNode(node.children[k], step + 1).map(r => k + r)));
+    return result.concat(flatten(Object.keys(node.children).map(k => Gaddag.walkSuffixesFromNode(node.children[k], step + 1).map(r => k + r))));
   }
 
   /**
