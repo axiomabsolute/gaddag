@@ -1,13 +1,14 @@
 {
     "files": [
-        "vendor.d.ts",
         "src/browser.ts",
         "src/gaddag.ts",
         "src/main.ts",
         "src/slides/intro.slide.ts",
         "src/slides/two-letter.slide.ts",
         "src/slides/sparse.slide.ts",
-        "src/layouts/exploration-slide.layout.ts"
+        "src/layouts/exploration-slide.layout.ts",
+        "test/gaddag-node.spec.ts",
+        "test/gaddag.spec.ts"
     ],
     "compilerOptions":{
         "noImplicitAny": true,

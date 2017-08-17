@@ -127,7 +127,7 @@
     }
 
     .message-slide .message {
-      height: 500px;
+      height: 90%;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -185,6 +185,7 @@
       .exploration-slide .slide-controls {
         flex-basis: 0 !important;
         flex-grow: 0;
+        width: 350px;
       }
 
      }
@@ -476,7 +477,7 @@
           <label for="anagram-letters">Letters to Show</label>
           <input id="anagram-letters" type="text" value="SCRABBLE">
         </fieldset>
-        <button type="button" id="anagram-update-button" class="pure-button">Update</button>
+        <button type="submit" id="anagram-update-button" class="pure-button">Update</button>
       </form>
     </div>
     <div data-selector=".explorations-content">
@@ -622,7 +623,7 @@
         <fieldset>
           <label for="word-pattern">Pattern</label>
           <input type="text" value="ing" id="word-pattern">
-          <button class="update-button pure-button" type="button">Update</button>
+          <button class="update-button pure-button" type="submit">Update</button>
         </fieldset>
         <hr />
         <fieldset>
@@ -707,32 +708,42 @@
         <fieldset>
           <label for="add-word">Add Word</label>
           <input type="text" value="" id="add-word">
-          <button class="add-word-button pure-button" type="button">Add</button>
+          <button class="add-word-button pure-button" type="submit">Add</button>
         </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked">
         <fieldset>
           <label for="check-validity">Check Validity</label>
           <input type="text" value="call" id="check-validity">
-          <button class="check-validity-button pure-button" type="button">Check</button>
+          <button class="check-validity-button pure-button" type="submit">Check</button>
         </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked">
         <fieldset>
           <label for="prefix-words">Words for Prefix</label>
           <input type="text" value="" id="prefix-words">
-          <button class="prefix-words-button pure-button" type="button">Search</button>
+          <button class="prefix-words-button pure-button" type="submit">Search</button>
         </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked">
         <fieldset>
           <label for="suffix-words">Words for Suffix</label>
           <input type="text" value="" id="suffix-words">
-          <button class="suffix-words-button pure-button" type="button">Search</button>
+          <button class="suffix-words-button pure-button" type="submit">Search</button>
         </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked">
         <fieldset>
           <label for="words-containing">Words Containing</label>
           <input type="text" value="" id="words-containing">
-          <button class="words-containing-button pure-button" type="button">Search</button>
+          <button class="words-containing-button pure-button" type="submit">Search</button>
         </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked">
         <fieldset>
           <label for="words-for-hand">Words for Hand</label>
           <input type="text" value="" id="words-for-hand">
-          <button class="words-for-hand-button pure-button" type="button">Search</button>
+          <button class="words-for-hand-button pure-button" type="submit">Search</button>
         </fieldset>
         <fieldset>
           <button class="clear-highlight-button pure-button" type="button">Clear</button>

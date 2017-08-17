@@ -6,9 +6,11 @@ var source = require('vinyl-source-stream');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require("gulp-typescript");
 var tsify = require('tsify');
-var tsProject = ts.createProject("tsconfig.json");
 var uglify = require('gulp-uglify');
 var nodeResolve = require('resolve');
+var mocha = require('gulp-mocha');
+
+var tsProject = ts.createProject("tsconfig.json");
 
 gulp.task("build", function() {
     return tsProject.src()
@@ -91,6 +93,17 @@ gulp.task("watch", ['default'],  function() {
 
 gulp.task("watch-deploy", ['deploy'], function() {
   gulp.watch(['./src/**/*.ts'], ['deploy']);
+});
+
+gulp.task('test', () => {
+  return gulp.src('./test/**/*.spec.ts', { base: '.' })
+    .pipe(tsProject())
+    .pipe(gulp.dest('./dist'))
+    .pipe(mocha({}));
+});
+
+gulp.task('watch-test', ['test'], function() {
+  gulp.watch(['./src/**/*.ts', './test/**/*.spec.ts'], ['test']);
 });
 
 function getNPMPackageIds() {

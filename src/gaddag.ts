@@ -281,7 +281,7 @@ export class Gaddag {
    * @returns calculated unminimized size
    */
   public rawSize(): number {
-    return this.allWords().reduce( (p, n) => p + (n.length * n.length), 0);
+    return 1 + this.allWords().reduce( (p, n) => p + 1 + (n.length * n.length), 0);
   }
 
   /**
@@ -490,26 +490,22 @@ export class Gaddag {
 
   private static checkWordNode(word: string, node: GaddagNode, step: number): boolean {
     let firstChar = word[0];
+    node.meta['step'] = step;
     if (!(firstChar in node.children)) {
-      node.meta['step'] = step;
       node.meta['result'] = 'halt';
       return false;
     }
     let nextNode = node.children[firstChar];
     if (word.length === 1 && !nextNode.isCompleteWord) {
-      node.meta['step'] = step;
       node.meta['result'] = 'halt';
       return false;
     } 
+    node.meta['result'] = 'step';
     if (word.length === 1 && nextNode.isCompleteWord) {
-      node.meta['step'] = step;
-      node.meta['result'] = 'step';
       nextNode.meta['step'] = step + 1;
       nextNode.meta['result'] = 'success';
       return true;
     }
-    node.meta['step'] = step;
-    node.meta['result'] = 'step';
     return Gaddag.checkWordNode(word.substr(1), nextNode, step + 1);
   }
 
