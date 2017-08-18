@@ -8,7 +8,8 @@
         "src/slides/sparse.slide.ts",
         "src/layouts/exploration-slide.layout.ts",
         "test/gaddag-node.spec.ts",
-        "test/gaddag.spec.ts"
+        "test/gaddag.spec.ts",
+        "test/utility.spec.ts"
     ],
     "compilerOptions":{
         "noImplicitAny": true,

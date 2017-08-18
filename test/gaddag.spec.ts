@@ -37,12 +37,11 @@ describe('Gaddag', () => {
       expect(gaddag.rawSize()).to.be.equal(1);
     });
 
-    // it('when empty returns only the root node', () => {
-    //   let nodesByDepth = gaddag.getNodesByDepth();
-    //   expect(Object.keys(nodesByDepth)).to.be.not.empty;
-    //   expect(nodesByDepth[0]).to.be.not.empty;
-    //   expect(nodesByDepth[0]).to.be.equal(gaddag.root);
-    // });
+    it('addWord adds single word', () => {
+      expect(gaddag.allWords().length).to.be.equal(0);
+      gaddag.addWord('anything');
+      expect(gaddag.allWords().length).to.be.equal(1);
+    });
   });
 
   describe('when a single word (call) is loaded', () => {
@@ -60,14 +59,14 @@ describe('Gaddag', () => {
     });
 
     it('rawSize estimates the unminized number of nodes', () => {
-      expect(gaddag.rawSize()).to.be.equal(17);
+      expect(gaddag.rawSize()).to.be.equal(18);
     });
 
     it('compressionRate computes compression rate by comparing rawSize and actual size', () => {
-      expect(gaddag.compressionRate()).to.be.equal(16/17);
+      expect(gaddag.compressionRate()).to.be.equal(16/18);
     })
 
-  })
+  });
 
   describe('when loaded with wordList', () => {
     beforeEach(() => {
@@ -97,7 +96,7 @@ describe('Gaddag', () => {
 
       it('ensures all non-blank letters used if mustUseAllNonBlanks', () => {
         let matches = gaddag.wordsForHand('c?ll', true);
-        expect(matches.length).to.be.equal(1);
+        expect(matches.length).to.be.equal(1)
         expect(matches[0]).to.be.equal('call');
       });
 
@@ -107,6 +106,29 @@ describe('Gaddag', () => {
         expect(matches).to.contain('call');
         expect(matches).to.contain('all');
       });
+    });
+
+    describe('wordsContaining', () => {
+      it('finds words by prefix', () => {
+        let wordsPrefixedByAll = wordList.filter(w => w.match(/^all/));
+        let matches = gaddag.wordsContaining('all');
+        wordsPrefixedByAll.forEach(w => expect(matches.indexOf(w)).to.be.greaterThan(-1));
+      });
+
+      it('finds words by suffix', () => {
+        let wordsSuffixedByAll = wordList.filter(w => w.match(/all$/));
+        let matches = gaddag.wordsContaining('all');
+        wordsSuffixedByAll.forEach(w => expect(matches.indexOf(w)).to.be.greaterThan(-1));
+      });
+
+      it('finds words by substring', () => {
+        let wordsContainingAll = wordList.filter(w => w.match(/all/));
+        let matches = gaddag.wordsContaining('all');
+        expect(matches.length).to.be.equal(5);
+        expect(matches.length).to.be.equal(wordsContainingAll.length);
+        wordsContainingAll.forEach(w => expect(matches.indexOf(w)).to.be.greaterThan(-1));
+      });
+
     });
 
   })

@@ -1,6 +1,17 @@
+/**
+ * A dictionary mapping string keys to values of a generic type
+ */
 export class Dictionary<T> {
   [index: string]: T;
 
+  /**
+   * Converts an array of items into a dictionary using the provided key and value selector on each item. If multiple items
+   * result in the same key, the latest item is kept.
+   * 
+   * @param items Collection of items generate lookup dictionary
+   * @param keySelector Function mapping from item to string key
+   * @param valueSelector Function mapping from item to the value to store
+   */
   public static ToLookup<T, U>(items: T[], keySelector: (item: T) => string, valueSelector: (item: T) => U): Dictionary<U> {
     return items.reduce((result, item) => {
       result[keySelector(item)] = valueSelector(item);
@@ -13,7 +24,7 @@ export class Dictionary<T> {
  * Monotonically increasing ID generator generator
  * @returns A generator which produces a monitonically increasing ID when called
  */
-function makeIdGenerator(): () => number {
+export function makeIdGenerator(): () => number {
   var count = -1;
   return () => {
     count = count + 1;
@@ -51,7 +62,7 @@ export function permute<T>(inputArr: T[]) {
  * @param dict Dictionary to clone
  * @returns Cloned dictionary
  */
-function cloneDict<T>(dict: Dictionary<T>): Dictionary<T> {
+export function cloneDict<T>(dict: Dictionary<T>): Dictionary<T> {
   let result: Dictionary<T> = {};
   Object.getOwnPropertyNames(dict).forEach(k => result[k] = dict[k]);
   return result;
@@ -62,7 +73,7 @@ function cloneDict<T>(dict: Dictionary<T>): Dictionary<T> {
  * @param word Word to reverse
  * @returns reversed word
  */
-function reverse(word: string) {
+export function reverse(word: string) {
   return word.split('').reverse().join('');
 }
 
@@ -88,7 +99,7 @@ export function keyValuePairs<T>(dict: Dictionary<T>): {key: string, value: T}[]
  * @param nums Array of numbers to sum
  * @returns sum of values of array
  */
-function sum(nums: number[]): number {
+export function sum(nums: number[]): number {
   return nums.reduce( (p, n) => p + n, 0);
 }
 

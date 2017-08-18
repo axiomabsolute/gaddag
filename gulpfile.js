@@ -95,11 +95,12 @@ gulp.task("watch-deploy", ['deploy'], function() {
   gulp.watch(['./src/**/*.ts'], ['deploy']);
 });
 
-gulp.task('test', () => {
+gulp.task('test', ['build'], () => {
   return gulp.src('./test/**/*.spec.ts', { base: '.' })
     .pipe(tsProject())
     .pipe(gulp.dest('./dist'))
-    .pipe(mocha({}));
+    .pipe(mocha({}))
+    .on('error', (error) => console.error(error.toString()));
 });
 
 gulp.task('watch-test', ['test'], function() {
