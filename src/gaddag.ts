@@ -239,7 +239,9 @@ export class Gaddag {
    */
   public getNodesByDepth(): {[depth: string]: GaddagNode[]} {
     let flag = new Date();
-    return Gaddag.getNodesByDepthFromNode(this._root, 0, flag);
+    let nodesByDepth = Gaddag.getNodesByDepthFromNode(this._root, 1, flag);
+    nodesByDepth[0] = [this._root];
+    return nodesByDepth;
   }
 
   /**
@@ -319,6 +321,7 @@ export class Gaddag {
    */
   public wordsForHand(hand: string, mustUseAllNonBlanks: boolean = false): string[] {
     let seed: Dictionary<number> = {};
+    this.clearMeta();
     // Construct a map of letter frequencies to track remaining hand while traversing graph
     let letters = hand.split('')
       .reduce( (result, letter) => {
@@ -601,6 +604,9 @@ export class Gaddag {
    * @param length remaining length
    */
   private static wordsOfLengthForNode(node: GaddagNode, length: number): string[] {
+    if (length < 1) {
+      return [];
+    }
     let children = values(node.children);
     if (length == 1) {
       if (node.token === Gaddag.TurnToken) {

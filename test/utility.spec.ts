@@ -68,7 +68,12 @@ describe('makeIdGenerator', () => {
     expect(idGenerator()).to.be.equal(2);
   });
 
-  it('creates ')
+  it('creates isolated instances', () => {
+    expect(idGenerator()).to.be.equal(0);
+    expect(idGenerator()).to.be.equal(1);
+    let idGenerator2 = makeIdGenerator();
+    expect(idGenerator2()).to.be.equal(0);
+  });
 });
 
 describe('cloneDict', () => {
