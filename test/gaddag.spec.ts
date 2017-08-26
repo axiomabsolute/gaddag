@@ -16,7 +16,7 @@ describe('Gaddag', () => {
   let gaddag: Gaddag;
   beforeEach(() => {
     gaddag = undefined;
-  }) ;
+  });
 
   it('creates', () => {
     expect(gaddag).to.be.undefined;
@@ -63,7 +63,7 @@ describe('Gaddag', () => {
     });
 
     it('compressionRate computes compression rate by comparing rawSize and actual size', () => {
-      expect(gaddag.compressionRate()).to.be.equal(16/18);
+      expect(gaddag.compressionRate()).to.be.equal(16 / 18);
     })
 
   });
@@ -127,7 +127,7 @@ describe('Gaddag', () => {
         gaddag.wordsForHand('cll?');
         let nodes = gaddag.getNodesByDepth();
         expect(nodes['0'][0].meta['result']).to.be.equal('step');
-        
+
         let levelOne = nodes['1'].map(node => node.meta['result']);
         expect(levelOne).to.be.lengthOf(13);
         expect(levelOne.filter(r => r === 'step')).to.be.lengthOf(4);
@@ -159,10 +159,10 @@ describe('Gaddag', () => {
       it('clears information between calls', () => {
         gaddag.wordsForHand('cll?');
         let nodes = gaddag.getNodesByDepth();
-        expect(nodes['4'].filter(node => node.meta['result'] === 'success' )).to.not.be.empty;
+        expect(nodes['4'].filter(node => node.meta['result'] === 'success')).to.not.be.empty;
         gaddag.wordsForHand('zz');
         nodes = gaddag.getNodesByDepth();
-        expect(nodes['4'].filter(node => node.meta['result'] === 'success' )).to.be.empty;
+        expect(nodes['4'].filter(node => node.meta['result'] === 'success')).to.be.empty;
       });
     });
 
@@ -193,10 +193,17 @@ describe('Gaddag', () => {
       });
 
       it('sets result metadata', () => { throw 'not implemented' });
-      
+
       it('sets step metadata', () => { throw 'not implemented' });
 
-      it('clears metadata between calls', () => { throw 'not implemented' });
+      it('clears metadata between calls', () => {
+        gaddag.wordsContaining('call');
+        let nodes = gaddag.getNodesByDepth();
+        expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.true;
+        gaddag.wordsContaining('zz');
+        nodes = gaddag.getNodesByDepth();
+        expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.false;
+      });
 
     });
 
@@ -212,7 +219,7 @@ describe('Gaddag', () => {
       it('returns same number of nodes as getNodes', () => {
         let nodes = gaddag.getNodes();
         let nodesByDepth = gaddag.getNodesByDepth();
-        let totalNodes = Object.keys(nodesByDepth).map(k => nodesByDepth[k].length).reduce((a,b) => a + b, 0);
+        let totalNodes = Object.keys(nodesByDepth).map(k => nodesByDepth[k].length).reduce((a, b) => a + b, 0);
         expect(totalNodes).to.be.equal(nodes.length);
       });
 
@@ -250,10 +257,17 @@ describe('Gaddag', () => {
       });
 
       it('sets result metadata', () => { throw 'not implemented' });
-      
+
       it('sets step metadata', () => { throw 'not implemented' });
 
-      it('clears metadata between calls', () => { throw 'not implemented' });
+      it('clears metadata between calls', () => {
+        gaddag.wordsForPrefix('ca');
+        let nodes = gaddag.getNodesByDepth();
+        expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.true;
+        gaddag.wordsForPrefix('zz');
+        nodes = gaddag.getNodesByDepth();
+        expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.false;
+      });
     });
 
     describe('wordsForSuffix', () => {
@@ -280,10 +294,30 @@ describe('Gaddag', () => {
       });
 
       it('sets result metadata', () => { throw 'not implemented' });
-      
-      it('sets step metadata', () => { throw 'not implemented' });
 
-      it('clears metadata between calls', () => { throw 'not implemented' });
+      it('sets step metadata', () => {
+        gaddag.wordsForSuffix('ll');
+        let nodes = gaddag.getNodesByDepth();
+
+        expect(nodes['0'][0].meta['step']).to.be.equal(0);
+        expect(nodes['1'].every(node => node.meta['step'] === undefined || node.meta['step'] === 1)).to.be.true;
+        expect(nodes['2'].every(node => node.meta['step'] === undefined || node.meta['step'] === 2)).to.be.true;
+        expect(nodes['3'].every(node => node.meta['step'] === undefined || node.meta['step'] === 3)).to.be.true;
+        expect(nodes['4'].every(node => node.meta['step'] === undefined || node.meta['step'] === 4)).to.be.true;
+        expect(nodes['5'].every(node => node.meta['step'] === undefined || node.meta['step'] === 5)).to.be.true;
+        expect(nodes['6'].every(node => node.meta['step'] === undefined || node.meta['step'] === 6)).to.be.true;
+        Object.keys(nodes).filter(k => parseInt(k) > 7)
+          .forEach(k => nodes[k].forEach(node => expect(node.meta['step']).to.be.undefined));
+      });
+
+      it('clears metadata between calls', () => {
+        gaddag.wordsForSuffix('all');
+        let nodes = gaddag.getNodesByDepth();
+        expect(nodes['3'].some(node => node.meta['result'] === 'success')).to.be.true;
+        gaddag.wordsForSuffix('zz');
+        nodes = gaddag.getNodesByDepth();
+        expect(nodes['3'].some(node => node.meta['result'] === 'success')).to.be.false;
+      });
     });
 
     describe('checkWord', () => {
@@ -320,14 +354,20 @@ describe('Gaddag', () => {
       });
 
       it('sets result metadata', () => { throw 'not implemented' });
-      
+
       it('sets step metadata', () => { throw 'not implemented' });
 
-      it('clears metadata between calls', () => { throw 'not implemented' });
+      it('clears metadata between calls', () => {
+        gaddag.checkWord('call');
+        let nodes = gaddag.getNodesByDepth();
+        expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.true;
+        gaddag.checkWord('zz');
+        expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.false;
+      });
     });
 
     describe('wordsForHandByPermutation', () => {
-      let result: {[permutation: string]: string[]};
+      let result: { [permutation: string]: string[] };
 
       // Somewhat expensive - compute once and share for tests
       before(() => {
@@ -341,7 +381,7 @@ describe('Gaddag', () => {
       it('finds all matches for hand', () => {
         let totalResults = Object.keys(result)
           .map(k => result[k].length)
-          .reduce((a, b) => a+b);
+          .reduce((a, b) => a + b);
         expect(totalResults).to.be.equal(2);
       });
 

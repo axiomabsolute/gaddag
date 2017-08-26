@@ -377,6 +377,7 @@ export class Gaddag {
    * @returns array of all words containing ordered substring
    */
   public wordsContaining(substring: string): string[] {
+    this.clearMeta();
     return Gaddag.wordsContainingFromNode(substring, reverse(substring), this._root, 0);
   }
 
@@ -418,6 +419,7 @@ export class Gaddag {
    * @param prefix 
    */
   public wordsForPrefix(prefix: string): string[] {
+    this.clearMeta();
     return Gaddag.wordsForPrefixFromNode(prefix, reverse(prefix), this._root, 0);
   }
 
@@ -465,6 +467,7 @@ export class Gaddag {
    * @param suffix 
    */
   public wordsForSuffix(suffix: string): string[] {
+    this.clearMeta();
     return Gaddag.wordsForSuffixFromNode(suffix, reverse(suffix), this._root, 0);
   }
 
@@ -499,6 +502,7 @@ export class Gaddag {
    * @param word Word to check
    */
   public checkWord(word: string): boolean {
+    this.clearMeta();
     return Gaddag.checkWordNode(reverse(word), this._root, 0);
   }
 
