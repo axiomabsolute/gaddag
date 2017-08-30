@@ -438,7 +438,7 @@ export class Gaddag {
       node.meta['result'] = 'step';
       node.children[Gaddag.TurnToken].meta['step'] = step + 1;
       node.children[Gaddag.TurnToken].meta['result'] = 'step';
-      return result.concat(Gaddag.walkSuffixesFromNode(node.children[Gaddag.TurnToken], step + 2).map(s => prefix + s));
+      return result.concat(Gaddag.walkSuffixesFromNode(node.children[Gaddag.TurnToken], step + 1).map(s => prefix + s));
     }
     let firstChar = xiferp[0];
     if (!(firstChar in node.children)) {
