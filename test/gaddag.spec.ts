@@ -227,9 +227,24 @@ describe('Gaddag', () => {
         expect(matches).to.be.an('array').that.is.empty;
       });
 
-      it('sets result metadata', () => { throw 'not implemented' });
+      it('sets result metadata', () => {
+        gaddag.wordsContaining('call');
+        let nodes = gaddag.getNodesByDepth();
+        expect(nodes['0'][0].meta['result']).to.be.equal('query');
+        expect(nodes['1'].filter(n => n.token === 'l' && n.meta['result'] === 'query').length).to.be.equal(1);
+        expect(nodes['2'].filter(n => n.token === 'l' && n.meta['result'] === 'query').length).to.be.equal(1);
+        expect(nodes['3'].filter(n => n.token === 'a' && n.meta['result'] === 'query').length).to.be.equal(1);
+        expect(nodes['4'].filter(n => n.token === 'c' && n.meta['result'] === 'success').length).to.be.equal(1);
+        expect(nodes['5'].filter(n => n.token === '>' && n.meta['result'] === 'step').length).to.be.equal(1);
+        expect(nodes['6'].filter(n => n.token === 's' && n.meta['result'] === 'success').length).to.be.equal(1);
+        expect(nodes['6'].filter(n => n.token === 'e' && n.meta['result'] === 'step').length).to.be.equal(1);
+        expect(nodes['7'].filter(n => n.token === 'r' && n.meta['result'] === 'success').length).to.be.equal(1);
+        Object.keys(nodes).filter(k => parseInt(k) > 7)
+          .forEach(k => nodes[k].forEach(n => expect(n.meta['result']).to.be.undefined));
+      });
 
       it('clears metadata between calls', () => {
+        gaddag.clearMeta();
         gaddag.wordsContaining('call');
         let nodes = gaddag.getNodesByDepth();
         expect(nodes['4'].some(node => node.meta['result'] === 'success')).to.be.true;
@@ -289,7 +304,21 @@ describe('Gaddag', () => {
         expect(matches).to.be.an('array').that.is.empty;
       });
 
-      it('sets result metadata', () => { throw 'not implemented' });
+      it('sets result metadata', () => {
+        gaddag.wordsForPrefix('ca');
+        let nodes = gaddag.getNodesByDepth();
+        expect(nodes['0'][0].meta['result']).to.be.equal('query');
+        expect(nodes['1'].filter(n => n.token === 'a' && n.meta['result'] === 'query').length, 'first tier').to.be.equal(1);
+        expect(nodes['2'].filter(n => n.token === 'c' && n.meta['result'] === 'query').length, 'second tier').to.be.equal(1);
+        expect(nodes['3'].filter(n => n.token === '>' && n.meta['result'] === 'step', 'third tier').length).to.be.equal(1);
+        expect(nodes['4'].filter(n => n.token === 'l' && n.meta['result'] === 'step', 'fourth tier').length).to.be.equal(1);
+        expect(nodes['5'].filter(n => n.token === 'l' && n.meta['result'] === 'success', 'fifth tier').length).to.be.equal(1);
+        expect(nodes['6'].filter(n => n.token === 's' && n.meta['result'] === 'success', 'sixth tier').length).to.be.equal(1);
+        expect(nodes['6'].filter(n => n.token === 'e' && n.meta['result'] === 'step', 'seventh tier').length).to.be.equal(1);
+        expect(nodes['7'].filter(n => n.token === 'r' && n.meta['result'] === 'success', 'eighth tier').length).to.be.equal(1);
+        Object.keys(nodes).filter(k => parseInt(k) > 7)
+          .forEach(k => nodes[k].forEach(n => expect(n.meta['result']).to.be.undefined));
+      });
 
       it('clears metadata between calls', () => {
         gaddag.wordsForPrefix('ca');
@@ -324,7 +353,19 @@ describe('Gaddag', () => {
         expect(matches).to.be.an('array').that.is.empty;
       });
 
-      it('sets result metadata', () => { throw 'not implemented' });
+      it('sets result metadata', () => {
+        gaddag.wordsForSuffix('er');
+        let nodes = gaddag.getNodesByDepth()
+        expect(nodes['0'][0].meta['result']).to.be.equal('query');
+        expect(nodes['1'].filter(n => n.token === 'r' && n.meta['result'] === 'query').length, 'first tier').to.be.equal(1);
+        expect(nodes['2'].filter(n => n.token === 'e' && n.meta['result'] === 'query').length, 'second tier').to.be.equal(1);
+        expect(nodes['3'].filter(n => n.token === 'l' && n.meta['result'] === 'step', 'third tier').length).to.be.equal(1);
+        expect(nodes['4'].filter(n => n.token === 'l' && n.meta['result'] === 'step', 'fourth tier').length).to.be.equal(1);
+        expect(nodes['5'].filter(n => n.token === 'a' && n.meta['result'] === 'step', 'fifth tier').length).to.be.equal(1);
+        expect(nodes['6'].filter(n => n.token === 'c' && n.meta['result'] === 'success', 'seventh tier').length).to.be.equal(1);
+        Object.keys(nodes).filter(k => parseInt(k) > 6)
+          .forEach(k => nodes[k].forEach(n => expect(n.meta['result']).to.be.undefined));
+      });
 
       it('sets step metadata', () => {
         gaddag.wordsForSuffix('ll');
@@ -384,7 +425,17 @@ describe('Gaddag', () => {
         expect(result).to.be.true;
       });
 
-      it('sets result metadata', () => { throw 'not implemented'; });
+      it('sets result metadata', () => {
+        gaddag.checkWord('call');
+        let nodes = gaddag.getNodesByDepth()
+        expect(nodes['0'][0].meta['result']).to.be.equal('step');
+        expect(nodes['1'].filter(n => n.token === 'l' && n.meta['result'] === 'step').length, 'first tier').to.be.equal(1);
+        expect(nodes['2'].filter(n => n.token === 'l' && n.meta['result'] === 'step').length, 'second tier').to.be.equal(1);
+        expect(nodes['3'].filter(n => n.token === 'a' && n.meta['result'] === 'step', 'third tier').length).to.be.equal(1);
+        expect(nodes['4'].filter(n => n.token === 'c' && n.meta['result'] === 'success', 'fourth tier').length).to.be.equal(1);
+        Object.keys(nodes).filter(k => parseInt(k) > 4)
+          .forEach(k => nodes[k].forEach(n => expect(n.meta['result']).to.be.undefined));
+      });
 
       it('sets step metadata', () => {
         gaddag.checkWord('call');

@@ -435,7 +435,7 @@ export class Gaddag {
         return result;
       }
       node.meta['step'] = step;
-      node.meta['result'] = 'step';
+      node.meta['result'] = 'query';
       node.children[Gaddag.TurnToken].meta['step'] = step + 1;
       node.children[Gaddag.TurnToken].meta['result'] = 'step';
       return result.concat(Gaddag.walkSuffixesFromNode(node.children[Gaddag.TurnToken], step + 1).map(s => prefix + s));
@@ -474,7 +474,8 @@ export class Gaddag {
   private static wordsForSuffixFromNode(suffix: string, xiffus: string, node: GaddagNode, step: number): string[] {
     if (xiffus.length === 0) {
       node.meta['step'] = step;
-      node.meta['result'] = node.isCompleteWord ? 'success' : 'step';
+      // Only set result meta if it's not already set - see "last letter check" below
+      node.meta['result'] = node.meta['result'] || (node.isCompleteWord ? 'success' : 'step');
       let result = node.isCompleteWord ? [ suffix ] : [];
       if (Gaddag.TurnToken in node.children) {
         node.children[Gaddag.TurnToken].meta['step'] = step + 1;
@@ -494,6 +495,11 @@ export class Gaddag {
     }
     node.meta['step'] = step;
     node.meta['result'] = 'query';
+    // If this is the last suffix letter, set the result meta to 'query'
+    if (xiffus.length === 1) {
+      let lastChild = node.children[firstChar];
+      lastChild.meta['result'] = lastChild.isCompleteWord ? 'success' : 'query';
+    }
     return Gaddag.wordsForSuffixFromNode(suffix, xiffus.substr(1), node.children[firstChar], step + 1);
   }
 
