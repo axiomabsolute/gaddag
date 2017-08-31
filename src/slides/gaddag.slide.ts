@@ -51,7 +51,7 @@ function update(
   let dagEdges = dag.getEdges();
   let root = dag.root;
 
-  let nodesByDepth = [[root]].concat(values(dag.getNodesByDepth()));
+  let nodesByDepth = values(dag.getNodesByDepth());
   let depth = nodesByDepth.length;
   let breadth = d3.max(nodesByDepth.map(t => t.length));
 
