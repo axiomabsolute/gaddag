@@ -18,6 +18,7 @@
     "gulp-sourcemaps": "^2.6.0",
     "gulp-typescript": "^3.2.0",
     "gulp-uglify": "^3.0.0",
+    "harp": "^0.24.0",
     "mocha": "^3.5.0",
     "ts-node": "^3.3.0",
     "tsify": "^3.0.1",
@@ -27,9 +28,8 @@
   },
   "scripts": {
     "deploy": "gulp deploy",
-    "start": "gulp",
+    "start": "gulp deploy && harp server .",
     "test": "gulp test",
-    "watch": "gulp watch",
     "watch-deploy": "gulp watch-deploy",
     "watch-test": "gulp watch-test"
   }

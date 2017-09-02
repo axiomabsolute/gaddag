@@ -18,21 +18,6 @@ gulp.task("build", function() {
         .js.pipe(gulp.dest("dist"));
 });
 
-function run() {
-  return exec('node ./dist/main.js', function(err, stdout, stderr) {
-      console.log(stdout);
-      console.log(stderr);
-  });
-}
-
-gulp.task("run", function() {
-  return run();
-});
-
-gulp.task('default', ['build'], function() {
-  return run()
-});
-
 gulp.task('copy-data', function() {
   gulp.src('./src/data/*')
     .pipe(gulp.dest('dist/data'));
@@ -86,10 +71,6 @@ var watchFiles = [
   './src/*.ts',
   './index.html'
 ];
-
-gulp.task("watch", ['default'],  function() {
-  gulp.watch('./src/**/*.ts', ['default']);
-});
 
 gulp.task("watch-deploy", ['deploy'], function() {
   gulp.watch(['./src/**/*.ts'], ['deploy']);

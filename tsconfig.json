@@ -2,7 +2,6 @@
     "files": [
         "src/browser.ts",
         "src/gaddag.ts",
-        "src/main.ts",
         "src/slides/intro.slide.ts",
         "src/slides/two-letter.slide.ts",
         "src/slides/sparse.slide.ts",
